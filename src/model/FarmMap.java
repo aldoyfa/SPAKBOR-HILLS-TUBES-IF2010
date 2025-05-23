@@ -1,0 +1,111 @@
+package model;
+
+import java.util.Random;
+
+/**
+ * Representasi peta Farm berukuran 32x32 tile.
+ * Menyediakan fungsi penempatan objek, pengecekan collision,
+ * dan visualisasi farm dengan posisi Player.
+ */
+public class FarmMap {
+    private Tile[][] tiles;
+    private final int width = 32;
+    private final int height = 32;
+
+    public FarmMap() {
+        tiles = new Tile[height][width];
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
+                tiles[y][x] = new Tile(x, y, TileType.TILLABLE);
+            }
+        }
+
+        placeHouse();
+        placePond();
+        placeShippingBinNearHouse();
+    }
+
+    private void placeHouse() {
+        Random rand = new Random();
+        int maxX = width - 6;
+        int maxY = height - 6;
+        int startX = rand.nextInt(maxX);
+        int startY = rand.nextInt(maxY);
+
+        for (int y = startY; y < startY + 6; y++) {
+            for (int x = startX; x < startX + 6; x++) {
+                tiles[y][x].setType(TileType.HOUSE);
+            }
+        }
+    }
+
+    private void placePond() {
+        Random rand = new Random();
+        int maxX = width - 4;
+        int maxY = height - 3;
+        int startX = rand.nextInt(maxX);
+        int startY = rand.nextInt(maxY);
+
+        for (int y = startY; y < startY + 3; y++) {
+            for (int x = startX; x < startX + 4; x++) {
+                tiles[y][x].setType(TileType.POND);
+            }
+        }
+    }
+
+    private void placeShippingBinNearHouse() {
+        for (int y = 0; y < height - 2; y++) {
+            for (int x = 0; x < width - 6; x++) {
+                boolean isHouse = true;
+                for (int j = y; j < y + 6; j++) {
+                    for (int i = x; i < x + 6; i++) {
+                        if (tiles[j][i].getType() != TileType.HOUSE) {
+                            isHouse = false;
+                            break;
+                        }
+                    }
+                    if (!isHouse) break;
+                }
+                if (isHouse) {
+                    for (int dy = 0; dy < 2; dy++) {
+                        for (int dx = 0; dx < 3; dx++) {
+                            tiles[y + dy][x + 6 + dx].setType(TileType.SHIPPING_BIN);
+                        }
+                    }
+                    return;
+                }
+            }
+        }
+    }
+
+    public Tile getTile(int x, int y) {
+        return tiles[y][x];
+    }
+
+    public boolean canMoveTo(int x, int y) {
+        if (x < 0 || y < 0 || x >= width || y >= height) return false;
+        return tiles[y][x].isWalkable();
+    }
+
+    /** Menampilkan farm map ke terminal. Player ditandai dengan 'p'. */
+    public void renderFarmMap(int playerX, int playerY) {
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
+                if (x == playerX && y == playerY) {
+                    System.out.print("p");
+                } else {
+                    switch (tiles[y][x].getType()) {
+                        case HOUSE -> System.out.print("h");
+                        case POND -> System.out.print("o");
+                        case SHIPPING_BIN -> System.out.print("s");
+                        case TILLED -> System.out.print("t");
+                        case PLANTED -> System.out.print("l");
+                        case OBSTACLE -> System.out.print("x");
+                        default -> System.out.print(".");
+                    }
+                }
+            }
+            System.out.println();
+        }
+    }
+}
