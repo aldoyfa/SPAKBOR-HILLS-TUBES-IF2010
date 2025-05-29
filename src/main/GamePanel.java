@@ -1,10 +1,18 @@
 package main;
 
 import javax.swing.JPanel;
+
+import java.awt.BasicStroke;
+import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Rectangle;
+
 import inputs.KeyboardListener;
+import entity.NPC;
+import entity.NPCManager;
 import entity.Player;
 import tile.TileManager;
 
@@ -35,11 +43,22 @@ public class GamePanel extends JPanel implements Runnable {
     KeyboardListener keyH = new KeyboardListener();
     public Player player = new Player(this, keyH);
 
+    // ... existing ...
+    public NPCManager npcM;       // ← baru
+    public boolean inDialogue;    // apakah dialog berjalan?
+    public NPC currentNPC;        // NPC yang di-interact
+    public int dialogueIndex;     // baris dialog sekarang
+    private boolean prevSpacePressed = false;
+    private boolean prevEnterPressed = false;
+
     public GamePanel() {
         this.setPreferredSize(new Dimension(screenWidth, screenHeight));
         this.setDoubleBuffered(true);
         this.addKeyListener(keyH);
         this.setFocusable(true);
+        this.addKeyListener(keyH);
+        this.setFocusable(true);
+        npcM = new NPCManager(this);  // setelah keyH & player siap
     }
 
     public void startGameThread() {
@@ -72,15 +91,74 @@ public class GamePanel extends JPanel implements Runnable {
     }
 
     public void update() {
-        player.update(); 
+        // deteksi rising edge
+        boolean spaceTap = keyH.spacePressed && !prevSpacePressed;
+        boolean enterTap = keyH.enterPressed && !prevEnterPressed;
+
+        // simpan state sekarang untuk frame berikutnya
+        prevSpacePressed = keyH.spacePressed;
+        prevEnterPressed = keyH.enterPressed;
+
+        if (!inDialogue) {
+            player.update();
+
+            // mulai dialog hanya sekali saat Space baru ditekan
+            if (spaceTap) {
+                Rectangle pr = new Rectangle(
+                player.worldX + player.solidArea.x,
+                player.worldY + player.solidArea.y,
+                player.solidArea.width,
+                player.solidArea.height
+            );
+                NPC hit = npcM.checkCollisionNPC(pr);
+                if (hit != null) {
+                    currentNPC    = hit;
+                    inDialogue    = true;
+                    dialogueIndex = 0;
+                }
+            }
+        } else {
+            // hanya maju dialog sekali tiap Enter atau Space baru ditekan
+            if (enterTap || spaceTap) {
+                dialogueIndex++;
+                // jika melewati batas, keluar dialog
+                if (dialogueIndex >= currentNPC.getDialogueCount()) {
+                    inDialogue    = false;
+                    dialogueIndex = 0;
+                }
+            }
+        }
     }
 
     public void paintComponent(Graphics g) {
+        // super.paintComponent(g);
+        // Graphics2D g2 = (Graphics2D) g;
+        // tileM.draw(g2);
+        // player.draw(g2);
+        // g2.dispose();
         super.paintComponent(g);
         Graphics2D g2 = (Graphics2D) g;
+
         tileM.draw(g2);
+        npcM.draw(g2);
         player.draw(g2);
-        g2.dispose(); 
+
+        if (inDialogue) {
+            drawDialogueBox(g2, currentNPC.getDialogue(dialogueIndex));
+        }
+        g2.dispose();
+    }   
+
+    private void drawDialogueBox(Graphics2D g2, String text) {
+        int x = 50, y = screenHeight - 150;
+        int w = screenWidth - 100, h = 120;
+        g2.setColor(new Color(0,0,0,200));
+        g2.fillRoundRect(x, y, w, h, 20, 20);
+        g2.setColor(Color.white);
+        g2.setStroke(new BasicStroke(3));
+        g2.drawRoundRect(x, y, w, h, 20, 20);
+        g2.setFont(new Font("Arial", Font.PLAIN, 24));
+        g2.drawString(text, x + 20, y + 50);
     }
 }
 
