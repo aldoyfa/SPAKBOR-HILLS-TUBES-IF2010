@@ -36,7 +36,7 @@ public class Player {
     public void setDefaultValues() {
         worldX = gp.tileSize * 17;
         worldY = gp.tileSize * 17;
-        speed = 64;
+        speed = 12;
         direction = "down";
     }
 

@@ -1,11 +1,15 @@
 package main;
 
 import javax.swing.JPanel;
+
+import Objects.ObjectManager;
+
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import inputs.KeyboardListener;
 import entity.Player;
+import Objects.Object;
 import tile.TileManager;
 
 public class GamePanel extends JPanel implements Runnable {
@@ -29,17 +33,24 @@ public class GamePanel extends JPanel implements Runnable {
     // FPS
     int FPS = 60; 
 
-    // Game Thread
+    // Objects
     Thread gameThread;
     public TileManager tileM = new TileManager(this);
+    public Object obj[] = new Object[10]; 
+    public ObjectManager objM = new ObjectManager(this);
     KeyboardListener keyH = new KeyboardListener();
     public Player player = new Player(this, keyH);
+    
 
     public GamePanel() {
         this.setPreferredSize(new Dimension(screenWidth, screenHeight));
         this.setDoubleBuffered(true);
         this.addKeyListener(keyH);
         this.setFocusable(true);
+    }
+
+    public void setupGame() {
+        objM.setObject(); 
     }
 
     public void startGameThread() {
@@ -79,6 +90,11 @@ public class GamePanel extends JPanel implements Runnable {
         super.paintComponent(g);
         Graphics2D g2 = (Graphics2D) g;
         tileM.draw(g2);
+        for (int i = 0; i < obj.length; i++) {
+            if (obj[i] != null) {
+                obj[i].draw(g2, this);
+            }
+        }
         player.draw(g2);
         g2.dispose(); 
     }
