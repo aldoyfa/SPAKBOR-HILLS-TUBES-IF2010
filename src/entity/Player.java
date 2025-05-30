@@ -17,6 +17,7 @@ public class Player {
    public int spriteNum = 1; 
    public int worldX, worldY, speed;
    public Rectangle solidArea;
+   public int solidAreaDefaultX, solidAreaDefaultY;
    public boolean collisionOn = false;
    public final int screenX, screenY;
 
@@ -28,6 +29,8 @@ public class Player {
       screenY = gp.screenHeight / 2 - (gp.tileSize / 2);
 
       solidArea = new Rectangle(8, 16, 32, 32);
+      solidAreaDefaultX = solidArea.x;
+      solidAreaDefaultY = solidArea.y;
 
       setDefaultValues();  
       getPlayerImage();
@@ -36,7 +39,7 @@ public class Player {
     public void setDefaultValues() {
         worldX = gp.tileSize * 17;
         worldY = gp.tileSize * 17;
-        speed = 64;
+        speed = 12;
         direction = "down";
     }
 
@@ -55,7 +58,7 @@ public class Player {
         }
     }
 
-    public void checkCollision() {
+    public void checkTileCollision() {
         int playerLeftWorldX = worldX + solidArea.x;
         int playerRightWorldX = worldX + solidArea.x + solidArea.width;
         int playerTopWorldY = worldY + solidArea.y;
@@ -109,6 +112,63 @@ public class Player {
 
     }
 
+    public int checkObjectCollision(Player player) {
+        int index = -1;
+
+        for (int j = 0; j < gp.obj.length; j++) {
+            if (gp.obj[j] != null) {
+                player.solidArea.x = player.worldX + player.solidArea.x;
+                player.solidArea.y = player.worldY + player.solidArea.y;
+
+                gp.obj[j].solidArea.x = gp.obj[j].worldX + gp.obj[j].solidArea.x;
+                gp.obj[j].solidArea.y = gp.obj[j].worldY + gp.obj[j].solidArea.y;
+                switch (player.direction) {
+                    case "up":
+                        player.solidArea.y -= player.speed;
+                        if (player.solidArea.intersects(gp.obj[j].solidArea)) {
+                            if (gp.obj[j].collision) {
+                                player.collisionOn = true;
+                            }
+                            index = j; 
+                        }
+                        break;
+                    case "down":
+                        player.solidArea.y += player.speed;
+                        if (player.solidArea.intersects(gp.obj[j].solidArea)) {
+                            if (gp.obj[j].collision) {
+                                player.collisionOn = true;
+                            }
+                            index = j; 
+                        }
+                        break;
+                    case "left":
+                        player.solidArea.x -= player.speed;
+                        if (player.solidArea.intersects(gp.obj[j].solidArea)) {
+                            if (gp.obj[j].collision) {
+                                player.collisionOn = true;
+                            }
+                            index = j; 
+                        }
+                        break;
+                    case "right":
+                        player.solidArea.x += player.speed;
+                        if (player.solidArea.intersects(gp.obj[j].solidArea)) {
+                            if (gp.obj[j].collision) {
+                                player.collisionOn = true;
+                            }
+                            index = j; 
+                        }
+                        break;
+                }
+                player.solidArea.x = player.solidAreaDefaultX;
+                player.solidArea.y = player.solidAreaDefaultY;
+                gp.obj[j].solidArea.x = gp.obj[j].solidAreaDefaultX;
+                gp.obj[j].solidArea.y = gp.obj[j].solidAreaDefaultY;
+            }
+        }
+        return index;
+    }
+
     public void update() {
         if (keyH.wPressed || keyH.aPressed || keyH.sPressed || keyH.dPressed) {
             if (keyH.wPressed) {
@@ -126,7 +186,11 @@ public class Player {
         
             // Check tile collision    
             collisionOn = false;
-            checkCollision();
+            checkTileCollision();
+            int objIndex = checkObjectCollision(this);
+            if (objIndex != -1) {
+                pickUpObject(objIndex);
+            }   
 
             if (!collisionOn) {
                 switch (direction) {
@@ -154,6 +218,18 @@ public class Player {
                 }
                 spriteCounter = 0;
             }
+        }
+    }
+
+    public void pickUpObject(int index) {
+        // implement logic ketika player menyentuh objek di sini
+        // contoh:
+        if (gp.obj[index].name.equals("House")) {
+            System.out.println("You entered the house!");
+        } else if (gp.obj[index].name.equals("Shipping Bin")) {
+            System.out.println("You opened the shipping bin!");
+        } else if (gp.obj[index].name.equals("Pond")) {
+            System.out.println("You are at the pond!");
         }
     }
 

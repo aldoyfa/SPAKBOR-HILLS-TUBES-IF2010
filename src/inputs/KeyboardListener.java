@@ -6,6 +6,7 @@ import java.awt.event.KeyEvent;
 public class KeyboardListener implements KeyListener {
     public boolean wPressed, aPressed, sPressed, dPressed;
     public boolean spacePressed, enterPressed;
+    public boolean upPressed, downPressed;
 
     public void keyTyped (KeyEvent e) {
     }
@@ -30,7 +31,9 @@ public class KeyboardListener implements KeyListener {
         }
         if (code == KeyEvent.VK_ENTER){
             enterPressed = true; 
-        }    
+        }
+        if (code == KeyEvent.VK_UP)    upPressed    = true;
+        if (code == KeyEvent.VK_DOWN)  downPressed  = true;
     }
 
     public void keyReleased (KeyEvent e) {
@@ -54,5 +57,7 @@ public class KeyboardListener implements KeyListener {
         if (code == KeyEvent.VK_ENTER){
             enterPressed = false; 
         } 
+        if (code == KeyEvent.VK_UP)    upPressed    = true;
+        if (code == KeyEvent.VK_DOWN)  downPressed  = true;
     }
 }
