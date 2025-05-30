@@ -8,6 +8,7 @@ import java.awt.Rectangle;
 import inputs.KeyboardListener;
 import main.GamePanel;
 import main.UtilityTool;
+import model.Inventory;
 
 public class Player {
     
@@ -28,11 +29,15 @@ public class Player {
    public final int screenX, screenY;
 
    // Atribut Player in-Game
-   public String name = "Player";
-   public int energy = 100;
-   public String farmName = "My Farm";
-   public String partner = null;
-   public int gold = 0;
+   private String name = "Player";
+   private int energy = 100;
+   private String farmName;
+   private String partner = null;
+   private int gold = 0;
+   public Inventory inventory = new Inventory();
+
+   // Atribut tambahan
+   public boolean hasSleptToday = false;
 
    public Player(GamePanel gp, KeyboardListener keyH) {
       this.gp = gp;
@@ -49,11 +54,56 @@ public class Player {
       getPlayerImage();
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public int getEnergy() {
+        return energy;
+    }
+
+    public void setEnergy(int energy) {
+        this.energy += energy;
+    }
+
+    public String getFarmName() {
+        return farmName;
+    }
+
+    public void setFarmName(String farmName) {
+        this.farmName = gp.farmMap.getName();
+    }
+
+    public String getPartner() {
+        return partner;
+    }
+
+    public void setPartner(String partner) {
+        this.partner = partner;
+    }
+
+    public int getGold() {
+        return gold;
+    }
+
+    public void setGold(int gold) {
+        this.gold += gold;
+    }
+
     public void setDefaultValues() {
         worldX = gp.tileSize * 17;
         worldY = gp.tileSize * 17;
         speed = 16;
         direction = "down";
+        inventory.addItem(new model.Item("Parsnip Seeds x15"));
+        inventory.addItem(new model.Item("Hoe"));
+        inventory.addItem(new model.Item("Watering Can"));
+        inventory.addItem(new model.Item("Pickaxe"));
+        inventory.addItem(new model.Item("Fishing Rod"));
     }
 
     public void getPlayerImage() {

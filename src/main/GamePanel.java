@@ -6,6 +6,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 
 import inputs.KeyboardListener;
+import model.FarmMap;
 import objects.Object;
 import objects.ObjectManager;
 import entity.Player;
@@ -38,10 +39,12 @@ public class GamePanel extends JPanel implements Runnable {
     public ObjectManager objM = new ObjectManager(this);
     KeyboardListener keyH = new KeyboardListener(this);
     Thread gameThread;
+    long timeCounter = 0; // Counter untuk waktu game
 
     // ENTITY AND OBJECT
     public Player player = new Player(this, keyH);
     public Object obj[] = new Object[10]; 
+    public FarmMap farmMap = new FarmMap(this);
 
     // GAME STATE
     public int gameState;
@@ -73,6 +76,29 @@ public class GamePanel extends JPanel implements Runnable {
         while (gameThread != null) {
             update(); 
             repaint(); 
+
+            // Tambahan: timeCounter naik setiap frame
+            timeCounter++;
+
+            // Jika sudah 60 frame (1 detik), tambahkan 5 menit waktu game
+            if (timeCounter >= FPS) {
+                farmMap.time.tick();
+                timeCounter = 0;
+
+                int hour = farmMap.time.getHour();
+                int minute = farmMap.time.getMinute();
+
+                // // Auto sleep jam 02:00–05:59
+                // if (hour >= 2 && hour < 6 && !player.hasSleptToday) {
+                //     player.autoSleep();
+                // }
+
+                // Reset flag tidur saat pagi
+                if (hour == 6 && minute == 0) {
+                    player.hasSleptToday = false;
+                }
+            }            
+
             try {
                 double remainingTime = nextDrawTime - System.nanoTime();
                 remainingTime /= 1000000; 
