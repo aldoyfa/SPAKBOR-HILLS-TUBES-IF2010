@@ -49,7 +49,7 @@ public class UI {
 
     public void drawGoldUI(){
         g2.drawImage(goldImage, gp.tileSize/2, gp.tileSize/2, gp.tileSize*9/10, gp.tileSize*9/10, null);
-        g2.drawString("Gold: " + gp.player.gold, 88, 75);
+        g2.drawString("Gold: " + gp.player.getGold(), 88, 75);
     }
 
     public int getXForCenteredText(String text) {
