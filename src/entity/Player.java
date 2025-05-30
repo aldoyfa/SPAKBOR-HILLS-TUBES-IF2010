@@ -97,8 +97,8 @@ public class Player {
     }
 
     public void setDefaultValues() {
-        worldX = gp.tileSize * 17;
-        worldY = gp.tileSize * 17;
+        worldX = gp.tileSize * 10;
+        worldY = gp.tileSize * 9;
         speed = 16;
         direction = "down";
         inventory.addItem(new model.Item("Parsnip Seeds x15"));
@@ -137,33 +137,33 @@ public class Player {
         switch (direction) {
             case "up":
                 playerTopRow = (playerTopWorldY - speed) / gp.tileSize;
-                tileNum1 = gp.tileM.mapTileNum[playerLeftCol][playerTopRow];
-                tileNum2 = gp.tileM.mapTileNum[playerRightCol][playerTopRow];
-                if (gp.tileM.tile[tileNum1].collision || gp.tileM.tile[tileNum2].collision) {
+                tileNum1 = gp.farmMap.mapTileNum[playerLeftCol][playerTopRow];
+                tileNum2 = gp.farmMap.mapTileNum[playerRightCol][playerTopRow];
+                if (gp.farmMap.tile[tileNum1].collision || gp.farmMap.tile[tileNum2].collision) {
                     collisionOn = true;
                 }
                 break;
             case "down":
                 playerBottomRow = (playerBottomWorldY + speed) / gp.tileSize;
-                tileNum1 = gp.tileM.mapTileNum[playerLeftCol][playerBottomRow];
-                tileNum2 = gp.tileM.mapTileNum[playerRightCol][playerBottomRow];
-                if (gp.tileM.tile[tileNum1].collision || gp.tileM.tile[tileNum2].collision) {
+                tileNum1 = gp.farmMap.mapTileNum[playerLeftCol][playerBottomRow];
+                tileNum2 = gp.farmMap.mapTileNum[playerRightCol][playerBottomRow];
+                if (gp.farmMap.tile[tileNum1].collision || gp.farmMap.tile[tileNum2].collision) {
                     collisionOn = true;
                 }
                 break;
             case "left":
                 playerLeftCol = (playerLeftWorldX - speed) / gp.tileSize;
-                tileNum1 = gp.tileM.mapTileNum[playerLeftCol][playerTopRow];
-                tileNum2 = gp.tileM.mapTileNum[playerLeftCol][playerBottomRow];
-                if (gp.tileM.tile[tileNum1].collision || gp.tileM.tile[tileNum2].collision) {
+                tileNum1 = gp.farmMap.mapTileNum[playerLeftCol][playerTopRow];
+                tileNum2 = gp.farmMap.mapTileNum[playerLeftCol][playerBottomRow];
+                if (gp.farmMap.tile[tileNum1].collision || gp.farmMap.tile[tileNum2].collision) {
                     collisionOn = true;
                 }
                 break;
             case "right":
                 playerRightCol = (playerRightWorldX + speed) / gp.tileSize;
-                tileNum1 = gp.tileM.mapTileNum[playerRightCol][playerTopRow];
-                tileNum2 = gp.tileM.mapTileNum[playerRightCol][playerBottomRow];
-                if (gp.tileM.tile[tileNum1].collision || gp.tileM.tile[tileNum2].collision) {
+                tileNum1 = gp.farmMap.mapTileNum[playerRightCol][playerTopRow];
+                tileNum2 = gp.farmMap.mapTileNum[playerRightCol][playerBottomRow];
+                if (gp.farmMap.tile[tileNum1].collision || gp.farmMap.tile[tileNum2].collision) {
                     collisionOn = true;
                 }
                 break;

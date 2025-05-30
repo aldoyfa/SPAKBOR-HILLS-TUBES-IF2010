@@ -12,7 +12,6 @@ import inputs.MyMouseListener;
 import model.FarmMap;
 import objects.Object;
 import render.ObjectRenderer;
-import render.TileRenderer;
 import entity.Player;
 
 
@@ -37,17 +36,10 @@ public class GamePanel extends JPanel implements Runnable {
 
     // SYSTEM
     public UI ui = new UI(this);
-    public TileRenderer tileM = new TileRenderer(this);
-    public ObjectRenderer objM = new ObjectRenderer(this);
     public KeyboardListener keyH = new KeyboardListener(this);
     public MyMouseListener mouseH = new MyMouseListener(this);
     Thread gameThread;
     long timeCounter = 0; // Counter untuk waktu game
-
-    // ENTITY AND OBJECT
-    public Player player = new Player(this, keyH);
-    public Object obj[] = new Object[10]; 
-    public FarmMap farmMap = new FarmMap(this);
 
     // GAME STATE
     public int gameState;
@@ -56,6 +48,13 @@ public class GamePanel extends JPanel implements Runnable {
     public final int pauseState = 2;
     public final int dialogueState = 3;
     public final int newGameState = 4;
+    public int newGameCounter = 0;
+
+    // ENTITY AND OBJECT
+    public FarmMap farmMap;
+    public Player player;
+    public Object[] obj;
+    public ObjectRenderer objM;
     
 
     public GamePanel() {
@@ -66,9 +65,15 @@ public class GamePanel extends JPanel implements Runnable {
         this.addMouseMotionListener(mouseH);
         this.setFocusable(true);
         this.setBackground(Color.BLACK);
+        // ENTITY AND OBJECT
+        farmMap = new FarmMap(this);
+        player = new Player(this, keyH);
+        obj = new Object[10]; 
+        objM = new ObjectRenderer(this);
     }
 
     public void setupGame() {
+        farmMap.renderer.getTileImage();
         objM.setObject(); 
         gameState = titleState;
     }
@@ -143,7 +148,7 @@ public class GamePanel extends JPanel implements Runnable {
         }
         // PLAY STATE
         else {
-            tileM.draw(g2);
+            farmMap.renderer.draw(g2);
             objM.draw(g2);
             player.draw(g2);
             ui.draw(g2);

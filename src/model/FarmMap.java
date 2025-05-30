@@ -1,28 +1,30 @@
 package model;
 
-// import java.util.Random;
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.Random;
 import main.GamePanel;
+import objects.House;
+import objects.Pond;
+import objects.ShippingBin;
+import render.TileRenderer;
 
-/**
- * Representasi peta Farm berukuran 32x32 tile.
- * Menyediakan fungsi penempatan objek, pengecekan collision,
- * dan visualisasi farm dengan posisi Player.
- */
 public class FarmMap {
     GamePanel gp;
-    // private Tile[][] tiles;
-    // private final int width = 32;
-    // private final int height = 32;
     private String name = "My Farm";
     private String player;
     public Time time = new Time();
+    public TileRenderer renderer;
+    public int mapTileNum[][];
+    public Tile[] tile;
 
     public FarmMap(GamePanel gp) {
         this.gp = gp;
-        // tiles = new Tile[height][width];
-        // placeHouse();
-        // placePond();
-        // placeShippingBinNearHouse();
+        tile = new Tile[10]; 
+        mapTileNum = new int[gp.maxWorldCol][gp.maxWorldRow];
+        loadMap("/res/maps/farmmap.txt");
+        renderer = new TileRenderer(this.gp);
     }
 
     public String getName() {
@@ -41,82 +43,83 @@ public class FarmMap {
         this.player = gp.player.getName();
     }
 
-    // private void placeHouse() {
-    //     Random rand = new Random();
-    //     int maxX = width - 6;
-    //     int maxY = height - 6;
-    //     int startX = rand.nextInt(maxX);
-    //     int startY = rand.nextInt(maxY);
+    public void loadMap (String filePath) {
+        try {
+            InputStream is = getClass().getResourceAsStream(filePath);
+            BufferedReader br = new BufferedReader(new InputStreamReader(is));
 
-    //     for (int y = startY; y < startY + 6; y++) {
-    //         for (int x = startX; x < startX + 6; x++) {
-    //             tiles[y][x].setType(TileType.HOUSE);
-    //         }
-    //     }
-    // }
+            int col = 0;
+            int row = 0;
 
-    // private void placePond() {
-    //     Random rand = new Random();
-    //     int maxX = width - 4;
-    //     int maxY = height - 3;
-    //     int startX = rand.nextInt(maxX);
-    //     int startY = rand.nextInt(maxY);
+            while (col < gp.maxWorldCol && row < gp.maxWorldRow) {
+                String line = br.readLine();
+                while (col < gp.maxWorldCol) {
+                    String numbers[] = line.split(" ");
+                    int num = Integer.parseInt(numbers[col]);
+                    mapTileNum[col][row] = num;
+                    col++;
+                }
+                if (col == gp.maxWorldCol) {
+                    col = 0;
+                    row++;
+                }
+            }
+            br.close();
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
-    //     for (int y = startY; y < startY + 3; y++) {
-    //         for (int x = startX; x < startX + 4; x++) {
-    //             tiles[y][x].setType(TileType.POND);
-    //         }
-    //     }
-    // }
+    public void placeObjects() {
+        Random rand = new Random();
 
-    // private void placeShippingBinNearHouse() {
-    //     for (int y = 0; y < height - 2; y++) {
-    //         for (int x = 0; x < width - 6; x++) {
-    //             boolean isHouse = true;
-    //             for (int j = y; j < y + 6; j++) {
-    //                 for (int i = x; i < x + 6; i++) {
-    //                     if (tiles[j][i].getType() != TileType.HOUSE) {
-    //                         isHouse = false;
-    //                         break;
-    //                     }
-    //                 }
-    //                 if (!isHouse) break;
-    //             }
-    //             if (isHouse) {
-    //                 for (int dy = 0; dy < 2; dy++) {
-    //                     for (int dx = 0; dx < 3; dx++) {
-    //                         tiles[y + dy][x + 6 + dx].setType(TileType.SHIPPING_BIN);
-    //                     }
-    //                 }
-    //                 return;
-    //             }
-    //         }
-    //     }
-    // }
+        int houseX, houseY;
+        do {
+            houseX = rand.nextInt(21) + 10; 
+            houseY = rand.nextInt(26) + 9;
+        } while (
+            (houseX == 10 && houseY == 9)
+        );
 
-    // public Tile getTile(int x, int y) {
-    //     return tiles[y][x];
-    // }
+        // Tempatkan House
+        gp.obj[0] = new House(gp);
+        gp.obj[0].worldX = houseX * gp.tileSize;
+        gp.obj[0].worldY = houseY * gp.tileSize;
 
-    // /** Menampilkan farm map ke terminal. Player ditandai dengan 'p'. */
-    // public void renderFarmMap(int playerX, int playerY) {
-    //     for (int y = 0; y < height; y++) {
-    //         for (int x = 0; x < width; x++) {
-    //             if (x == playerX && y == playerY) {
-    //                 System.out.print("p");
-    //             } else {
-    //                 switch (tiles[y][x].getType()) {
-    //                     case HOUSE -> System.out.print("h");
-    //                     case POND -> System.out.print("o");
-    //                     case SHIPPING_BIN -> System.out.print("s");
-    //                     case TILLED -> System.out.print("t");
-    //                     case PLANTED -> System.out.print("l");
-    //                     case OBSTACLE -> System.out.print("x");
-    //                     default -> System.out.print(".");
-    //                 }
-    //             }
-    //         }
-    //         System.out.println();
-    //     }
-    // }
+        // Cari posisi Shipping Bin (selalu berjarak 1 tile kosong dari House)
+        int shippingBinX = houseX + 7;
+        int shippingBinY = houseY + 5;
+        gp.obj[1] = new ShippingBin(gp);
+        gp.obj[1].worldX = shippingBinX * gp.tileSize;
+        gp.obj[1].worldY = shippingBinY * gp.tileSize;
+
+        int pondX, pondY;
+        do {
+            pondX = rand.nextInt(28) + 11; 
+            pondY = rand.nextInt(29) + 10;
+        } while (
+            (pondX >= houseX && pondX <= houseX + 7 && pondY >= houseY && pondY <= houseY + 7) ||
+            (pondX >= shippingBinX - 1 && pondX <= shippingBinX + 4 && pondY >= shippingBinY && pondY <= shippingBinY + 3)
+        );
+        
+        gp.obj[2] = new Pond(gp);
+        gp.obj[2].worldX = pondX * gp.tileSize;
+        gp.obj[2].worldY = pondY * gp.tileSize; 
+    }
+
+    public void placeObjects(int houseX, int houseY, int shippingBinX, int shippingBinY, int pondX, int pondY) {
+
+        gp.obj[0] = new House(gp);
+        gp.obj[0].worldX = houseX * gp.tileSize;
+        gp.obj[0].worldY = houseY * gp.tileSize;
+
+        gp.obj[1] = new ShippingBin(gp);
+        gp.obj[1].worldX = shippingBinX * gp.tileSize;
+        gp.obj[1].worldY = shippingBinY * gp.tileSize;
+
+        gp.obj[2] = new Pond(gp);
+        gp.obj[2].worldX = pondX * gp.tileSize;
+        gp.obj[2].worldY = pondY * gp.tileSize; 
+    }
 }

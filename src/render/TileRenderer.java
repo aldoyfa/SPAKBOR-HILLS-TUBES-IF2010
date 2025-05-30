@@ -1,9 +1,6 @@
 package render;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import javax.imageio.ImageIO;
 import java.awt.Graphics2D;
 import main.GamePanel;
@@ -12,15 +9,10 @@ import model.Tile;
 
 public class TileRenderer {
     GamePanel gp;
-    public Tile[] tile;
-    public int mapTileNum[][];
+    
 
     public TileRenderer(GamePanel gp) {
         this.gp = gp;
-        tile = new Tile[10]; 
-        mapTileNum = new int[gp.maxWorldCol][gp.maxWorldRow];
-        loadMap("/res/maps/farmmap.txt");
-        getTileImage();   
     }
 
     public void getTileImage() {
@@ -29,45 +21,18 @@ public class TileRenderer {
         setup (2, "tilled", false);
         setup (3, "tree", false);
         setup (4, "grass", false);
+        setup (5, "planted", true);
     }
 
     public void setup (int index, String imageName, boolean collision) {
         UtilityTool uTool = new UtilityTool();
         try {
-            tile[index] = new Tile();
-            tile[index].image = ImageIO.read(getClass().getResourceAsStream("/res/tiles/" + imageName +".png"));
-            tile[index].image = uTool.scaleImage(tile[index].image, gp.tileSize, gp.tileSize);
-            tile[index].collision = collision;
+            gp.farmMap.tile[index] = new Tile();
+            gp.farmMap.tile[index].image = ImageIO.read(getClass().getResourceAsStream("/res/tiles/" + imageName +".png"));
+            gp.farmMap.tile[index].image = uTool.scaleImage(gp.farmMap.tile[index].image, gp.tileSize, gp.tileSize);
+            gp.farmMap.tile[index].collision = collision;
         } 
         catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void loadMap (String filePath) {
-        try {
-            InputStream is = getClass().getResourceAsStream(filePath);
-            BufferedReader br = new BufferedReader(new InputStreamReader(is));
-
-            int col = 0;
-            int row = 0;
-
-            while (col < gp.maxWorldCol && row < gp.maxWorldRow) {
-                String line = br.readLine();
-                while (col < gp.maxWorldCol) {
-                    String numbers[] = line.split(" ");
-                    int num = Integer.parseInt(numbers[col]);
-                    mapTileNum[col][row] = num;
-                    col++;
-                }
-                if (col == gp.maxWorldCol) {
-                    col = 0;
-                    row++;
-                }
-            }
-            br.close();
-        }
-        catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -77,7 +42,7 @@ public class TileRenderer {
         int row = 0;
 
         while (col < gp.maxWorldCol && row < gp.maxWorldRow) {
-            int tileNum = mapTileNum[col][row];
+            int tileNum = gp.farmMap.mapTileNum[col][row];
 
             int x = col * gp.tileSize;
             int y = row * gp.tileSize;
@@ -89,7 +54,7 @@ public class TileRenderer {
                 y + gp.tileSize > gp.player.worldY - gp.player.screenY &&
                 y - gp.tileSize < gp.player.worldY + gp.player.screenY) {
             
-                g2.drawImage(tile[tileNum].image, screenX, screenY, null);
+                g2.drawImage(gp.farmMap.tile[tileNum].image, screenX, screenY, null);
             }
 
             col++;

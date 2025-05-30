@@ -59,6 +59,7 @@ public class MyMouseListener implements MouseListener, MouseMotionListener {
 		if (gp.gameState == gp.titleState) {
 			if (gp.ui.newGameRect.contains(x, y)) {
 				gp.gameState = gp.newGameState;
+				gp.newGameCounter++;
 			} else if (gp.ui.loadGameRect.contains(x, y)) {
 				System.out.println("Load game clicked");
 				// Implementasi load game
