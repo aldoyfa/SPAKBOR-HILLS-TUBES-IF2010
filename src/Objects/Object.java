@@ -1,9 +1,10 @@
-package Objects;
+package objects;
 
 import java.awt.image.BufferedImage;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import main.GamePanel;
+import main.UtilityTool;
 
 public class Object {
     public BufferedImage image;
@@ -13,6 +14,7 @@ public class Object {
     public Rectangle solidArea; 
     public int solidAreaDefaultX = 0;
     public int solidAreaDefaultY = 0;
+    UtilityTool uTool = new UtilityTool();
 
 
     public void draw(Graphics2D g2, GamePanel gp) {
