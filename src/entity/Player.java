@@ -7,6 +7,9 @@ import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import inputs.KeyboardListener;
 import main.GamePanel;
+import model.Inventory;
+import model.Time;
+
 
 public class Player {
    GamePanel gp;
@@ -19,6 +22,11 @@ public class Player {
    public Rectangle solidArea;
    public boolean collisionOn = false;
    public final int screenX, screenY;
+   public Inventory inventory = new Inventory();
+   public Time time = new Time();
+   public boolean hasSleptToday = false;
+   public int energy = 100;
+
 
    public Player(GamePanel gp, KeyboardListener keyH) {
       this.gp = gp;
@@ -31,6 +39,11 @@ public class Player {
 
       setDefaultValues();  
       getPlayerImage();
+
+      inventory.addItem(new model.Item("Hoe"));
+      inventory.addItem(new model.Item("Parsnip Seeds x15"));
+      inventory.addItem(new model.Item("Watering Can"));
+
     }
 
     public void setDefaultValues() {
@@ -192,4 +205,16 @@ public class Player {
         }
         g2.drawImage(image, screenX, screenY, gp.tileSize, gp.tileSize, null);
     }
+
+    public void autoSleep() {
+        if (!hasSleptToday) {
+            System.out.println("Tertidur otomatis jam " + time.getHour() + ":" + String.format("%02d", time.getMinute()));
+    
+            time.resetToMorning();  // hanya reset jam ke 06:00
+            energy = 100;
+            hasSleptToday = true;
+        }
+    }
+    
+    
 }

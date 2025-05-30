@@ -1,25 +1,16 @@
 package action;
 
-import main.GameModel;
-import model.Inventory;
-import model.Player;
-import item.Item;
-import java.util.Map;
+import main.GamePanel;
 
 public class OpenInventoryAction implements Action {
-    @Override
-    public void execute(GameModel game) {
-        Player player = game.getPlayer();
-        Inventory inventory = player.getInventory();
-        Map<Item, Integer> items = inventory.getAllItems();
+    private GamePanel gp;
 
-        if (items.isEmpty()) {
-            System.out.println("Inventory kosong.");
-        } else {
-            System.out.println("Isi Inventory:");
-            for (Map.Entry<Item, Integer> entry : items.entrySet()) {
-                System.out.println("- " + entry.getKey().getName() + " x" + entry.getValue());
-            }
-        }
+    public OpenInventoryAction(GamePanel gp) {
+        this.gp = gp;
     }
-} 
+
+    @Override
+    public void execute() {
+        gp.player.inventory.printInventory();
+    }
+}

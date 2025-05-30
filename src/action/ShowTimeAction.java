@@ -1,19 +1,16 @@
 package action;
 
-import main.GameModel;
-import model.Farm;
-import java.time.format.DateTimeFormatter;
+import main.GamePanel;
 
 public class ShowTimeAction implements Action {
-    @Override
-    public void execute(GameModel game) {
-        Farm farm = game.getFarm();
-        String season = farm.getSeason().toString();
-        int day = farm.getDay();
-        String time = farm.getTime().format(DateTimeFormatter.ofPattern("HH:mm"));
+    private GamePanel gp;
 
-        System.out.println("Musim: " + season);
-        System.out.println("Hari ke-" + day);
-        System.out.println("Waktu: " + time);
+    public ShowTimeAction(GamePanel gp) {
+        this.gp = gp;
+    }
+
+    @Override
+    public void execute() {
+        System.out.println(gp.player.time.getCurrentTime());
     }
 }

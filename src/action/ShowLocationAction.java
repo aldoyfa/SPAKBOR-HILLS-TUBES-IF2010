@@ -1,19 +1,21 @@
 package action;
 
-import main.GameModel;
-import model.Farm;
-import java.time.format.DateTimeFormatter;
+import main.GamePanel;
 
-public class ShowTimeAction implements Action {
+public class ShowLocationAction implements Action {
+    private GamePanel gp;
+
+    public ShowLocationAction(GamePanel gp) {
+        this.gp = gp;
+    }
+
     @Override
-    public void execute(GameModel game) {
-        Farm farm = game.getFarm();
-        String season = farm.getSeason().toString();
-        int day = farm.getDay();
-        String time = farm.getTime().format(DateTimeFormatter.ofPattern("HH:mm"));
+    public void execute() {
+        int tileX = gp.player.worldX / gp.tileSize;
+        int tileY = gp.player.worldY / gp.tileSize;
 
-        System.out.println("Musim: " + season);
-        System.out.println("Hari ke-" + day);
-        System.out.println("Waktu: " + time);
+        System.out.println("Lokasi Anda saat ini:");
+        System.out.println("Pixel: (" + gp.player.worldX + ", " + gp.player.worldY + ")");
+        System.out.println("Tile: (" + tileX + ", " + tileY + ")");
     }
 }
