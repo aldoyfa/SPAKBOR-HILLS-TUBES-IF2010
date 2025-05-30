@@ -9,6 +9,7 @@ import inputs.KeyboardListener;
 import main.GamePanel;
 import main.UtilityTool;
 import model.Inventory;
+import objects.NPC;
 
 public class Player {
     
@@ -32,6 +33,7 @@ public class Player {
    private String name = "Player";
    private int energy = 100;
    private String farmName;
+   public String gender;
    private String partner = null;
    private int gold = 0;
    public Inventory inventory = new Inventory();
@@ -166,7 +168,7 @@ public class Player {
                 }
                 break;
             default:
-                return; // No movement, no collision check
+                return; 
         }
 
     }
@@ -262,7 +264,7 @@ public class Player {
                 checkTileCollision();
                 int objIndex = checkObjectCollision(this);
                 if (objIndex != -1) {
-                    pickUpObject(objIndex);
+                    interactObject(objIndex);
                 }
             }
             else {
@@ -307,7 +309,7 @@ public class Player {
         }
     }
 
-    public void pickUpObject(int index) {
+    public void interactObject(int index) {
         // implement logic ketika player menyentuh objek di sini
         // contoh:
         if (gp.obj[index].name.equals("House")) {
@@ -316,7 +318,17 @@ public class Player {
             System.out.println("You opened the shipping bin!");
         } else if (gp.obj[index].name.equals("Pond")) {
             System.out.println("You are at the pond!");
+        } else if (gp.obj[index] instanceof NPC) {
+            if (gp.keyH.enterPressed == true) {
+                if (getEnergy() >= 10) {
+                    gp.gameState = gp.dialogueState;
+                    ((NPC) gp.obj[index]).speak();
+                    setEnergy(-10);
+                    ((NPC) gp.obj[index]).setHeartPoints(10);
+                }
+            }
         }
+        gp.keyH.enterPressed = false;
     }
 
     public void draw(Graphics2D g2) {
