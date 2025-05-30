@@ -1,13 +1,12 @@
 package main;
 
 import javax.swing.JPanel;
-
-import Objects.ObjectManager;
-
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+
 import inputs.KeyboardListener;
+import Objects.ObjectManager;
 import entity.Player;
 import Objects.Object;
 import tile.TileManager;
