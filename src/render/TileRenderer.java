@@ -1,35 +1,34 @@
-package tile;
+package render;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-
 import javax.imageio.ImageIO;
 import java.awt.Graphics2D;
 import main.GamePanel;
 import main.UtilityTool;
+import model.Tile;
 
-public class TileManager {
+public class TileRenderer {
     GamePanel gp;
     public Tile[] tile;
     public int mapTileNum[][];
 
-    public TileManager(GamePanel gp) {
+    public TileRenderer(GamePanel gp) {
         this.gp = gp;
         tile = new Tile[10]; 
         mapTileNum = new int[gp.maxWorldCol][gp.maxWorldRow];
-        loadMap("/save/save01/map01.txt");
+        loadMap("/res/maps/farmmap.txt");
         getTileImage();   
     }
 
     public void getTileImage() {
-        setup (0, "grass", false);
+        setup (0, "tilable", false);
         setup (1, "wall", true);
-        setup (2, "water", false);
-        setup (3, "earth", false);
-        setup (4, "sand", false);
-        setup (5, "tree", false);
+        setup (2, "tilled", false);
+        setup (3, "tree", false);
+        setup (4, "grass", false);
     }
 
     public void setup (int index, String imageName, boolean collision) {

@@ -1,16 +1,20 @@
 package main;
 
 import javax.swing.JPanel;
+
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 
 import inputs.KeyboardListener;
+import inputs.MyMouseListener;
 import model.FarmMap;
 import objects.Object;
-import objects.ObjectManager;
+import render.ObjectRenderer;
+import render.TileRenderer;
 import entity.Player;
-import tile.TileManager;
+
 
 public class GamePanel extends JPanel implements Runnable {
 
@@ -27,17 +31,16 @@ public class GamePanel extends JPanel implements Runnable {
     // World Settings 
     public final int maxWorldCol = 52;
     public final int maxWorldRow = 50;
-    // public final int worldWidth = tileSize * maxWorldCol; 
-    // public final int worldHeight = tileSize * maxWorldRow; 
 
     // FPS
     int FPS = 60; 
 
     // SYSTEM
     public UI ui = new UI(this);
-    public TileManager tileM = new TileManager(this);
-    public ObjectManager objM = new ObjectManager(this);
-    KeyboardListener keyH = new KeyboardListener(this);
+    public TileRenderer tileM = new TileRenderer(this);
+    public ObjectRenderer objM = new ObjectRenderer(this);
+    public KeyboardListener keyH = new KeyboardListener(this);
+    public MyMouseListener mouseH = new MyMouseListener(this);
     Thread gameThread;
     long timeCounter = 0; // Counter untuk waktu game
 
@@ -48,20 +51,26 @@ public class GamePanel extends JPanel implements Runnable {
 
     // GAME STATE
     public int gameState;
+    public final int titleState = 0;
     public final int playState = 1;
     public final int pauseState = 2;
+    public final int dialogueState = 3;
+    public final int newGameState = 4;
     
 
     public GamePanel() {
         this.setPreferredSize(new Dimension(screenWidth, screenHeight));
         this.setDoubleBuffered(true);
         this.addKeyListener(keyH);
+        this.addMouseListener(mouseH);
+        this.addMouseMotionListener(mouseH);
         this.setFocusable(true);
+        this.setBackground(Color.BLACK);
     }
 
     public void setupGame() {
         objM.setObject(); 
-        gameState = playState;
+        gameState = titleState;
     }
 
     public void startGameThread() {
@@ -128,15 +137,17 @@ public class GamePanel extends JPanel implements Runnable {
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
         Graphics2D g2 = (Graphics2D) g;
-        tileM.draw(g2);
-        for (int i = 0; i < obj.length; i++) {
-            if (obj[i] != null) {
-                obj[i].draw(g2, this);
-            }
+        // TITLE SCREEN
+        if (gameState == titleState) {
+            ui.draw(g2);
         }
-        player.draw(g2);
-        ui.draw(g2);
+        // PLAY STATE
+        else {
+            tileM.draw(g2);
+            objM.draw(g2);
+            player.draw(g2);
+            ui.draw(g2);
+        }
         g2.dispose(); 
     }
 }
-
