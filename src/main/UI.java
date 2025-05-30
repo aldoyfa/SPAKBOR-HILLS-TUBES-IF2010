@@ -16,20 +16,11 @@ public class UI {
     public UI(GamePanel gp) {
         this.gp = gp;
         handjet_30 = new Font("Handjet", Font.PLAIN, 30);
-        try {
-            // GOLD IMAGE
-            goldImage = ImageIO.read(getClass().getResourceAsStream("/res/ui/gold.png"));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
     public void draw(Graphics2D g2) {
         this.g2 = g2;
-
-        g2.setFont(handjet_30);
-        g2.setColor(Color.WHITE);
-        
+    
         if (gp.gameState == gp.playState) {
             drawGoldUI();
         
@@ -48,6 +39,14 @@ public class UI {
     }
 
     public void drawGoldUI(){
+        g2.setFont(handjet_30);
+        g2.setColor(Color.WHITE);
+        try {
+            // GOLD IMAGE
+            goldImage = ImageIO.read(getClass().getResourceAsStream("/res/ui/gold.png"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         g2.drawImage(goldImage, gp.tileSize/2, gp.tileSize/2, gp.tileSize*9/10, gp.tileSize*9/10, null);
         g2.drawString("Gold: " + gp.player.getGold(), 88, 75);
     }
