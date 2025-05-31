@@ -13,9 +13,7 @@ Anggota Kelompok:
 | 18223138  | Sonya Putri Fadilah      |
 
 ## About the Game
-Setelah gagal menguasai dunia sebanyak 420 kali, Dr. Asep Spakbor memutuskan banting setir menjadi petani. Demi menghindari kekacauan yang lebih besar, O.W.C.A —Organisasi Warga Cool Abiez meminta kamu, seorang agen biasa, untuk menciptakan sebuah game bertani yang cukup cerdas untuk menenangkan hasrat penghancuran sang ilmuwan.
-
-Lahir lah game Spakbor Hills, simulator bertani dengan sistem energi, cuaca, dan hubungan sosial yang kompleks. Dalam game ini, kamu harus bertani, memancing, memasak, bersosialisasi dengan NPC, dan mencapai milestone penting seperti menikah atau menjadi petani kaya.
+Spakbor Hills adalah permainan simulasi bertani berbasis teks yang dibuat untuk membantu Dr. Asep Spakbor menjadi petani sukses demi mencegah kekacauan dunia. Pemain dapat bertani, memancing, memasak, menjual hasil panen, serta menjalin hubungan dengan NPC. Setiap aksi membutuhkan strategi, energi, dan waktu dalam game. Tujuan akhir permainan adalah mengumpulkan 17.209 gold dan menikah dengan salah satu NPC.
 
 ## Cara Menjalankan Program
 - *Untuk OS Windows:*
