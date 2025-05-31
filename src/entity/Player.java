@@ -197,7 +197,7 @@ public class Player {
         System.out.println("Energi Player: " + energy);
     }
 
-    // === ACTION METHODS === //
+    // Action Methods
     public void eating(EdibleItem item) {
         new EatingAction(item).execute(this);
     }

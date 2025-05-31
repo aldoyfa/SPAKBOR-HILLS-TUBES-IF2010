@@ -73,7 +73,7 @@ public class GamePanel extends JPanel implements Runnable {
 
     public ActionMenuItem[] detailedActionMenuItems = new ActionMenuItem[] {
         new ActionMenuItem("Tilling", "Mengubah land menjadi soil", 5, 5, "Hoe"),
-        new ActionMenuItem("Recover Land*", "Mengubah soil menjadi land", 5, 5, "Pickaxe"),
+        new ActionMenuItem("Recover Land", "Mengubah soil menjadi land", 5, 5, "Pickaxe"),
         new ActionMenuItem("Planting", "Menanam seed di soil.", 5, 5, "Seed yang hendak ditanam"),
         new ActionMenuItem("Watering", "Bergerak ke soil yang telah ditanam dan melakukan watering.", 5, 5, "Watering Can")
     };
@@ -252,8 +252,8 @@ public class GamePanel extends JPanel implements Runnable {
         if (showDetailedActionMenu) {
             int x = 50;
             int y = 100;
-            int width = 400;
-            int height = 300;
+            int width = 500;
+            int height = 200;
             int arc = 20;
 
             // Draw background box
