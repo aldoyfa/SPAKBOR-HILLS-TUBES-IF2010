@@ -23,7 +23,7 @@ public class FishingAction {
         }
 
         if (gp.player.getEnergy() < 5) {
-            gp.ui.currentDialogue = "You don,t have enough energy to fishing.";
+            gp.ui.currentDialogue = "You don't have enough energy to fishing.";
             gp.gameState = gp.dialogueState;
             return;
         }
