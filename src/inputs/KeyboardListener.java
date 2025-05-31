@@ -3,6 +3,11 @@ package inputs;
 import java.awt.event.KeyListener;
 import java.awt.event.KeyEvent;
 import main.GamePanel;
+import action.Chatting;
+import action.Gift;
+import action.Marry;
+import action.Propose;
+import objects.NPC;
 
 public class KeyboardListener implements KeyListener {
     GamePanel gp;
@@ -74,14 +79,93 @@ public class KeyboardListener implements KeyListener {
                 } else if (gp.ui.selectingGender) {
                     // Set ke player & lanjut ke main game
                     gp.player.setName(gp.ui.playerName);
-                    gp.player.gender = (gp.ui.genderIndex == 0) ? "male" : "female";
+                    gp.player.gender = (gp.ui.chooseIndex == 0) ? "male" : "female";
                     gp.farmMap.setName(gp.ui.farmName);
                     gp.gameState = gp.playState;
                 }
             } else if (gp.ui.selectingGender) {
                 if (e.getKeyCode() == KeyEvent.VK_LEFT || e.getKeyCode() == KeyEvent.VK_RIGHT) {
-                    gp.ui.genderIndex = 1 - gp.ui.genderIndex;
+                    gp.ui.chooseIndex = 1 - gp.ui.chooseIndex;
                 }
+            }
+        }
+        else if (gp.gameState == gp.NPCInterfaceState) {
+            if (code == KeyEvent.VK_LEFT) {
+                gp.ui.npcOptionIndex = (gp.ui.npcOptionIndex + gp.ui.npcOptions.length - 1) % gp.ui.npcOptions.length;
+            }
+            if (code == KeyEvent.VK_RIGHT) {
+                gp.ui.npcOptionIndex = (gp.ui.npcOptionIndex + 1) % gp.ui.npcOptions.length;
+            }
+            if (code == KeyEvent.VK_ENTER || code == KeyEvent.VK_SPACE) {
+                String selected = gp.ui.npcOptions[gp.ui.npcOptionIndex];
+                switch (selected) {
+                    case "Chat":
+                        new Chatting (gp, gp.ui.currentNPC);
+                        break;
+                    case "Gift":
+                        new Gift (gp, gp.ui.currentNPC);
+                        break;
+                    case "Propose":
+                        new Propose (gp, gp.ui.currentNPC);
+                        break;
+                    case "Marry":
+                        new Marry (gp, gp.ui.currentNPC);
+                        break;
+                }
+            }
+        }
+        else if (gp.gameState == gp.inventorySelectionState) {
+            // Navigation untuk inventory selection
+            java.util.List<model.Item> items = gp.player.getInventory().getItems();
+            
+            if (code == KeyEvent.VK_UP) {
+                if (gp.ui.inventorySelectionIndex > 0) {
+                    gp.ui.inventorySelectionIndex--;
+                }
+            }
+            if (code == KeyEvent.VK_DOWN) {
+                if (gp.ui.inventorySelectionIndex < items.size() - 1) {
+                    gp.ui.inventorySelectionIndex++;
+                }
+            }
+            if (code == KeyEvent.VK_ENTER) {
+                // Konfirmasi pilihan item dan execute gift logic
+                if (!items.isEmpty() && gp.ui.inventorySelectionIndex < items.size()) {
+                    NPC targetNPC = gp.ui.targetNPC;
+                    
+                    // Cek apakah player memiliki energy untuk memberikan gift
+                    if (gp.player.getEnergy() >= 5) {
+                        // Execute gift logic
+                        String reaction = "";
+                        int heartPointsGain = 0;
+                        
+                        // Evaluasi gift berdasarkan preferensi NPC (asumsi method evaluateGift ada)
+                        // Untuk sementara menggunakan logic sederhana
+                        heartPointsGain = 20; // Default value
+                        reaction = targetNPC.getName() + " accepts the gift. +" + heartPointsGain + " heart points!";
+                        
+                        // Update heart points NPC
+                        targetNPC.setHeartPoints(heartPointsGain);
+                        
+                        // Hapus item dari inventory
+                        gp.player.getInventory().getItems().remove(gp.ui.inventorySelectionIndex);
+                        
+                        // Update energy player
+                        gp.player.setEnergy(-5);
+                        
+                        // Set dialogue dan pindah ke dialogue state
+                        gp.ui.currentDialogue = reaction;
+                        gp.gameState = gp.dialogueState;
+                    } else {
+                        // Not enough energy
+                        gp.ui.currentDialogue = "You don't have enough energy to give gifts!";
+                        gp.gameState = gp.dialogueState;
+                    }
+                }
+            }
+            if (code == KeyEvent.VK_ESCAPE) {
+                // Kembali ke NPC interface
+                gp.gameState = gp.NPCInterfaceState;
             }
         }
     }

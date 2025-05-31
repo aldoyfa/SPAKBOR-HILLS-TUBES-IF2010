@@ -19,6 +19,7 @@ public class NPC_Abigail extends NPC {
         setDialogue();
     }
 
+
     @Override
     public void setDialogue() {
         dialogues[0] = ("Heya! Aku Abigail! Mau eksplorasi alam \nbersamaku?");

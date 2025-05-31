@@ -24,10 +24,16 @@ public class UI {
     public int hoveredButton = -1;
     public String playerName = "";
     public String farmName = "";
-    public int genderIndex = 0; 
+    public int chooseIndex = 0; 
     public boolean enteringPlayerName = true;
     public boolean enteringFarmName = false;
     public boolean selectingGender = false;
+    public String[] npcOptions = {"Chat", "Gift", "Propose", "Marry"};
+    public int npcOptionIndex = 0;
+
+    // Variabel untuk inventory selection
+    public int inventorySelectionIndex = 0;
+    public NPC targetNPC; // NPC yang akan menerima gift
 
     public UI(GamePanel gp) {
         this.gp = gp;
@@ -71,6 +77,16 @@ public class UI {
         // DIALOGUE STATE
         if (gp.gameState == gp.dialogueState) {
             drawDialogueScreen();
+        }
+
+        // NPC INTERFACE STATE
+        if (gp.gameState == gp.NPCInterfaceState) {
+            drawNPCInterfaceScreen();
+        }
+
+        // INVENTORY SELECTION STATE
+        if (gp.gameState == gp.inventorySelectionState) {
+            drawInventorySelectionScreen();
         }
     }
 
@@ -116,11 +132,9 @@ public class UI {
     public void drawInputScreen() {
 
          // DIALOGUE BOX
+        drawDialogueBox();
         int x = gp.tileSize * 2;
         int y = gp.tileSize / 2;
-        int width = gp.screenWidth - (gp.tileSize * 4);
-        int height = gp.tileSize * 4;
-        drawSubWindow(x, y, width, height);
                 
         // DIALOGUE TEXT
         g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 60F));
@@ -135,13 +149,34 @@ public class UI {
             g2.drawString(farmName + "_", x, y + 65);
         } else if (selectingGender) {
             g2.drawString("Select Gender: (use left and right arrows)", x, y);
-            String genderStr = (genderIndex == 0) ? "Male" : "Female";
+            String genderStr = (chooseIndex == 0) ? "Male" : "Female";
             g2.setColor(Color.YELLOW);
             g2.drawString(genderStr, x, y + 65);
             g2.setColor(Color.WHITE);
             g2.drawString("Press ENTER to confirm", x, y + 130);
         }
-}
+    }
+
+    public void drawNPCInterfaceScreen() {
+        drawDialogueBox();
+        int x = gp.tileSize * 3;
+        int y = gp.tileSize * 2 ;
+
+        g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 48F));
+        g2.setColor(Color.WHITE);
+        g2.drawString("Select Action (←/→ to move, ENTER to confirm):", x, y);
+
+        int spacing = gp.tileSize * 3;
+
+        for (int i = 0; i < npcOptions.length; i++) {
+            if (i == npcOptionIndex) {
+                g2.setColor(Color.YELLOW);
+            } else {
+                g2.setColor(Color.WHITE);
+            }
+            g2.drawString(npcOptions[i], x + (i * spacing), y + gp.tileSize * 2);
+        }
+    }
 
 
     public void drawPauseScreen() {
@@ -154,13 +189,11 @@ public class UI {
 
     public void drawDialogueScreen() {
         // DIALOGUE BOX
-        int x = gp.tileSize * 2;
-        int y = gp.tileSize / 2;
-        int width = gp.screenWidth - (gp.tileSize * 4);
-        int height = gp.tileSize * 4;
-        drawSubWindow(x, y, width, height);
+        drawDialogueBox();
 
         // DIALOGUE TEXT
+        int x = gp.tileSize * 2;
+        int y = gp.tileSize / 2;
         g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 60F));
         x += gp.tileSize;
         y += gp.tileSize;
@@ -180,11 +213,16 @@ public class UI {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        g2.drawImage(energyImage, x + gp.tileSize*5/2, 235, goldImage.getWidth()*4/3, goldImage.getHeight()*4/3, null);
-        g2.drawString("Heart Points: " + currentNPC.getHeartPoints(), x + gp.tileSize*3+20, 270);
+        g2.drawImage(energyImage, x + gp.tileSize*3, 235, goldImage.getWidth()*4/3, goldImage.getHeight()*4/3, null);
+        g2.drawString("Heart Points: " + currentNPC.getHeartPoints(), x + gp.tileSize*3+50, 270);
     }
 
-    public void drawSubWindow (int x, int y, int width, int height) {
+    public void drawDialogueBox () {
+        int x = gp.tileSize * 2;
+        int y = gp.tileSize / 2;
+        int width = gp.screenWidth - (gp.tileSize * 4);
+        int height = gp.tileSize * 4;
+
         // DRAW SUB WINDOW
         Color c = new Color(0, 0, 0, 200);
         g2.setColor(c);
@@ -218,6 +256,36 @@ public class UI {
         }
         g2.drawImage(energyImage, gp.tileSize/2+7, gp.tileSize+20, goldImage.getWidth()*4/3, goldImage.getHeight()*4/3, null);
         g2.drawString("Energy: " + gp.player.getEnergy(), 88, 120);
+    }
+
+    public void drawInventorySelectionScreen() {
+        drawDialogueBox();
+        int x = gp.tileSize * 3;
+        int y = gp.tileSize * 2;
+
+        g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 48F));
+        g2.setColor(Color.WHITE);
+        g2.drawString("Select item to give (↑/↓ to move, ENTER to confirm, ESC to cancel):", x, y);
+        
+        // Ambil items dari inventory
+        java.util.List<model.Item> items = gp.player.getInventory().getItems();
+        
+        if (items.isEmpty()) {
+            g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 48F));
+            g2.setColor(Color.RED);
+            g2.drawString("No items in inventory!", x, y + gp.tileSize);
+            return;
+        }
+
+        // Tampilkan setiap item dalam list
+        for (int i = 0; i < items.size(); i++) {
+            if (i == inventorySelectionIndex) {
+                g2.setColor(Color.YELLOW);
+            } else {
+                g2.setColor(Color.WHITE);
+            }
+            g2.drawString(items.get(i).getName(), x, y + gp.tileSize + (i * 60));
+        }
     }
 
     public int getXForCenteredText(String text) {

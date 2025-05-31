@@ -10,6 +10,7 @@ import inputs.KeyboardListener;
 import main.GamePanel;
 import main.UtilityTool;
 import model.Inventory;
+import model.Item;
 import objects.NPC;
 
 public class Player {
@@ -107,6 +108,36 @@ public class Player {
         inventory.addItem(new model.Item("Watering Can"));
         inventory.addItem(new model.Item("Pickaxe"));
         inventory.addItem(new model.Item("Fishing Rod"));
+    }
+
+    // Getter untuk inventory actions
+    public String getSelectedItemName() {
+        if (inventory.getItems().isEmpty()) {
+            return null;
+        }
+        // Asumsi item pertama adalah item yang sedang dipilih
+        // Bisa dimodifikasi dengan sistem seleksi yang lebih kompleks
+        return inventory.getItems().get(0).getName();
+    }
+    
+    public Item getSelectedItem() {
+        if (inventory.getItems().isEmpty()) {
+            return null;
+        }
+        return inventory.getItems().get(0);
+    }
+    
+    public boolean hasItem(String itemName) {
+        return inventory.getItems().stream()
+            .anyMatch(item -> item.getName().equals(itemName));
+    }
+    
+    public boolean removeItem(String itemName) {
+        return inventory.getItems().removeIf(item -> item.getName().equals(itemName));
+    }
+    
+    public Inventory getInventory() {
+        return inventory;
     }
 
     public void getPlayerImage() {
@@ -313,20 +344,17 @@ public class Player {
     public void interactObject(int index) {
         // implement logic ketika player menyentuh objek di sini
         // contoh:
-        if (gp.obj[index].name.equals("House")) {
-            System.out.println("You entered the house!");
-        } else if (gp.obj[index].name.equals("Shipping Bin")) {
-            System.out.println("You opened the shipping bin!");
-        } else if (gp.obj[index].name.equals("Pond")) {
-            System.out.println("You are at the pond!");
-        } else if (gp.obj[index] instanceof NPC) {
+        // if (gp.obj[index].name.equals("House")) {
+        //     System.out.println("You entered the house!");
+        // } else if (gp.obj[index].name.equals("Shipping Bin")) {
+        //     System.out.println("You opened the shipping bin!");
+        // } else if (gp.obj[index].name.equals("Pond")) {
+        //     System.out.println("You are at the pond!");
+        // }  
+        if (gp.obj[index] instanceof NPC) {
             if (gp.keyH.enterPressed == true) {
-                if (getEnergy() >= 10) {
-                    gp.gameState = gp.dialogueState;
-                    ((NPC) gp.obj[index]).speak();
-                    setEnergy(-10);
-                    ((NPC) gp.obj[index]).setHeartPoints(10);
-                }
+                gp.gameState = gp.NPCInterfaceState;
+                gp.ui.currentNPC = (NPC) gp.obj[index];
             }
         }
         gp.keyH.enterPressed = false;
