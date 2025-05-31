@@ -19,7 +19,9 @@ Spakbor Hills adalah permainan simulasi bertani berbasis teks yang dibuat untuk 
 - *Untuk OS Windows:*
   ```text
   Klik tombol "Run Java" di VS Code
-
+  
+- *Game Play:*
+Untuk memainkan permainan Spakbor Hills, gunakan tombol W, A, S, dan D untuk menggerakkan karakter. Menu Help dapat digunakan untuk melihat panduan lengkap mengenai aksi-aksi dalam permainan. Saat memilih New Game, pemain akan diminta untuk memasukkan nama karakter, nama kebun, dan jenis kelamin. Sepanjang permainan, pemain dapat melakukan berbagai aksi sesuai dengan tombol yang tercantum di menu Help. Jika ingin mengakhiri permainan, gunakan opsi Exit dari menu utama.
 ## Struktur Program
 
 ```
