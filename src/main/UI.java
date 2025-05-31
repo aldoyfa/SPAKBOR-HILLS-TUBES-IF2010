@@ -7,9 +7,11 @@ import java.awt.BasicStroke;
 import java.awt.FontFormatException;
 import java.io.InputStream;
 import javax.imageio.ImageIO;
+
+import objects.NPC;
+
 import java.awt.Font;
 import java.awt.Color;
-import objects.NPC;
 
 public class UI {
     GamePanel gp;

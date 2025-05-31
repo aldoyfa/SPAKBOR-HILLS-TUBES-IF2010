@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Random;
+
 import main.GamePanel;
 import objects.House;
 import objects.Pond;

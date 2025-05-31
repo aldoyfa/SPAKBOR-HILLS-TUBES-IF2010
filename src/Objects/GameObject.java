@@ -1,5 +1,5 @@
 // src/entity/GameObject.java
-package Objects;
+package objects;
 
 import java.awt.Graphics2D;
 import java.awt.Rectangle;

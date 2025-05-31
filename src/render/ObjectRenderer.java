@@ -1,13 +1,14 @@
 package render;
 
 import main.GamePanel;
-import java.awt.Graphics2D;
 import objects.NPC_Abigail;
 import objects.NPC_Caroline;
 import objects.NPC_Dasco;
 import objects.NPC_Emily;
 import objects.NPC_MayorTadi;
 import objects.NPC_Perry;
+
+import java.awt.Graphics2D;
 
 public class ObjectRenderer {
     GamePanel gp;
