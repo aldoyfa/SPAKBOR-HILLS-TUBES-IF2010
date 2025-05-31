@@ -7,10 +7,15 @@ public class OpenInventoryAction implements Action {
 
     public OpenInventoryAction(GamePanel gp) {
         this.gp = gp;
+        execute();
     }
 
     @Override
     public void execute() {
-        gp.player.inventory.printInventory();
+        // Reset inventory selection index
+        gp.ui.inventorySelectionIndex = 0;
+        
+        // Masuk ke inventory state
+        gp.gameState = gp.inventoryState;
     }
 }

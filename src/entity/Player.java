@@ -3,13 +3,16 @@ package entity;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import javax.imageio.ImageIO;
+
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import inputs.KeyboardListener;
 import main.GamePanel;
 import main.UtilityTool;
 import model.Inventory;
+import model.Item;
 import objects.NPC;
+import model.ItemType;
 
 public class Player {
     
@@ -101,11 +104,47 @@ public class Player {
         worldY = gp.tileSize * 9;
         speed = 16;
         direction = "down";
-        inventory.addItem(new model.Item("Parsnip Seeds x15"));
-        inventory.addItem(new model.Item("Hoe"));
-        inventory.addItem(new model.Item("Watering Can"));
-        inventory.addItem(new model.Item("Pickaxe"));
-        inventory.addItem(new model.Item("Fishing Rod"));
+        
+        // Menggunakan explicit types untuk clarity
+        inventory.addItem("Parsnip Seeds", 15, ItemType.SEED);
+        inventory.addItem("Hoe", 1, ItemType.EQUIPMENT);
+        inventory.addItem("Watering Can", 1, ItemType.EQUIPMENT);
+        inventory.addItem("Pickaxe", 1, ItemType.EQUIPMENT);
+        inventory.addItem("Fishing Rod", 1, ItemType.EQUIPMENT);
+        
+        // TAMBAHKAN FOOD ITEMS UNTUK TESTING
+        inventory.addItem("Baguette", 3, ItemType.FOOD);
+        inventory.addItem("Fish n' Chips", 2, ItemType.FOOD);
+    }
+
+    // Update getter methods untuk kompatibilitas dengan sistem lama
+    public String getSelectedItemName() {
+        return inventory.getSelectedItemName(); // Sudah return displayName (dengan quantity)
+    }
+
+    public Item getSelectedItem() {
+        return inventory.getSelectedItem();
+    }
+
+    public boolean hasItem(String itemName) {
+        return inventory.hasItem(itemName);
+    }
+
+    public boolean removeItem(String itemName) {
+        return inventory.removeItem(itemName, 1);
+    }
+
+    public boolean removeItem(String itemName, int quantity) {
+        return inventory.removeItem(itemName, quantity);
+    }
+
+    // Method untuk kemudahan menambah item
+    public void addItem(String name, int quantity, ItemType type) {
+        inventory.addItem(name, quantity, type);
+    }
+
+    public Inventory getInventory() {
+        return inventory;
     }
 
     public void getPlayerImage() {

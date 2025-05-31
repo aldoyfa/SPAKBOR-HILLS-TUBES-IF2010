@@ -1,6 +1,8 @@
 package objects;
 
 import java.io.IOException;
+import java.util.Arrays;
+
 import javax.imageio.ImageIO;
 import java.awt.Rectangle;
 
@@ -45,6 +47,11 @@ public abstract class NPC extends Object {
    public void setRelationshipStatus(RelationshipsStatus relationshipStatus) {
         this.relationshipStatus = relationshipStatus;
     }
+
+
+    // Metode untuk memperbarui status relationship berdasarkan heart points
+    private void updateRelationshipStatus() {
+        }
 
     @Override
     public void getImage() {
