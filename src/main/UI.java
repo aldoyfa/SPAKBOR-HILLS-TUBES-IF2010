@@ -114,6 +114,11 @@ public class UI {
         if (gp.gameState == gp.plantInventoryState) {
             drawPlantInventoryScreen();
         }
+
+        // WORLD MAP STATE
+        if (gp.gameState == gp.worldMapState) {
+            drawWorldMapScreen();
+        }
     }
 
     public void drawTitleScreen() {
@@ -465,5 +470,44 @@ public class UI {
 
     public int getXForCenteredText(String text) {
         return gp.screenWidth / 2 - g2.getFontMetrics().stringWidth(text) / 2;
+    }
+
+    public void drawWorldMapScreen() {
+        // Background
+        g2.setColor(new Color(0, 0, 0, 200));
+        g2.fillRect(0, 0, gp.screenWidth, gp.screenHeight);
+        
+        // Title
+        g2.setFont(g2.getFont().deriveFont(Font.BOLD, 96F));
+        String text = "Select Map";
+        int x = getXForCenteredText(text);
+        int y = gp.tileSize * 3;
+        g2.setColor(Color.WHITE);
+        g2.drawString(text, x, y);
+        
+        // Instructions
+        g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 32F));
+        text = "Use W/S to select and ENTER to confirm";
+        x = getXForCenteredText(text);
+        y = y + gp.tileSize; // Posisi setelah judul
+        g2.setColor(Color.WHITE);
+        g2.drawString(text, x, y);
+        
+        // Map Options - Kurangi spacing
+        g2.setFont(g2.getFont().deriveFont(Font.BOLD, 48F));
+        y = y + gp.tileSize; // Mulai dari posisi setelah instruksi
+        
+        for (int i = 0; i < gp.mapNames.length; i++) {
+            text = gp.mapNames[i];
+            x = getXForCenteredText(text);
+            
+            if (i == gp.selectedMap) {
+                g2.setColor(Color.YELLOW);
+            } else {
+                g2.setColor(Color.WHITE);
+            }
+            g2.drawString(text, x, y);
+            y += gp.tileSize; // Kurangi spacing dari 2 * tileSize menjadi 1 * tileSize
+        }
     }
 }

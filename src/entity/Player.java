@@ -112,9 +112,9 @@ public class Player {
         inventory.addItem("Pickaxe", 1, ItemType.EQUIPMENT);
         inventory.addItem("Fishing Rod", 1, ItemType.EQUIPMENT);
         
-        // TAMBAHKAN FOOD ITEMS UNTUK TESTING
-        inventory.addItem("Baguette", 3, ItemType.FOOD);
-        inventory.addItem("Fish n' Chips", 2, ItemType.FOOD);
+        // // TAMBAHKAN FOOD ITEMS UNTUK TESTING
+        // inventory.addItem("Baguette", 3, ItemType.FOOD);
+        // inventory.addItem("Fish n' Chips", 2, ItemType.FOOD);
     }
 
     // Update getter methods untuk kompatibilitas dengan sistem lama
@@ -280,6 +280,32 @@ public class Player {
         }
         return image;
     }
+    public void checkMapBoundary() {
+        boolean atBoundary = false;
+        
+        // Cek batas map
+        if (worldX <= 0) {
+            worldX = 0;
+            atBoundary = true;
+        }
+        if (worldX >= gp.maxWorldCol * gp.tileSize - gp.tileSize) {
+            worldX = gp.maxWorldCol * gp.tileSize - gp.tileSize;
+            atBoundary = true;
+        }
+        if (worldY <= 0) {
+            worldY = 0;
+            atBoundary = true;
+        }
+        if (worldY >= gp.maxWorldRow * gp.tileSize - gp.tileSize) {
+            worldY = gp.maxWorldRow * gp.tileSize - gp.tileSize;
+            atBoundary = true;
+        }
+        
+        if (atBoundary) {
+            moving = false;
+            gp.gameState = gp.worldMapState;
+        }
+    }
 
     public void update() {
         if (moving == false) {
@@ -346,6 +372,7 @@ public class Player {
                 pixelCounter = 0;
             }
         }
+        checkMapBoundary();
     }
 
     public void interactObject(int index) {

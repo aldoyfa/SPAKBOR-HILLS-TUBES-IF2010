@@ -6,7 +6,6 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-
 import inputs.KeyboardListener;
 import inputs.MyMouseListener;
 import model.CropData;
@@ -29,8 +28,12 @@ public class GamePanel extends JPanel implements Runnable {
     public final int screenHeight = tileSize * maxScreenRow; // 768 pixels
     
     // World Settings 
-    public final int maxWorldCol = 52;
-    public final int maxWorldRow = 50;
+    public int maxWorldCol = 52;
+    public int maxWorldRow = 50;
+    public final int maxFarmMapCol = 52;
+    public final int maxFarmMapRow = 50;
+    public final int maxOtherMapCol = 32;
+    public final int maxOtherMapRow = 32;
 
     // FPS
     int FPS = 60; 
@@ -55,8 +58,20 @@ public class GamePanel extends JPanel implements Runnable {
     public final int eatInventoryState = 8; 
     public final int plantInventoryState = 9; 
     public final int tileActionState = 10;
+    public final int worldMapState = 11;
+    public int selectedMap = 0;
+    public String[] mapNames = {"Farm Map", "Ocean", "Lake", "River", "Village", "Store"}; 
+    public String[] mapPaths = {
+        "/res/maps/farmmap.txt",
+        "/res/maps/ocean.txt", 
+        "/res/maps/lake.txt",
+        "/res/maps/river.txt",
+        "/res/maps/village.txt",
+        "/res/maps/store.txt"
+    };
 
     public int newGameCounter = 0;
+    public boolean isInFarmMap = true; 
 
     // ENTITY AND OBJECT
     public FarmMap farmMap;
@@ -171,7 +186,9 @@ public class GamePanel extends JPanel implements Runnable {
         // PLAY STATE
         else {
             farmMap.renderer.draw(g2);
-            objM.draw(g2);
+            if (selectedMap == 0) {
+                objM.draw(g2);
+            }
             player.draw(g2);
             ui.draw(g2);
         }

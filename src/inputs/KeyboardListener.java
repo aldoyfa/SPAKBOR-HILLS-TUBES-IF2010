@@ -8,6 +8,7 @@ import action.Gift;
 import action.Marry;
 import action.Propose;
 import action.PlantAction;
+import objects.Object;
 
 public class KeyboardListener implements KeyListener {
     GamePanel gp;
@@ -72,6 +73,11 @@ public class KeyboardListener implements KeyListener {
                     gp.ui.currentNPC = null; // Reset NPC setelah dialogue selesai
                 }
                 gp.gameState = gp.playState;
+                if (gp.ui.currentDialogue.contains("energy")) {
+                    gp.gameState = gp.playState;
+                } else {
+                    gp.gameState = gp.playState;
+                }
             }
         }
         else if (gp.gameState == gp.newGameState) {
@@ -127,6 +133,79 @@ public class KeyboardListener implements KeyListener {
             }
             if (code == KeyEvent.VK_ESCAPE) {
                 gp.gameState = gp.playState;
+            }
+        }
+        else if (gp.gameState == gp.worldMapState) {
+            if (code == KeyEvent.VK_W) {
+                gp.selectedMap--;
+                if (gp.selectedMap < 0) {
+                    gp.selectedMap = gp.mapNames.length - 1;
+                }
+            }
+            if (code == KeyEvent.VK_S) {
+                gp.selectedMap++;
+                if (gp.selectedMap >= gp.mapNames.length) {
+                    gp.selectedMap = 0;
+                }
+            }
+            if (code == KeyEvent.VK_ENTER) {
+                // Check energy first before proceeding
+                if (gp.player.getEnergy() < 10) {
+                    gp.ui.currentDialogue = "Not enough energy to travel! You need at least 10 energy.";
+                    gp.gameState = gp.dialogueState;
+                    
+                    // Reset player position to previous location
+                    gp.player.worldX = gp.tileSize * (gp.maxWorldCol/4);
+                    gp.player.worldY = gp.tileSize * (gp.maxWorldRow/4);
+                    gp.player.direction = "down";
+                    
+                    // Switch back to play state
+                    gp.gameState = gp.playState;
+                    return;
+                }
+
+                try {
+                    // Set map dimensions based on selected map
+                    if (gp.selectedMap == 0) { // Farm Map
+                        gp.maxWorldCol = gp.maxFarmMapCol;
+                        gp.maxWorldRow = gp.maxFarmMapRow;
+                    } else { // Other maps (Ocean, Lake, River, Village)
+                        gp.maxWorldCol = gp.maxOtherMapCol;
+                        gp.maxWorldRow = gp.maxOtherMapRow;
+                    }
+
+                    // Clear existing objects
+                    gp.obj = new objects.Object[10];
+
+                    // Reinitialize map arrays with new dimensions
+                    gp.farmMap.mapTileNum = new int[gp.maxWorldCol][gp.maxWorldRow];
+
+                    // Load selected map
+                    gp.farmMap.loadMap(gp.mapPaths[gp.selectedMap]);
+
+                    // Reset player position relative to new map size
+                    gp.player.worldX = gp.tileSize * (gp.maxWorldCol/4);
+                    gp.player.worldY = gp.tileSize * (gp.maxWorldRow/4);
+                    gp.player.direction = "down";
+
+                    // Place objects only if it's farm map
+                    if (gp.selectedMap == 0) {
+                        gp.objM.setObject();
+                    }
+
+                    // Reduce energy by 10
+                    gp.player.setEnergy(-10);
+
+                    // Add 15 minutes to game time (3 ticks since 1 tick = 5 minutes)
+                    for (int i = 0; i < 3; i++) {
+                        gp.farmMap.time.tick();
+                    }
+
+                    gp.gameState = gp.playState;
+                } catch (Exception ex) {
+                    System.out.println("Error loading map: " + ex.getMessage());
+                    ex.printStackTrace();
+                }
             }
         }
         else if (gp.gameState == gp.tileActionState) {
