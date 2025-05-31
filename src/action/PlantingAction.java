@@ -1,67 +1,41 @@
 package action;
-import java.time.LocalTime;
 
-import model.Action;
-import model.Farm;
-import model.Tile;
+import entity.Player;
+import main.GamePanel;
+import model.Seed;
 
 public class PlantingAction implements Action {
-    private final int energyCost = 5;
-    private final LocalTime timeCost = LocalTime.of(0, 5);
+    private int x, y;
+    private Seed seed;
+    private GamePanel gp;
 
-    @Override
-    public void execute(Player player, Farm farm, String args) {
-        // Format args = "x,y,SeedName"
-        String[] parts = args.split(",");
-        if (parts.length < 3) {
-            System.out.println("Input tidak valid. Gunakan format: x,y,nama_seed");
-            return;
-        }
-
-        int x = Integer.parseInt(parts[0].trim());
-        int y = Integer.parseInt(parts[1].trim());
-        String seedName = parts[2].trim();
-
-        Tile tile = farm.getFarmMap().getTile(x, y);
-
-        if (tile.getType() != TileType.TILLED || tile.getCrop() != null) {
-            System.out.println("Tile tidak bisa ditanami.");
-            return;
-        }
-
-        Inventory inventory = player.getInventory();
-        Item seedItem = null;
-        for (Item item : inventory.getAllItems().keySet()) {
-            if (item instanceof Seeds && item.getName().equalsIgnoreCase(seedName)) {
-                seedItem = item;
-                break;
-            }
-        }
-
-        if (seedItem == null) {
-            System.out.println("Benih tidak ditemukan di inventory.");
-            return;
-        }
-
-        Seeds seed = (Seeds) seedItem;
-        if (seed.getSeason() != farm.getSeason()) {
-            System.out.println("Benih hanya bisa ditanam di musim " + seed.getSeason());
-            return;
-        }
-
-        // Eksekusi tanam
-        tile.setType(TileType.PLANTED);
-        tile.setCrop(new Crops(seed.getName())); // Asumsi 1:1 antara seed & crop
-
-        inventory.removeItem(seed, 1);
-        player.deductEnergy(energyCost);
-        farm.advanceTime(timeCost);
-
-        System.out.println("Menanam " + seed.getName() + " di tile (" + x + "," + y + ")");
+    public PlantingAction(GamePanel gp, int x, int y, Seed seed) {
+        this.gp = gp;
+        this.x = x;
+        this.y = y;
+        this.seed = seed;
     }
 
     @Override
-    public boolean isExecutable(Player player) {
-        return player.getEnergy() >= energyCost;
+    public void execute(Player player) {
+        if (player.getEnergy() < 5) {
+            System.out.println("Energi tidak cukup untuk menanam.");
+            return;
+        }
+
+        if (!player.getInventory().contains(seed)) {
+            System.out.println("Kamu tidak memiliki seed ini.");
+            return;
+        }
+
+        if (gp.farmMap[x][y].isTilled() && gp.farmMap[x][y].isEmpty()) {
+            gp.farmMap[x][y].plant(seed);
+            player.getInventory().remove(seed);
+            player.reduceEnergy(5);
+            player.time.tick();
+            System.out.println("Seed ditanam di: " + x + ", " + y);
+        } else {
+            System.out.println("Tile ini tidak bisa ditanami.");
+        }
     }
 }

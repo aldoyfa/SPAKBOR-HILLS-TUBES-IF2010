@@ -1,41 +1,33 @@
 package action;
-import java.time.LocalTime;
 
-import model.Action;
+import entity.Player;
 import model.Farm;
-import model.Tile;
+import main.GamePanel;
 
 public class TillingAction implements Action {
-    private final int energyCost = 5;
-    private final LocalTime timeCost = LocalTime.of(0, 5); // 5 menit
+    private int x, y; // posisi tile yang ingin dibajak
+    private GamePanel gp;
 
-    @Override
-    public void execute(Player player, Farm farm, String args) {
-        // args = "x,y"
-        String[] parts = args.split(",");
-        int x = Integer.parseInt(parts[0].trim());
-        int y = Integer.parseInt(parts[1].trim());
-
-        Tile tile = farm.getFarmMap().getTile(x, y);
-
-        if (tile.getType() != TileType.TILLABLE) {
-            System.out.println("Tile tidak bisa dibajak.");
-            return;
-        }
-
-        if (player.getEnergy() < energyCost) {
-            System.out.println("Energi tidak cukup.");
-            return;
-        }
-
-        tile.setType(TileType.TILLED);
-        player.deductEnergy(energyCost);
-        farm.advanceTime(timeCost);
-        System.out.println("Tanah di (" + x + "," + y + ") telah dibajak!");
+    public TillingAction(GamePanel gp, int x, int y) {
+        this.gp = gp;
+        this.x = x;
+        this.y = y;
     }
 
     @Override
-    public boolean isExecutable(Player player) {
-        return player.getEnergy() >= energyCost;
+    public void execute(Player player) {
+        if (player.getEnergy() < 5) {
+            System.out.println("Energi tidak cukup untuk membajak.");
+            return;
+        }
+
+        if (gp.farmMap[x][y].canBeTilled()) {
+            gp.farmMap[x][y].till();
+            player.reduceEnergy(5);
+            player.time.tick();
+            System.out.println("Tanah dibajak di: " + x + ", " + y);
+        } else {
+            System.out.println("Tile ini tidak bisa dibajak.");
+        }
     }
 }

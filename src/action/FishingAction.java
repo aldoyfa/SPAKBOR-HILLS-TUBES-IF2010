@@ -1,57 +1,61 @@
 package action;
-import java.time.LocalTime;
-import java.util.*;
 
-import model.Action;
-import model.Farm;
+import entity.Player;
+import java.util.Random;
+import java.util.Scanner;
+import model.Fish;
+import model.FishType;
+import model.Time;
 
 public class FishingAction implements Action {
-    private final int energyCost = 5;
-    private final LocalTime timeCost = LocalTime.of(0, 15);
-    private final Random rand = new Random();
+    private String location; // misal: "Pond", "Ocean"
+    private Time time;
+    private Random random = new Random();
 
-    @Override
-    public void execute(Player player, Farm farm, String args) {
-        Location location = player.getLocation(); // misalnya Pond
-
-        if (player.getEnergy() < energyCost) {
-            System.out.println("Energi tidak cukup.");
-            return;
-        }
-
-        // Random jenis ikan (sementara kita asumsikan selalu dapat Halibut)
-        Fish fish = new Fish("Halibut"); // bisa buat sistem registry nanti
-
-        int correctNumber = rand.nextInt(100) + 1; // tebak 1-100
-        int attempts = 10;
-        Scanner scanner = new Scanner(System.in);
-
-        System.out.println("Tebak angka dari 1-100! (maks 10 percobaan)");
-        while (attempts-- > 0) {
-            System.out.print("Tebakan: ");
-            int guess = scanner.nextInt();
-
-            if (guess == correctNumber) {
-                System.out.println("Selamat! Kamu mendapatkan ikan " + fish.getName());
-                player.getInventory().addItem(fish, 1);
-                break;
-            } else if (guess < correctNumber) {
-                System.out.println("Terlalu kecil.");
-            } else {
-                System.out.println("Terlalu besar.");
-            }
-
-            if (attempts == 0) {
-                System.out.println("Sayang sekali, kamu tidak mendapat ikan.");
-            }
-        }
-
-        player.deductEnergy(energyCost);
-        farm.advanceTime(timeCost);
+    public FishingAction(String location, Time time) {
+        this.location = location;
+        this.time = time;
     }
 
     @Override
-    public boolean isExecutable(Player player) {
-        return player.getEnergy() >= energyCost;
+    public void execute(Player player) {
+        if (player.getEnergy() < 5) {
+            System.out.println("Energi tidak cukup untuk memancing.");
+            return;
+        }
+
+        player.reduceEnergy(5);
+        // Add 15 minutes by calling tick() 3 times (5 minutes per tick)
+        for (int i = 0; i < 3; i++) {
+            time.tick();
+        }
+
+        // RNG menentukan ikan yang muncul, now considering season and weather
+        Fish caughtFish = Fish.randomFish(location, time.getSeason(), time.getWeather());
+        FishType type = caughtFish.getType();
+
+        int maxTries = type == FishType.LEGENDARY ? 7 : 10;
+        int range = type == FishType.COMMON ? 10 : (type == FishType.REGULAR ? 100 : 500);
+        int target = random.nextInt(range) + 1;
+
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Memancing " + caughtFish.getName() + " (" + type + ") - Tebak angka dari 1 sampai " + range);
+
+        boolean success = false;
+        for (int i = 1; i <= maxTries; i++) {
+            System.out.print("Tebakan ke-" + i + ": ");
+            int guess = scanner.nextInt();
+            if (guess == target) {
+                success = true;
+                break;
+            }
+        }
+
+        if (success) {
+            player.getInventory().addItem(caughtFish);
+            System.out.println("Berhasil menangkap " + caughtFish.getName() + "!");
+        } else {
+            System.out.println("Gagal menangkap ikan.");
+        }
     }
 }

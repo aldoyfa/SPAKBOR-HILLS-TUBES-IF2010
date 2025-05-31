@@ -1,36 +1,32 @@
 package action;
-import java.time.LocalTime;
 
-import model.Action;
-import model.Farm;
-import model.Tile;
+import entity.Player;
+import main.GamePanel;
 
 public class WateringAction implements Action {
-    private final int energyCost = 5;
-    private final LocalTime timeCost = LocalTime.of(0, 5);
+    private int x, y;
+    private GamePanel gp;
 
-    @Override
-    public void execute(Player player, Farm farm, String args) {
-        String[] parts = args.split(",");
-        int x = Integer.parseInt(parts[0].trim());
-        int y = Integer.parseInt(parts[1].trim());
-
-        Tile tile = farm.getFarmMap().getTile(x, y);
-
-        if (tile.getType() != TileType.PLANTED || tile.isWatered()) {
-            System.out.println("Tile tidak bisa disiram.");
-            return;
-        }
-
-        tile.setWatered(true);
-        player.deductEnergy(energyCost);
-        farm.advanceTime(timeCost);
-
-        System.out.println("Menyiram tanaman di tile (" + x + "," + y + ")");
+    public WateringAction(GamePanel gp, int x, int y) {
+        this.gp = gp;
+        this.x = x;
+        this.y = y;
     }
 
     @Override
-    public boolean isExecutable(Player player) {
-        return player.getEnergy() >= energyCost;
+    public void execute(Player player) {
+        if (player.getEnergy() < 5) {
+            System.out.println("Energi tidak cukup untuk menyiram.");
+            return;
+        }
+
+        if (gp.farmMap[x][y].hasPlant()) {
+            gp.farmMap[x][y].water();
+            player.reduceEnergy(5);
+            player.time.tick();
+            System.out.println("Tanaman disiram di: " + x + ", " + y);
+        } else {
+            System.out.println("Tidak ada tanaman untuk disiram.");
+        }
     }
 }

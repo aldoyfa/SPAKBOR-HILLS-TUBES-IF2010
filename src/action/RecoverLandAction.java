@@ -1,46 +1,37 @@
 package action;
-import java.time.LocalTime;
 
-import model.Action;
-import model.Farm;
-import model.Tile;
+import entity.Player;
+import main.GamePanel;
 
 public class RecoverLandAction implements Action {
-    private final int energyCost = 5;
-    private final LocalTime timeCost = LocalTime.of(0, 5);
+    private int x, y;
+    private GamePanel gp;
 
-    @Override
-    public void execute(Player player, Farm farm, String args) {
-        String[] parts = args.split(",");
-        int x = Integer.parseInt(parts[0].trim());
-        int y = Integer.parseInt(parts[1].trim());
-
-        Tile tile = farm.getFarmMap().getTile(x, y);
-
-        if (tile.getType() != TileType.TILLED) {
-            System.out.println("Tile bukan tanah yang bisa dikembalikan.");
-            return;
-        }
-
-        boolean hasPickaxe = player.getInventory().getAllItems().keySet().stream()
-            .anyMatch(item -> item instanceof Equipment && item.getName().equalsIgnoreCase("Pickaxe"));
-
-        if (!hasPickaxe) {
-            System.out.println("Butuh Pickaxe untuk melakukan recover.");
-            return;
-        }
-
-        tile.setType(TileType.TILLABLE);
-        tile.setCrop(null);
-        tile.setWatered(false);
-
-        player.deductEnergy(energyCost);
-        farm.advanceTime(timeCost);
-        System.out.println("Tile di (" + x + "," + y + ") dikembalikan ke bentuk awal.");
+    public RecoverLandAction(GamePanel gp, int x, int y) {
+        this.gp = gp;
+        this.x = x;
+        this.y = y;
     }
 
     @Override
-    public boolean isExecutable(Player player) {
-        return player.getEnergy() >= energyCost;
+    public void execute(Player player) {
+        if (player.getEnergy() < 5) {
+            System.out.println("Energi tidak cukup untuk recovery tanah.");
+            return;
+        }
+
+        if (!player.getInventory().hasTool("Pickaxe")) {
+            System.out.println("Kamu butuh Pickaxe untuk melakukan recovery.");
+            return;
+        }
+
+        if (gp.farmMap[x][y].isSoil()) {
+            gp.farmMap[x][y].resetToLand();
+            player.reduceEnergy(5);
+            player.time.tick();
+            System.out.println("Tile berhasil dikembalikan ke bentuk land di (" + x + "," + y + ")");
+        } else {
+            System.out.println("Tile ini bukan tanah (soil).");
+        }
     }
 }
