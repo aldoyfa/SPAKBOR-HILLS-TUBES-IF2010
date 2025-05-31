@@ -61,6 +61,22 @@ public class KeyboardListener implements KeyListener {
             if (code == KeyEvent.VK_P) { // Tekan P untuk plant
                 new action.PlantAction(gp);
             }
+            if (code == KeyEvent.VK_H) { // Tekan H untuk till (Hoe)
+                new action.TillingAction(gp);
+            }
+            // FARM MANAGEMENT ACTIONS
+            if (code == KeyEvent.VK_H) { // Till with Hoe
+                new action.TillingAction(gp);
+            }
+            if (code == KeyEvent.VK_P) { // Plant seeds
+                new action.PlantAction(gp);
+            }
+            if (code == KeyEvent.VK_Q) { // Water plants (Q for Quality care!)
+                new action.WateringAction(gp);
+            }
+            if (code == KeyEvent.VK_R) { // Recover tilled land
+                new action.RecoverLandAction(gp);
+            }
         }
         else if (gp.gameState == gp.pauseState) {
             if (code == KeyEvent.VK_ESCAPE) {
@@ -193,7 +209,7 @@ public class KeyboardListener implements KeyListener {
                 gp.gameState = gp.playState;
             }
         }
-        // EAT INVENTORY STATE
+      
         else if (gp.gameState == gp.eatInventoryState) {
             if (code == KeyEvent.VK_UP) {
                 if (gp.ui.filteredInventorySelectionIndex > 0) {
