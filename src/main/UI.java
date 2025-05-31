@@ -20,8 +20,8 @@ import java.awt.Color;
 public class UI {
     GamePanel gp;
     Graphics2D g2;
-    BufferedImage goldImage, energyImage, mainMenuImage, newGameImage, loadGameImage, creditsImage, exitImage, continueImage, creditsMenuImage, helpMenuImage,helpButtonImage;
-    public Rectangle newGameRect, loadGameRect, creditsRect, exitRect, helpButtonRect, continueRect;
+    BufferedImage goldImage, energyImage, mainMenuImage, newGameImage, loadGameImage, creditsImage, exitImage, saveImage, continueImage, creditsMenuImage, helpMenuImage,helpButtonImage;
+    public Rectangle newGameRect, loadGameRect, creditsRect, exitRect, helpButtonRect, continueRect, saveRect;
     Font maruMonica;
     public String currentDialogue = "";
     public NPC currentNPC;
@@ -269,7 +269,7 @@ public class UI {
             helpButtonImage = ImageIO.read(getClass().getResourceAsStream("/res/ui/helpbutton.png"));
             continueImage = ImageIO.read(getClass().getResourceAsStream("/res/ui/continue.png"));
             exitImage = ImageIO.read(getClass().getResourceAsStream("/res/ui/exit.png"));
-
+            saveImage = ImageIO.read(getClass().getResourceAsStream("/res/ui/save.png"));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -277,14 +277,16 @@ public class UI {
         y = gp.screenHeight / 2 + gp.tileSize * 2;
         g2.drawImage(continueImage, x, y,null);
         g2.drawImage(helpButtonImage, x+256, y, null);
-        g2.drawImage(exitImage, x+512, y, null);
+        g2.drawImage(saveImage, x+512, y, null);
+        g2.drawImage(exitImage, x+768, y, null);
 
         int width = newGameImage.getWidth();
         int height = newGameImage.getHeight();
 
         continueRect = new Rectangle(x, y, width, height);
         helpButtonRect = new Rectangle(x + 256, y, width, height);
-        exitRect = new Rectangle(x + 512, y, width, height);
+        saveRect = new Rectangle(x + 512, y, width, height);
+        exitRect = new Rectangle(x + 768, y, width, height);
 
         g2.setColor(Color.YELLOW);
         g2.setStroke(new BasicStroke(6F));
@@ -294,6 +296,8 @@ public class UI {
             g2.drawRect(x + 256, y, width, height);
         } else if (hoveredButton == 6) {
             g2.drawRect(x + 512, y, width, height);
+        } else if (hoveredButton == 7) {
+            g2.drawRect(x + 768, y, width, height);
         }
     }
 

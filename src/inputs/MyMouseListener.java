@@ -39,12 +39,14 @@ public class MyMouseListener implements MouseListener, MouseMotionListener {
 			}
 		}
 		if (gp.gameState == gp.pauseState) {
-			if (gp.ui.newGameRect.contains(x, y)) {
+			if (gp.ui.continueRect.contains(x, y)) {
 				gp.ui.hoveredButton = 4;
-			} else if (gp.ui.loadGameRect.contains(x, y)) {
+			} else if (gp.ui.helpButtonRect.contains(x, y)) {
 				gp.ui.hoveredButton = 5;
-			} else if (gp.ui.creditsRect.contains(x, y)) {
+			} else if (gp.ui.saveRect.contains(x, y)) {
 				gp.ui.hoveredButton = 6;
+			} else if (gp.ui.exitRect.contains(x, y)) {
+				gp.ui.hoveredButton = 7;
 			} else {
 				gp.ui.hoveredButton = -1;
 			}
@@ -97,6 +99,9 @@ public class MyMouseListener implements MouseListener, MouseMotionListener {
 				gp.gameState = gp.helpState;
 			} else if (gp.ui.continueRect.contains(x, y)) {
 				gp.gameState = gp.playState;
+			} else if (gp.ui.saveRect.contains(x, y)) {
+				System.out.println("Save game clicked");
+				// Implementasi save game
 			} else if (gp.ui.exitRect.contains(x, y)) {
 				gp.gameState = gp.titleState;
 			}
