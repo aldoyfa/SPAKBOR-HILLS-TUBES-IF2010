@@ -68,21 +68,6 @@ public class KeyboardListener implements KeyListener {
         if (code == KeyEvent.VK_D) {
             dPressed = false;
         }
-        if (code == KeyEvent.VK_1) {
-            onePressed = false;
-        }
-        if (code == KeyEvent.VK_2) {
-            twoPressed = false;
-        }
-        if (code == KeyEvent.VK_3) {
-            threePressed = false;
-        }
-        if (code == KeyEvent.VK_4) {
-            fourPressed = false;
-        }
-        if (code == KeyEvent.VK_5) {
-            fivePressed = false;
-        }
         if (code == KeyEvent.VK_UP) {
             upPressed = false;
         }
