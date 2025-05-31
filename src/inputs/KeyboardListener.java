@@ -114,13 +114,13 @@ public class KeyboardListener implements KeyListener {
             }
         }
         else if (gp.gameState == gp.worldMapState) {
-            if (code == KeyEvent.VK_W || code == KeyEvent.VK_UP) {
+            if (code == KeyEvent.VK_W) {
                 gp.selectedMap--;
                 if (gp.selectedMap < 0) {
                     gp.selectedMap = gp.mapNames.length - 1;
                 }
             }
-            if (code == KeyEvent.VK_S || code == KeyEvent.VK_DOWN) {
+            if (code == KeyEvent.VK_S) {
                 gp.selectedMap++;
                 if (gp.selectedMap >= gp.mapNames.length) {
                     gp.selectedMap = 0;
@@ -128,17 +128,35 @@ public class KeyboardListener implements KeyListener {
             }
             if (code == KeyEvent.VK_ENTER) {
                 try {
-                    // Load map yang dipilih
+                    // Set map dimensions based on selected map
+                    if (gp.selectedMap == 0) { // Farm Map
+                        gp.maxWorldCol = gp.maxFarmMapCol;
+                        gp.maxWorldRow = gp.maxFarmMapRow;
+                    } else { // Other maps (Ocean, Lake, River, Village)
+                        gp.maxWorldCol = gp.maxOtherMapCol;
+                        gp.maxWorldRow = gp.maxOtherMapRow;
+                    }
+
+                    // Reinitialize map arrays with new dimensions
+                    gp.farmMap.mapTileNum = new int[gp.maxWorldCol][gp.maxWorldRow];
+
+                    // Load selected map
                     gp.farmMap.loadMap(gp.mapPaths[gp.selectedMap]);
-                    // Reset posisi player ke tengah map
-                    gp.player.worldX = gp.tileSize * (gp.maxWorldCol/2);
-                    gp.player.worldY = gp.tileSize * (gp.maxWorldRow/2);
+
+                    // Reset player position relative to new map size
+                    gp.player.worldX = gp.tileSize * (gp.maxWorldCol/4);
+                    gp.player.worldY = gp.tileSize * (gp.maxWorldRow/4);
                     gp.player.direction = "down";
-                    // Reset object placement sesuai map baru
-                    gp.farmMap.placeObjects();
+
+                    // Reset object placement if needed
+                    if (gp.selectedMap == 0) {
+                        gp.farmMap.placeObjects();
+                    }
+
                     gp.gameState = gp.playState;
                 } catch (Exception ex) {
                     System.out.println("Error loading map: " + ex.getMessage());
+                    ex.printStackTrace();
                 }
             }
         }

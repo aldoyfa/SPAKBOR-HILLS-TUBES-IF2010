@@ -43,28 +43,34 @@ public class FarmMap {
         this.player = gp.player.getName();
     }
 
-    public void loadMap (String filePath) {
+    public void loadMap(String filePath) {
         try {
+            // Reset map array with current dimensions
+            mapTileNum = new int[gp.maxWorldCol][gp.maxWorldRow];
+            
             InputStream is = getClass().getResourceAsStream(filePath);
             BufferedReader br = new BufferedReader(new InputStreamReader(is));
 
             int col = 0;
             int row = 0;
 
-            while (col < gp.maxWorldCol && row < gp.maxWorldRow) {
+            while (row < gp.maxWorldRow) {
                 String line = br.readLine();
-                while (col < gp.maxWorldCol) {
-                    String numbers[] = line.split(" ");
+                if (line == null) break;
+                
+                String[] numbers = line.split(" ");
+                for (col = 0; col < gp.maxWorldCol && col < numbers.length; col++) {
                     int num = Integer.parseInt(numbers[col]);
                     mapTileNum[col][row] = num;
-                    col++;
                 }
-                if (col == gp.maxWorldCol) {
-                    col = 0;
-                    row++;
-                }
+                row++;
             }
             br.close();
+            
+            // Reinitialize renderer after loading new map
+            if (renderer != null) {
+                renderer.getTileImage();
+            }
         }
         catch (Exception e) {
             e.printStackTrace();
