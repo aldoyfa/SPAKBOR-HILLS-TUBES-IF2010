@@ -209,9 +209,7 @@ public class KeyboardListener implements KeyListener {
                 gp.gameState = gp.playState;
             }
         }
-        
-
-        // PERTAHANKAN HANYA INI - EAT INVENTORY STATE (sudah ada di kode Anda)
+      
         else if (gp.gameState == gp.eatInventoryState) {
             if (code == KeyEvent.VK_UP) {
                 if (gp.ui.filteredInventorySelectionIndex > 0) {
@@ -238,7 +236,7 @@ public class KeyboardListener implements KeyListener {
             }
         }
 
-        // PERTAHANKAN HANYA INI - PLANT INVENTORY STATE (sudah ada di kode Anda)
+        // PLANT INVENTORY STATE
         else if (gp.gameState == gp.plantInventoryState) {
             if (code == KeyEvent.VK_UP) {
                 if (gp.ui.filteredInventorySelectionIndex > 0) {

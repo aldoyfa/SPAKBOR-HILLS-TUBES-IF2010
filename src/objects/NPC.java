@@ -1,8 +1,6 @@
 package objects;
 
 import java.io.IOException;
-import java.util.Arrays;
-
 import javax.imageio.ImageIO;
 import java.awt.Rectangle;
 

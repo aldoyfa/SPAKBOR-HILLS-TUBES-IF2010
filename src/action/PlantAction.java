@@ -95,10 +95,10 @@ public class PlantAction implements Action {
             String cropResult = "";
             switch (selectedSeed.getName().toLowerCase()) {
                 case "parsnip seeds":
-                    cropResult = "Parsnip will grow in 4 days.";
+                    cropResult = "\nParsnip will grow in 4 days.";
                     break;
                 case "cauliflower seeds":
-                    cropResult = "Cauliflower will grow in 12 days.";
+                    cropResult = "\nCauliflower will grow in 12 days.";
                     break;
                 case "potato seeds":
                     cropResult = "Potato will grow in 6 days.";
@@ -107,7 +107,7 @@ public class PlantAction implements Action {
                     cropResult = "Turnip will grow in 4 days.";
                     break;
                 default:
-                    cropResult = "Seeds have been planted.";
+                    cropResult = "\nSeeds have been planted.";
             }
             
             reaction += cropResult;

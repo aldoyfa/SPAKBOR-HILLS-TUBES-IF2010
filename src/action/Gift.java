@@ -59,17 +59,17 @@ public class Gift implements Action {
             boolean isHated = java.util.Arrays.asList(hatedItems).contains(itemBaseName);
             
             if (isLoved) {
-                heartPointsGain = 50;
-                reaction = targetNPC.getName() + " loves the " + itemBaseName + "! +" + heartPointsGain + " heart points!";
+                heartPointsGain = 25;
+                reaction = targetNPC.getName() + " loves the " + itemBaseName + "! \n+" + heartPointsGain + " heart points!";
             } else if (isLiked) {
-                heartPointsGain = 30;
-                reaction = targetNPC.getName() + " likes the " + itemBaseName + "! +" + heartPointsGain + " heart points!";
+                heartPointsGain = 20;
+                reaction = targetNPC.getName() + " likes the " + itemBaseName + "! \n+" + heartPointsGain + " heart points!";
             } else if (isHated) {
-                heartPointsGain = -20;
-                reaction = targetNPC.getName() + " hates the " + itemBaseName + "! " + heartPointsGain + " heart points!";
+                heartPointsGain = -25;
+                reaction = targetNPC.getName() + " hates the " + itemBaseName + "! \n" + heartPointsGain + " heart points!";
             } else {
-                heartPointsGain = 10;
-                reaction = targetNPC.getName() + " accepts the " + itemBaseName + ". +" + heartPointsGain + " heart points!";
+                heartPointsGain = 0;
+                reaction = targetNPC.getName() + " accepts the " + itemBaseName + ". \n+" + heartPointsGain + " heart points!";
             }
             
             // Update heart points NPC

@@ -34,13 +34,9 @@ public class UI {
     public boolean selectingGender = false;
     public String[] npcOptions = {"Chat", "Gift", "Propose", "Marry"};
     public int npcOptionIndex = 0;
-
-// Variabel untuk inventory selection
-public int inventorySelectionIndex = 0;
-
-// Variabel untuk filtered inventory (eat/plant actions)
-public int filteredInventorySelectionIndex = 0;
-public List<Item> filteredItems = new ArrayList<>();
+    public int inventorySelectionIndex = 0;
+    public int filteredInventorySelectionIndex = 0;
+    public List<Item> filteredItems = new ArrayList<>();
 
     public UI(GamePanel gp) {
         this.gp = gp;
@@ -95,20 +91,11 @@ public List<Item> filteredItems = new ArrayList<>();
             drawInventorySelectionScreen();
         }
 
-        // INVENTORY STATE (tambahkan ini)
+        // INVENTORY STATE 
         if (gp.gameState == gp.inventoryState) {
             drawInventoryScreen();
         }
 
-        // HAPUS ATAU COMMENT OUT INI - TIDAK DIPERLUKAN LAGI:
-        /*
-        // FILTERED INVENTORY STATE (untuk eat/plant actions)
-        if (gp.gameState == gp.filteredInventoryState) {
-            drawFilteredInventoryScreen();
-        }
-        */
-        
-        // PERTAHANKAN HANYA INI - 2 STATE BARU:
         // EAT INVENTORY STATE
         if (gp.gameState == gp.eatInventoryState) {
             drawEatInventoryScreen();
@@ -245,7 +232,7 @@ public List<Item> filteredItems = new ArrayList<>();
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            g2.drawImage(energyImage, x + gp.tileSize*3, 235, energyImage.getWidth()*4/3, energyImage.getHeight()*4/3, null);
+            g2.drawImage(energyImage, x + gp.tileSize*3, 235, goldImage.getWidth()*4/3, goldImage.getHeight()*4/3, null);
             g2.drawString("Heart Points: " + currentNPC.getHeartPoints(), x + gp.tileSize*3+50, 270);
         }
     }
@@ -291,7 +278,6 @@ public List<Item> filteredItems = new ArrayList<>();
         g2.drawString("Energy: " + gp.player.getEnergy(), 88, 120);
     }
 
-    // Method untuk menampilkan inventory selection (KHUSUS UNTUK GIFT)
     public void drawInventorySelectionScreen() {
         drawDialogueBox();
         int boxX = gp.tileSize * 2;
@@ -326,19 +312,8 @@ public List<Item> filteredItems = new ArrayList<>();
         g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 24F));
         g2.setColor(Color.WHITE);
         g2.drawString("Item " + (inventorySelectionIndex + 1) + " of " + items.size(), textX, textY + 160);
-        
-        // TAMPILKAN INFO NPC HANYA UNTUK GIFT ACTION
-        if (currentNPC != null) {
-            g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 28F));
-            g2.setColor(Color.WHITE);
-            g2.drawString("Giving to: " + currentNPC.getName(), textX, textY + 200);
-            
-            g2.setColor(Color.RED);
-            g2.drawString("❤️ Heart Points: " + currentNPC.getHeartPoints(), textX, textY + 230);
-        }
     }
 
-    // Method untuk menampilkan inventory lengkap
     public void drawInventoryScreen() {
         drawDialogueBox();
         
@@ -368,16 +343,15 @@ public List<Item> filteredItems = new ArrayList<>();
         g2.setFont(g2.getFont().deriveFont(Font.BOLD, 40F));
         g2.setColor(Color.YELLOW);
         String selectedItemDisplay = items.get(inventorySelectionIndex).getSimpleDisplayName();
-        g2.drawString("Selected: " + selectedItemDisplay, textX, textY + 120);
+        g2.drawString("Selected: " + selectedItemDisplay, textX, textY + 110);
         
         // Info type dan posisi item
         g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 24F));
         g2.setColor(Color.WHITE);
-        g2.drawString("Type: " + items.get(inventorySelectionIndex).getType().getDisplayName(), textX, textY + 160);
-        g2.drawString("Item " + (inventorySelectionIndex + 1) + " of " + items.size(), textX, textY + 190);
+        g2.drawString("Type: " + items.get(inventorySelectionIndex).getType().getDisplayName(), textX, textY + 145);
+        g2.drawString("Item " + (inventorySelectionIndex + 1) + " of " + items.size(), textX, textY + 170);
     }
 
-    // Method khusus untuk Eat - TANPA currentNPC
     public void drawEatInventoryScreen() {
         drawDialogueBox();
         
@@ -405,20 +379,19 @@ public List<Item> filteredItems = new ArrayList<>();
         g2.setFont(g2.getFont().deriveFont(Font.BOLD, 40F));
         g2.setColor(Color.YELLOW);
         String selectedItemDisplay = filteredItems.get(filteredInventorySelectionIndex).getSimpleDisplayName();
-        g2.drawString("Selected: " + selectedItemDisplay, textX, textY + 120);
+        g2.drawString("Selected: " + selectedItemDisplay, textX, textY + 110);
         
         // Info posisi item
         g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 24F));
         g2.setColor(Color.WHITE);
-        g2.drawString("Item " + (filteredInventorySelectionIndex + 1) + " of " + filteredItems.size(), textX, textY + 160);
+        g2.drawString("Item " + (filteredInventorySelectionIndex + 1) + " of " + filteredItems.size(), textX, textY + 150);
         
         // Tampilkan info action
         g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 28F));
         g2.setColor(Color.CYAN);
-        g2.drawString("Action: Restore energy", textX, textY + 200);
+        g2.drawString("Action: Restore energy", textX, textY + 185);
     }
 
-    // Method khusus untuk Plant - TANPA currentNPC
     public void drawPlantInventoryScreen() {
         drawDialogueBox();
         
@@ -446,17 +419,17 @@ public List<Item> filteredItems = new ArrayList<>();
         g2.setFont(g2.getFont().deriveFont(Font.BOLD, 40F));
         g2.setColor(Color.YELLOW);
         String selectedItemDisplay = filteredItems.get(filteredInventorySelectionIndex).getSimpleDisplayName();
-        g2.drawString("Selected: " + selectedItemDisplay, textX, textY + 120);
+        g2.drawString("Selected: " + selectedItemDisplay, textX, textY + 110);
         
         // Info posisi item
         g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 24F));
         g2.setColor(Color.WHITE);
-        g2.drawString("Item " + (filteredInventorySelectionIndex + 1) + " of " + filteredItems.size(), textX, textY + 160);
+        g2.drawString("Item " + (filteredInventorySelectionIndex + 1) + " of " + filteredItems.size(), textX, textY + 150);
         
         // Tampilkan info action
         g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 28F));
         g2.setColor(Color.CYAN);
-        g2.drawString("Action: Plant in farm", textX, textY + 200);
+        g2.drawString("Action: Plant in farm", textX, textY + 185);
     }
 
     public int getXForCenteredText(String text) {

@@ -11,6 +11,4 @@ public class House extends Object {
         height = 64*6; // 64 itu tileSize
         super.getImage();
     }
-
-
 }
