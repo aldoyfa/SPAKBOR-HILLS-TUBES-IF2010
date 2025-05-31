@@ -2,15 +2,12 @@ package render;
 
 import main.GamePanel;
 import java.awt.Graphics2D;
-import objects.House;
 import objects.NPC_Abigail;
 import objects.NPC_Caroline;
 import objects.NPC_Dasco;
 import objects.NPC_Emily;
 import objects.NPC_MayorTadi;
 import objects.NPC_Perry;
-import objects.Pond;
-import objects.ShippingBin;
 
 public class ObjectRenderer {
     GamePanel gp;
@@ -20,18 +17,13 @@ public class ObjectRenderer {
     }
 
     public void setObject() {
-        gp.obj[0] = new House(gp);
-        gp.obj[0].worldX = 10 * gp.tileSize;
-        gp.obj[0].worldY = 9 * gp.tileSize;
-
-        gp.obj[1] = new ShippingBin(gp);
-        gp.obj[1].worldX = 17 * gp.tileSize;
-        gp.obj[1].worldY = 14 * gp.tileSize;
-
-        gp.obj[2] = new Pond(gp);
-        gp.obj[2].worldX = 23 * gp.tileSize;
-        gp.obj[2].worldY = 14 * gp.tileSize;
-
+        if (gp.newGameCounter == 0) {
+            gp.farmMap.placeObjects();
+        }
+        else {
+            gp.farmMap.placeObjects(); // Diisi nilai lokasi object dari save file
+        }
+    
         gp.obj[3] = new NPC_Abigail(gp);
         gp.obj[3].worldX = 30 * gp.tileSize;
         gp.obj[3].worldY = 14 * gp.tileSize;
