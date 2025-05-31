@@ -1,16 +1,19 @@
 package main;
 
 import javax.swing.JPanel;
+
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 
 import inputs.KeyboardListener;
+import inputs.MyMouseListener;
 import model.FarmMap;
-import Objects.ObjectManager;
+import objects.Object;
+import render.ObjectRenderer;
 import entity.Player;
-import Objects.Object;
-import tile.TileManager;
+
 
 public class GamePanel extends JPanel implements Runnable {
 
@@ -27,41 +30,52 @@ public class GamePanel extends JPanel implements Runnable {
     // World Settings 
     public final int maxWorldCol = 52;
     public final int maxWorldRow = 50;
-    // public final int worldWidth = tileSize * maxWorldCol; 
-    // public final int worldHeight = tileSize * maxWorldRow; 
 
     // FPS
     int FPS = 60; 
 
     // SYSTEM
     public UI ui = new UI(this);
-    public TileManager tileM = new TileManager(this);
-    public ObjectManager objM = new ObjectManager(this);
-    KeyboardListener keyH = new KeyboardListener(this);
+    public KeyboardListener keyH = new KeyboardListener(this);
+    public MyMouseListener mouseH = new MyMouseListener(this);
     Thread gameThread;
     long timeCounter = 0; // Counter untuk waktu game
 
-    // ENTITY AND OBJECT
-    public Player player = new Player(this, keyH);
-    public Object obj[] = new Object[10]; 
-    public FarmMap farmMap = new FarmMap(this);
-
     // GAME STATE
     public int gameState;
+    public final int titleState = 0;
     public final int playState = 1;
     public final int pauseState = 2;
+    public final int dialogueState = 3;
+    public final int newGameState = 4;
+    public int newGameCounter = 0;
+
+    // ENTITY AND OBJECT
+    public FarmMap farmMap;
+    public Player player;
+    public Object[] obj;
+    public ObjectRenderer objM;
     
 
     public GamePanel() {
         this.setPreferredSize(new Dimension(screenWidth, screenHeight));
         this.setDoubleBuffered(true);
         this.addKeyListener(keyH);
+        this.addMouseListener(mouseH);
+        this.addMouseMotionListener(mouseH);
         this.setFocusable(true);
+        this.setBackground(Color.BLACK);
+        // ENTITY AND OBJECT
+        farmMap = new FarmMap(this);
+        player = new Player(this, keyH);
+        obj = new Object[10]; 
+        objM = new ObjectRenderer(this);
     }
 
     public void setupGame() {
+        farmMap.renderer.getTileImage();
         objM.setObject(); 
-        gameState = playState;
+        gameState = titleState;
     }
 
     public void startGameThread() {
@@ -128,14 +142,17 @@ public class GamePanel extends JPanel implements Runnable {
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
         Graphics2D g2 = (Graphics2D) g;
-        tileM.draw(g2);
-        for (int i = 0; i < obj.length; i++) {
-            if (obj[i] != null) {
-                obj[i].draw(g2, this);
-            }
+        // TITLE SCREEN
+        if (gameState == titleState) {
+            ui.draw(g2);
         }
-        player.draw(g2);
-        ui.draw(g2);
+        // PLAY STATE
+        else {
+            farmMap.renderer.draw(g2);
+            objM.draw(g2);
+            player.draw(g2);
+            ui.draw(g2);
+        }
         g2.dispose(); 
     }
 }
