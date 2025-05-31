@@ -11,6 +11,7 @@ import java.util.List;
 
 import javax.imageio.ImageIO;
 
+import model.Fish;
 import model.Item;
 import objects.NPC;
 
@@ -36,7 +37,13 @@ public class UI {
     public int npcOptionIndex = 0;
     public int inventorySelectionIndex = 0;
     public int filteredInventorySelectionIndex = 0;
+    public int fishingAttempt = 1;
+    public int fishingMaxAttempts = 10;
+    public int fishingTarget = 0;
+    public String fishingInput = "";
+    public boolean fishingSuccess = false;
     public List<Item> filteredItems = new ArrayList<>();
+    public Fish selectedFish;
 
     public UI(GamePanel gp) {
         this.gp = gp;
@@ -105,6 +112,11 @@ public class UI {
         if (gp.gameState == gp.plantInventoryState) {
             drawPlantInventoryScreen();
         }
+
+        if (gp.gameState == gp.fishingGuessState) {
+            drawFishingGuessScreen();
+        }
+        
     }
 
     public void drawTitleScreen() {
@@ -214,10 +226,8 @@ public class UI {
         g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 60F));
         x += gp.tileSize;
         y += gp.tileSize;
-        for (String line : currentDialogue.split("\n")) {
-            g2.drawString(line, x, y);
-            y += 55;
-        }
+        drawWrappedText(currentDialogue, x, y, gp.screenWidth - x * 2, 55);
+
 
         // PERBAIKAN: HANYA TAMPILKAN NPC INFO JIKA currentNPC TIDAK NULL
         if (currentNPC != null) {
@@ -435,4 +445,65 @@ public class UI {
     public int getXForCenteredText(String text) {
         return gp.screenWidth / 2 - g2.getFontMetrics().stringWidth(text) / 2;
     }
+
+    public void drawWrappedText(String text, int x, int y, int maxWidth, int lineHeight) {
+        for (String line : wrapText(text, maxWidth)) {
+            g2.drawString(line, x, y);
+            y += lineHeight;
+        }
+    }
+    
+    private java.util.List<String> wrapText(String text, int maxWidth) {
+        java.util.List<String> lines = new java.util.ArrayList<>();
+        StringBuilder line = new StringBuilder();
+        for (String word : text.split(" ")) {
+            String testLine = line.length() == 0 ? word : line + " " + word;
+            int width = g2.getFontMetrics().stringWidth(testLine);
+            if (width > maxWidth) {
+                lines.add(line.toString());
+                line = new StringBuilder(word);
+            } else {
+                line = new StringBuilder(testLine);
+            }
+        }
+        if (line.length() > 0) {
+            lines.add(line.toString());
+        }
+        return lines;
+    }
+    
+    public void drawFishingGuessScreen() {
+        drawDialogueBox();
+        int x = gp.tileSize * 3;
+        int y = gp.tileSize + 10;
+    
+        g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 48F));
+        g2.setColor(Color.WHITE);
+        
+        // Nama ikan dan tipe
+        if (selectedFish != null) {
+            g2.drawString("Guess to catch fish: " + selectedFish.getName() + " (" + selectedFish.getType().getDisplayName() + ")", x, y + 30);
+        }
+    
+        // Riddle info
+        g2.drawString("Riddle number " + fishingAttempt + " (1–" + fishingTargetMax() + "):", x, y + 90);
+    
+        // Input user
+        g2.setColor(Color.YELLOW);
+        g2.drawString(fishingInput + "_", x, y + 160);
+    
+        // ESC info (bottom right corner)
+        g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 30F));
+        g2.setColor(Color.LIGHT_GRAY);
+        String cancelText = "(ESC to cancel)";
+        int cancelX = gp.screenWidth - gp.tileSize * 2 - g2.getFontMetrics().stringWidth(cancelText) - 25;
+        int cancelY = gp.tileSize / 2 + gp.tileSize * 4 - 25;
+        g2.drawString(cancelText, cancelX, cancelY);
+    }
+
+    private int fishingTargetMax() {
+        return (selectedFish != null) ? selectedFish.getMaxNumber() : 10;
+    }
+                 
+    
 }

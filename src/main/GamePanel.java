@@ -70,6 +70,7 @@ public class GamePanel extends JPanel implements Runnable {
     public final int inventoryState = 22; // INVENTORY LENGKAP
     public final int eatInventoryState = 23; // KHUSUS EAT
     public final int plantInventoryState = 24; // KHUSUS PLANT
+    public final int fishingGuessState = 25; // KHUSUS FISHING
 
     public int newGameCounter = 0;
 

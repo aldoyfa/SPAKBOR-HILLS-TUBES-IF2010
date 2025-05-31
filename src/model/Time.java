@@ -92,5 +92,11 @@ public class Time {
     public int getMinute() {
         return minute;
     }
+    
+    public void addMinutes(int minutes) {
+        for (int i = 0; i < minutes / 5; i++) {
+            tick(); // karena 1 tick = 5 menit
+        }
+    }    
 
 }

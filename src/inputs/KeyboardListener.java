@@ -7,6 +7,7 @@ import action.Chatting;
 import action.Gift;
 import action.Marry;
 import action.Propose;
+import model.Fish;
 
 public class KeyboardListener implements KeyListener {
     GamePanel gp;
@@ -27,6 +28,14 @@ public class KeyboardListener implements KeyListener {
                 }
             }
         }
+
+        else if (gp.gameState == gp.fishingGuessState) {
+            char c = e.getKeyChar();
+            if (Character.isDigit(c)) {
+                gp.ui.fishingInput += c;
+            }
+        }
+        
     }
 
     public void keyPressed (KeyEvent e) {
@@ -77,6 +86,9 @@ public class KeyboardListener implements KeyListener {
             if (code == KeyEvent.VK_R) { // Recover tilled land
                 new action.RecoverLandAction(gp);
             }
+            if (code == KeyEvent.VK_F) { // Tombol F untuk memancing
+                action.FishingAction.execute(gp);
+            }            
         }
         else if (gp.gameState == gp.pauseState) {
             if (code == KeyEvent.VK_ESCAPE) {
@@ -262,6 +274,40 @@ public class KeyboardListener implements KeyListener {
                 gp.gameState = gp.playState;
             }
         }
+
+        else if (gp.gameState == gp.fishingGuessState) {
+            if (code == KeyEvent.VK_ESCAPE) {
+                gp.gameState = gp.playState; // langsung kembali ke mode main
+                return;
+            }
+        
+            if (code == KeyEvent.VK_BACK_SPACE && gp.ui.fishingInput.length() > 0) {
+                gp.ui.fishingInput = gp.ui.fishingInput.substring(0, gp.ui.fishingInput.length() - 1);
+            } 
+            else if (code == KeyEvent.VK_ENTER) {
+                try {
+                    int guess = Integer.parseInt(gp.ui.fishingInput);
+                    if (guess == gp.ui.fishingTarget) {
+                        gp.ui.fishingSuccess = true;
+                        Fish caught = gp.ui.selectedFish;
+                        gp.player.addItem(caught.getName(), 1, model.ItemType.FISH);
+                        gp.ui.currentDialogue = "You caught a " + caught.getName() + "!";
+                        gp.gameState = gp.dialogueState;
+                    } else {
+                        gp.ui.fishingAttempt++;
+                        gp.ui.fishingInput = "";
+        
+                        if (gp.ui.fishingAttempt > gp.ui.fishingMaxAttempts) {
+                            gp.ui.currentDialogue = "Failed to catch a fish...";
+                            gp.gameState = gp.dialogueState;
+                        }
+                    }
+                } catch (NumberFormatException ignored) {
+                    gp.ui.fishingInput = "";
+                }
+            }
+        }                
+        
     }
 
     public void keyReleased (KeyEvent e) {
