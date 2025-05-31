@@ -12,6 +12,7 @@ import main.UtilityTool;
 import model.Inventory;
 import model.Item;
 import objects.NPC;
+import objects.ShippingBin;
 import model.ItemType;
 
 public class Player {
@@ -362,21 +363,32 @@ public class Player {
     }
 
     public void interactObject(int index) {
-        // implement logic ketika player menyentuh objek di sini
-        // contoh:
-        // if (gp.obj[index].name.equals("House")) {
-        //     System.out.println("You entered the house!");
-        // } else if (gp.obj[index].name.equals("Shipping Bin")) {
-        //     System.out.println("You opened the shipping bin!");
-        // } else if (gp.obj[index].name.equals("Pond")) {
-        //     System.out.println("You are at the pond!");
-        // }  
         if (gp.obj[index] instanceof NPC) {
             if (gp.keyH.enterPressed == true) {
                 gp.gameState = gp.NPCInterfaceState;
                 gp.ui.currentNPC = (NPC) gp.obj[index];
             }
+        } 
+        // ENHANCED: Handle Shipping Bin interaction with currentNPC reset
+        else if (gp.obj[index] instanceof ShippingBin) {
+            if (gp.keyH.enterPressed == true) {
+                // IMPORTANT: Reset currentNPC untuk object interactions
+                gp.ui.currentNPC = null;
+                
+                ShippingBin shippingBin = (ShippingBin) gp.obj[index];
+                shippingBin.interact();
+            }
         }
+        // Handle other objects (also reset currentNPC)
+        else {
+            if (gp.keyH.enterPressed == true) {
+                // IMPORTANT: Reset currentNPC untuk semua object interactions
+                gp.ui.currentNPC = null;
+                
+                System.out.println("You interacted with: " + gp.obj[index].name);
+            }
+        }
+        
         gp.keyH.enterPressed = false;
     }
 

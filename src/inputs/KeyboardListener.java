@@ -93,18 +93,29 @@ public class KeyboardListener implements KeyListener {
         }
         else if (gp.gameState == gp.dialogueState) {
             if (code == KeyEvent.VK_ENTER) {
-                // SPECIAL: Check if it's Emily's shop dialogue
+                // Check Emily shop transition
                 if (gp.ui.isEmilyShop) {
-                    // Transition to shop mode selection
                     gp.ui.shopModeIndex = 0;
                     gp.gameState = gp.shopModeState;
-                    return; // Don't reset isEmilyShop yet
+                    return;
                 }
                 
-                // Normal dialogue exit (for other NPCs)
+                // Check Shipping Bin transition
+                if (gp.ui.isShippingBinMode) {
+                    // Directly go to sell categories (no buy/sell choice)
+                    new action.SellAction(gp);
+                    return;
+                }
+                
+                // ENHANCED: Normal dialogue exit dengan proper cleanup
                 if (gp.ui.currentNPC != null) {
                     gp.ui.currentNPC = null;
                 }
+                
+                // IMPORTANT: Reset all mode flags
+                gp.ui.isEmilyShop = false;
+                gp.ui.isShippingBinMode = false;
+                
                 gp.gameState = gp.playState;
             }
         }
@@ -282,27 +293,13 @@ public class KeyboardListener implements KeyListener {
         }
         // SHOP MODE STATE (Buy/Sell)
         else if (gp.gameState == gp.shopModeState) {
-            if (code == KeyEvent.VK_LEFT) {
-                gp.ui.shopModeIndex = (gp.ui.shopModeIndex + gp.ui.shopModes.length - 1) % gp.ui.shopModes.length;
-            }
-            if (code == KeyEvent.VK_RIGHT) {
-                gp.ui.shopModeIndex = (gp.ui.shopModeIndex + 1) % gp.ui.shopModes.length;
-            }
             if (code == KeyEvent.VK_ENTER) {
-                String selectedMode = gp.ui.shopModes[gp.ui.shopModeIndex];
-                if (selectedMode.equals("Buy")) {
-                    // Go to buy category selection
-                    gp.ui.shopCategoryIndex = 0;
-                    gp.gameState = gp.shopCategoryState;
-                } else if (selectedMode.equals("Sell")) {
-                    // Go to sell category selection
-                    new action.SellAction(gp);
-                }
+                // Emily only has buy mode now
+                gp.ui.shopCategoryIndex = 0;
+                gp.gameState = gp.shopCategoryState;
             }
             if (code == KeyEvent.VK_ESCAPE) {
-                // Exit shop completely
                 gp.ui.isEmilyShop = false;
-                gp.ui.currentNPC = null;
                 gp.gameState = gp.playState;
             }
         }
@@ -388,7 +385,10 @@ public class KeyboardListener implements KeyListener {
                 }
             }
             if (code == KeyEvent.VK_ESCAPE) {
-                gp.gameState = gp.shopModeState;
+                // ENHANCED: Clean exit shipping bin dengan reset semua flags
+                gp.ui.isShippingBinMode = false;
+                gp.ui.currentNPC = null; // Reset currentNPC juga
+                gp.gameState = gp.playState;
             }
         }
         // SELL ITEM STATE
@@ -408,9 +408,9 @@ public class KeyboardListener implements KeyListener {
                 }
             }
             if (code == KeyEvent.VK_ENTER) {
-                // Execute sell logic
+                // Execute shipping logic
                 String selectedItem = gp.ui.sellItems.get(gp.ui.sellItemIndex);
-                action.SellAction.executeSellLogic(gp, selectedItem);
+                action.SellAction.executeShipLogic(gp, selectedItem);
             }
             if (code == KeyEvent.VK_ESCAPE) {
                 gp.gameState = gp.sellCategoryState;

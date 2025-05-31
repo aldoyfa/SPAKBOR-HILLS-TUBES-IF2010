@@ -44,16 +44,17 @@ public int inventorySelectionIndex = 0;
 public int filteredInventorySelectionIndex = 0;
 public List<Item> filteredItems = new ArrayList<>();
 
-// SHOP VARIABLES
+// SHOP VARIABLES (Emily)
 public boolean isEmilyShop = false;
-public String[] shopModes = {"Buy", "Sell"};
+public String[] shopModes = {"Buy"}; // Remove "Sell"
 public int shopModeIndex = 0;
 public ItemType[] shopCategories = {ItemType.SEED, ItemType.FOOD, ItemType.MISC};
 public int shopCategoryIndex = 0;
 public List<String> shopItems = new ArrayList<>();
 public int shopItemIndex = 0;
 
-// SELL VARIABLES
+// NEW: SHIPPING BIN VARIABLES
+public boolean isShippingBinMode = false;
 public List<ItemType> sellCategories = new ArrayList<>();
 public int sellCategoryIndex = 0;
 public List<String> sellItems = new ArrayList<>();
@@ -270,8 +271,8 @@ public int sellItemIndex = 0;
             y += 55;
         }
 
-        // PERBAIKAN: HANYA TAMPILKAN NPC INFO JIKA currentNPC TIDAK NULL
-        if (currentNPC != null) {
+        // ENHANCED: HANYA TAMPILKAN NPC INFO JIKA currentNPC TIDAK NULL DAN BUKAN OBJECT MODE
+        if (currentNPC != null && !isShippingBinMode) {
             // NPC NAME
             g2.setFont(g2.getFont().deriveFont(Font.BOLD, 40F));
             g2.drawString(currentNPC.getName(), x, 270);
@@ -280,11 +281,28 @@ public int sellItemIndex = 0;
             try {
                 // ENERGY IMAGE (digunakan sebagai heart icon)
                 energyImage = ImageIO.read(getClass().getResourceAsStream("/res/ui/energy.png"));
+                if (energyImage != null) {
+                    // Scale energy image
+                    int imageWidth = 32;
+                    int imageHeight = 32;
+                    g2.drawImage(energyImage, x, 280, imageWidth, imageHeight, null);
+                    
+                    // Heart points text
+                    g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 28F));
+                    g2.drawString("" + currentNPC.getHeartPoints(), x + imageWidth + 5, 300);
+                }
             } catch (IOException e) {
-                e.printStackTrace();
+                // Fallback tanpa icon
+                g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 28F));
+                g2.drawString("❤️ " + currentNPC.getHeartPoints(), x, 300);
             }
-            g2.drawImage(energyImage, x + gp.tileSize*3, 235, energyImage.getWidth()*4/3, energyImage.getHeight()*4/3, null);
-            g2.drawString("Heart Points: " + currentNPC.getHeartPoints(), x + gp.tileSize*3+50, 270);
+        }
+        
+        // OPTIONAL: Show shipping bin specific info
+        if (isShippingBinMode) {
+            g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 28F));
+            g2.setColor(Color.GREEN);
+            g2.drawString("💰 Current Gold: " + gp.player.getGold() + "g", x, 300);
         }
     }
 
@@ -511,25 +529,14 @@ public int sellItemIndex = 0;
         g2.drawString("EMILY'S SHOP - WELCOME!", textX, textY);
         
         g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 28F));
-        g2.drawString("(←/→ to move, ENTER to select, ESC to close)", textX, textY + 40);
-        
-        // Show shop mode options
-        int spacing = gp.tileSize * 4;
-        for (int i = 0; i < shopModes.length; i++) {
-            if (i == shopModeIndex) {
-                g2.setFont(g2.getFont().deriveFont(Font.BOLD, 48F));
-                g2.setColor(Color.YELLOW);
-            } else {
-                g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 40F));
-                g2.setColor(Color.WHITE);
-            }
-            g2.drawString(shopModes[i], textX + (i * spacing), textY + 120);
-        }
+        g2.drawString("I only sell items here.", textX, textY + 40);
+        g2.drawString("Use the Shipping Bin to sell your items!", textX, textY + 70);
+        g2.drawString("(ENTER to browse, ESC to close)", textX, textY + 100);
         
         // Show gold
         g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 24F));
         g2.setColor(Color.GREEN);
-        g2.drawString("Your Gold: " + gp.player.getGold() + "g", textX, textY + 180);
+        g2.drawString("Your Gold: " + gp.player.getGold() + "g", textX, textY + 140);
     }
 
     // SHOP CATEGORY SELECTION
@@ -625,14 +632,14 @@ public int sellItemIndex = 0;
 
         g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 32F));
         g2.setColor(Color.WHITE);
-        g2.drawString("EMILY'S SHOP - SELECT SELL CATEGORY", textX, textY);
+        g2.drawString("SHIPPING BIN - SELECT CATEGORY", textX, textY);
         
         g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 28F));
-        g2.drawString("(↑/↓ to move, ENTER to select, ESC to back)", textX, textY + 40);
+        g2.drawString("(↑/↓ to move, ENTER to select, ESC to close)", textX, textY + 40);
         
         if (sellCategories.isEmpty()) {
             g2.setColor(Color.RED);
-            g2.drawString("No items available to sell!", textX, textY + 100);
+            g2.drawString("No items available to ship!", textX, textY + 100);
             return;
         }
         
@@ -663,10 +670,10 @@ public int sellItemIndex = 0;
 
         g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 32F));
         g2.setColor(Color.WHITE);
-        g2.drawString("EMILY'S SHOP - SELL ITEMS", textX, textY);
+        g2.drawString("SHIPPING BIN - SHIP ITEMS", textX, textY);
         
         g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 28F));
-        g2.drawString("(↑/↓ to move, ENTER to sell, ESC to back)", textX, textY + 40);
+        g2.drawString("(↑/↓ to move, ENTER to ship, ESC to back)", textX, textY + 40);
         
         if (sellItems.isEmpty()) {
             g2.setColor(Color.RED);
@@ -677,8 +684,6 @@ public int sellItemIndex = 0;
         // Show selected item
         String selectedItem = sellItems.get(sellItemIndex);
         int sellPrice = ShopDatabase.getSellPrice(selectedItem);
-        
-        // Get quantity dari inventory
         int quantity = gp.player.getInventory().getItemQuantity(selectedItem);
         
         g2.setFont(g2.getFont().deriveFont(Font.BOLD, 40F));
@@ -687,7 +692,7 @@ public int sellItemIndex = 0;
         
         g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 32F));
         g2.setColor(Color.GREEN);
-        g2.drawString("Sell Price: " + sellPrice + "g each", textX, textY + 160);
+        g2.drawString("Ship Price: " + sellPrice + "g each", textX, textY + 160);
         
         g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 24F));
         g2.setColor(Color.WHITE);
@@ -695,10 +700,10 @@ public int sellItemIndex = 0;
         g2.drawString("Your Gold: " + gp.player.getGold() + "g", textX, textY + 215);
         g2.drawString("Item " + (sellItemIndex + 1) + " of " + sellItems.size(), textX, textY + 240);
         
-        // Sell confirmation
+        // Ship confirmation
         g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 28F));
         g2.setColor(Color.CYAN);
-        g2.drawString("Press ENTER to sell 1 item", textX, textY + 275);
+        g2.drawString("Press ENTER to ship 1 item", textX, textY + 275);
     }
 
     public int getXForCenteredText(String text) {
