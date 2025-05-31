@@ -30,8 +30,8 @@ public class GamePanel extends JPanel implements Runnable {
     // World Settings 
     public final int maxFarmMapCol = 52;
     public final int maxFarmMapRow = 50;
-    public final int maxOtherMapCol = 32;
-    public final int maxOtherMapRow = 32;
+    public final int maxOtherMapCol = 32;  // This now includes NpcHouse
+    public final int maxOtherMapRow = 32;  // This now includes NpcHouse
     
     // Current map dimensions
     public int maxWorldCol = maxFarmMapCol;
@@ -57,13 +57,14 @@ public class GamePanel extends JPanel implements Runnable {
     public final int NPCInterfaceState = 5;
     public final int worldMapState = 6;
     public int selectedMap = 0;
-    public String[] mapNames = {"Farm Map", "Ocean", "Lake", "River", "Village"}; 
+    public String[] mapNames = {"Farm Map", "Ocean", "Lake", "River", "Village", "NpcHouse"}; 
     public String[] mapPaths = {
         "/res/maps/farmmap.txt",
         "/res/maps/ocean.txt", 
         "/res/maps/lake.txt",
         "/res/maps/river.txt",
-        "/res/maps/village.txt"
+        "/res/maps/village.txt",
+        "/res/maps/flooring.txt"
     };
 
     // ENTITY AND OBJECT
@@ -162,11 +163,15 @@ public class GamePanel extends JPanel implements Runnable {
         if (gameState == titleState) {
             ui.draw(g2);
         } else {
+            // Draw map tiles
             farmMap.renderer.draw(g2);
-            // Draw objects for both farm and village maps
-            if (selectedMap == 0 || selectedMap == 4) {
+            
+            // Draw objects only for farm and village maps
+            if (selectedMap == 0 || selectedMap == 4) { 
                 objM.draw(g2);
             }
+            
+            // Always draw player
             player.draw(g2);
             ui.draw(g2);
         }
