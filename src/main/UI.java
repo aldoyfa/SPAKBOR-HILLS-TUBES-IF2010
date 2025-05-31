@@ -20,8 +20,8 @@ import java.awt.Color;
 public class UI {
     GamePanel gp;
     Graphics2D g2;
-    BufferedImage goldImage, energyImage, mainMenuImage, newGameImage, loadGameImage, creditsImage, exitImage;
-    public Rectangle newGameRect, loadGameRect, creditsRect, exitRect;
+    BufferedImage goldImage, energyImage, mainMenuImage, newGameImage, loadGameImage, creditsImage, exitImage, continueImage, creditsMenuImage, helpMenuImage,helpButtonImage;
+    public Rectangle newGameRect, loadGameRect, creditsRect, exitRect, helpButtonRect, continueRect;
     Font maruMonica;
     public String currentDialogue = "";
     public NPC currentNPC;
@@ -62,6 +62,16 @@ public class UI {
         // TITLE STATE
         if (gp.gameState == gp.titleState) {
             drawTitleScreen();
+        }
+
+        // CREDITS STATE
+        if (gp.gameState == gp.creditsState) {
+            drawCreditsScreen();
+        }
+
+        // HELP STATE
+        if (gp.gameState == gp.helpState) {
+            drawHelpScreen();
         }
 
         // NEW GAME STATE
@@ -160,6 +170,24 @@ public class UI {
         }
     }
 
+    public void drawCreditsScreen() {
+        try {
+            creditsMenuImage = ImageIO.read(getClass().getResourceAsStream("/res/ui/creditsmenu.png"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        g2.drawImage(creditsMenuImage, 0, 0, gp.screenWidth, gp.screenHeight, null);
+    }
+
+    public void drawHelpScreen() {
+        try {
+            helpMenuImage = ImageIO.read(getClass().getResourceAsStream("/res/ui/helpmenu.png"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        g2.drawImage(helpMenuImage, 0, 0, gp.screenWidth, gp.screenHeight, null);
+    }
+
     public void drawInputScreen() {
 
          // DIALOGUE BOX
@@ -237,6 +265,36 @@ public class UI {
         int x = getXForCenteredText(text);
         int y = gp.screenHeight * 2 / 8;
         g2.drawString(text, x, y);
+        try {
+            helpButtonImage = ImageIO.read(getClass().getResourceAsStream("/res/ui/helpbutton.png"));
+            continueImage = ImageIO.read(getClass().getResourceAsStream("/res/ui/continue.png"));
+            exitImage = ImageIO.read(getClass().getResourceAsStream("/res/ui/exit.png"));
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        x = gp.tileSize * 2;
+        y = gp.screenHeight / 2 + gp.tileSize * 2;
+        g2.drawImage(continueImage, x, y,null);
+        g2.drawImage(helpButtonImage, x+256, y, null);
+        g2.drawImage(exitImage, x+512, y, null);
+
+        int width = newGameImage.getWidth();
+        int height = newGameImage.getHeight();
+
+        continueRect = new Rectangle(x, y, width, height);
+        helpButtonRect = new Rectangle(x + 256, y, width, height);
+        exitRect = new Rectangle(x + 512, y, width, height);
+
+        g2.setColor(Color.YELLOW);
+        g2.setStroke(new BasicStroke(6F));
+        if (hoveredButton == 4) {
+            g2.drawRect(x, y, width, height);
+        } else if (hoveredButton == 5) {
+            g2.drawRect(x + 256, y, width, height);
+        } else if (hoveredButton == 6) {
+            g2.drawRect(x + 512, y, width, height);
+        }
     }
 
     public void drawDialogueScreen() {

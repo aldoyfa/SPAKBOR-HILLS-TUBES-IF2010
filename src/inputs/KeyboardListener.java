@@ -8,7 +8,6 @@ import action.Gift;
 import action.Marry;
 import action.Propose;
 import action.PlantAction;
-import objects.Object;
 
 public class KeyboardListener implements KeyListener {
     GamePanel gp;
@@ -63,6 +62,16 @@ public class KeyboardListener implements KeyListener {
                 new action.ShowTimeAction(gp);
             }
         }
+        else if (gp.gameState == gp.creditsState) {
+            if (code == KeyEvent.VK_ESCAPE) {
+                gp.gameState = gp.titleState;
+            }
+        }
+        else if (gp.gameState == gp.helpState) {
+            if (code == KeyEvent.VK_ESCAPE) {
+                gp.gameState = gp.pauseState;
+            }
+        }
         else if (gp.gameState == gp.pauseState) {
             if (code == KeyEvent.VK_ESCAPE) {
                 gp.gameState = gp.playState;
@@ -102,6 +111,8 @@ public class KeyboardListener implements KeyListener {
                     gp.player.gender = (gp.ui.chooseIndex == 0) ? "male" : "female";
                     gp.farmMap.setName(gp.ui.farmName);
                     gp.gameState = gp.playState;
+                    gp.ui.selectingGender = false;
+                    gp.ui.enteringPlayerName = true;
                 }
             } else if (gp.ui.selectingGender) {
                 if (e.getKeyCode() == KeyEvent.VK_LEFT || e.getKeyCode() == KeyEvent.VK_RIGHT) {

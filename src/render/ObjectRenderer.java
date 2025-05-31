@@ -18,7 +18,7 @@ public class ObjectRenderer {
     }
 
     public void setObject() {
-        if (gp.newGameCounter == 0) {
+        if (gp.newGameCounter == 1) {
             gp.farmMap.placeObjects();
         }
         else {

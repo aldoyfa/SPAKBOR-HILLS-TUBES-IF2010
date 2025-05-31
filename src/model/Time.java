@@ -110,4 +110,14 @@ public class Time {
         return minute;
     }
 
+    public void reset () {
+        minute = 0;
+        hour = 6;
+        dayActual = 1;
+        daySeason = 1;
+        seasonIndex = 0;
+        weather = "Sunny";
+        rainyDaysThisSeason = 0;
+    }
+
 }

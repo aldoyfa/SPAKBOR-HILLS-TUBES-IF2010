@@ -59,6 +59,9 @@ public class GamePanel extends JPanel implements Runnable {
     public final int plantInventoryState = 9; 
     public final int tileActionState = 10;
     public final int worldMapState = 11;
+    public final int creditsState = 12;
+    public final int helpState = 13;
+
     public int selectedMap = 0;
     public String[] mapNames = {"Farm Map", "Ocean", "Lake", "River", "Village", "Store"}; 
     public String[] mapPaths = {
@@ -104,6 +107,29 @@ public class GamePanel extends JPanel implements Runnable {
     public void startGameThread() {
         gameThread = new Thread(this);
         gameThread.start();
+    }
+
+    public void resetWorld() {
+        // Reset map dan tile image
+        farmMap = new FarmMap(this);
+        farmMap.renderer.getTileImage();
+
+        // Reset player
+        player = new Player(this, keyH);
+        
+        // Reset objek
+        obj = new Object[10];
+        objM = new ObjectRenderer(this);
+        objM.setObject();
+
+        // Reset waktu
+        farmMap.time.reset(); // pastikan ada metode reset() di class Time
+
+        // Reset energi, lokasi awal, dan lain-lain
+        player.setDefaultValues();
+
+        // Set ulang state
+        gameState = playState;
     }
 
     @Override
