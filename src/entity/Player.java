@@ -103,39 +103,41 @@ public class Player {
         worldY = gp.tileSize * 9;
         speed = 16;
         direction = "down";
-        inventory.addItem(new model.Item("Parsnip Seeds x15"));
-        inventory.addItem(new model.Item("Hoe"));
-        inventory.addItem(new model.Item("Watering Can"));
-        inventory.addItem(new model.Item("Pickaxe"));
-        inventory.addItem(new model.Item("Fishing Rod"));
+        
+        // Menggunakan system baru - pisahkan nama dan quantity
+        inventory.addItem("Parsnip Seeds", 15);
+        inventory.addItem("Hoe", 1);
+        inventory.addItem("Watering Can", 1);
+        inventory.addItem("Pickaxe", 1);
+        inventory.addItem("Fishing Rod", 1);
     }
 
-    // Getter untuk inventory actions
+    // Update getter methods untuk kompatibilitas dengan sistem lama
     public String getSelectedItemName() {
-        if (inventory.getItems().isEmpty()) {
-            return null;
-        }
-        // Asumsi item pertama adalah item yang sedang dipilih
-        // Bisa dimodifikasi dengan sistem seleksi yang lebih kompleks
-        return inventory.getItems().get(0).getName();
+        return inventory.getSelectedItemName(); // Sudah return displayName (dengan quantity)
     }
-    
+
     public Item getSelectedItem() {
-        if (inventory.getItems().isEmpty()) {
-            return null;
-        }
-        return inventory.getItems().get(0);
+        return inventory.getSelectedItem();
     }
-    
+
     public boolean hasItem(String itemName) {
-        return inventory.getItems().stream()
-            .anyMatch(item -> item.getName().equals(itemName));
+        return inventory.hasItem(itemName);
     }
-    
+
     public boolean removeItem(String itemName) {
-        return inventory.getItems().removeIf(item -> item.getName().equals(itemName));
+        return inventory.removeItem(itemName, 1);
     }
-    
+
+    public boolean removeItem(String itemName, int quantity) {
+        return inventory.removeItem(itemName, quantity);
+    }
+
+    // Method untuk kemudahan menambah item
+    public void addItem(String name, int quantity) {
+        inventory.addItem(name, quantity);
+    }
+
     public Inventory getInventory() {
         return inventory;
     }

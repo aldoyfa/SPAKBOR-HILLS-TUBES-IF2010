@@ -6,8 +6,11 @@ import java.awt.Rectangle;
 import java.awt.BasicStroke;
 import java.awt.FontFormatException;
 import java.io.InputStream;
+import java.util.List;
+
 import javax.imageio.ImageIO;
 
+import model.Item;
 import objects.NPC;
 
 import java.awt.Font;
@@ -266,10 +269,14 @@ public class UI {
 
         g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 48F));
         g2.setColor(Color.WHITE);
-        g2.drawString("Select item to give (↑/↓ to move, ENTER to confirm, ESC to cancel):", x, y);
+        g2.drawString("Select item to give", x, y - 30);
+        
+        g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 48F));
+        g2.setColor(Color.WHITE);
+        g2.drawString("(↑/↓ to move, ENTER to confirm, ESC to cancel):", x, y + 30);
         
         // Ambil items dari inventory
-        java.util.List<model.Item> items = gp.player.getInventory().getItems();
+        List<Item> items = gp.player.getInventory().getItems();
         
         if (items.isEmpty()) {
             g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 48F));
@@ -279,15 +286,15 @@ public class UI {
         }
 
         // Tampilkan hanya item yang dipilih (seperti gender selection)
-        g2.setFont(g2.getFont().deriveFont(Font.BOLD, 64F));
+        g2.setFont(g2.getFont().deriveFont(Font.BOLD, 48F));
         g2.setColor(Color.YELLOW);
         String selectedItemName = items.get(inventorySelectionIndex).getName();
-        g2.drawString("Selected Item: " + selectedItemName, x, y + gp.tileSize + 50);
+        g2.drawString("Selected Item: " + selectedItemName, x, y + gp.tileSize + 30);
         
         // Tampilkan instruksi tambahan
         g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 36F));
         g2.setColor(Color.WHITE);
-        g2.drawString("Item " + (inventorySelectionIndex + 1) + " of " + items.size(), x, y + gp.tileSize + 120);
+        g2.drawString("Item " + (inventorySelectionIndex + 1) + " of " + items.size(), x, y + gp.tileSize + 80);
     }
 
     public int getXForCenteredText(String text) {

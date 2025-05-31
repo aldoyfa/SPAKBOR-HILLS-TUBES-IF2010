@@ -2,6 +2,7 @@ package action;
 
 import objects.NPC;
 import main.GamePanel;
+import model.Item;
 
 public class Gift implements Action {
     private GamePanel gp;
@@ -39,18 +40,21 @@ public class Gift implements Action {
         java.util.List<model.Item> items = gp.player.getInventory().getItems();
         
         if (!items.isEmpty() && gp.ui.inventorySelectionIndex < items.size()) {
-            // NPC targetNPC = gp.ui.currentNPC; // Menggunakan currentNPC
+            NPC targetNPC = gp.ui.currentNPC;
+            Item selectedItem = items.get(gp.ui.inventorySelectionIndex);
             
-            // Execute gift logic
+            // Execute gift logic menggunakan base name (tanpa quantity)
+            String itemBaseName = selectedItem.getBaseName();
             String reaction = "";
             int heartPointsGain = 20; // Default value untuk sementara
-            reaction = gp.ui.currentNPC.getName() + " accepts the gift. +" + heartPointsGain + " heart points!";
+            
+            reaction = targetNPC.getName() + " accepts the " + itemBaseName + ". +" + heartPointsGain + " heart points!";
             
             // Update heart points NPC
-            gp.ui.currentNPC.setHeartPoints(heartPointsGain);
+            targetNPC.setHeartPoints(heartPointsGain);
             
-            // Hapus item dari inventory
-            gp.player.getInventory().getItems().remove(gp.ui.inventorySelectionIndex);
+            // Hapus 1 quantity dari item yang dipilih
+            gp.player.getInventory().removeSelectedItem(1);
             
             // Update energy player
             gp.player.setEnergy(-5);
