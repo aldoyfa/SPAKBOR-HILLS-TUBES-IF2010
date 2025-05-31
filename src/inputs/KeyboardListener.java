@@ -7,7 +7,11 @@ import action.Chatting;
 import action.Gift;
 import action.Marry;
 import action.Propose;
+import action.FishingAction;
 import action.PlantAction;
+import model.Fish;
+import model.ShopDatabase;
+import model.ItemType;
 
 public class KeyboardListener implements KeyListener {
     GamePanel gp;
@@ -26,6 +30,12 @@ public class KeyboardListener implements KeyListener {
                 } else if (gp.ui.enteringFarmName) {
                     gp.ui.farmName += c;
                 }
+            }
+        }
+        else if (gp.gameState == gp.fishingGuessState) {
+            char c = e.getKeyChar();
+            if (Character.isDigit(c)) {
+                gp.ui.fishingInput += c;
             }
         }
     }
@@ -64,6 +74,9 @@ public class KeyboardListener implements KeyListener {
             if (code == KeyEvent.VK_L) {
                 new action.ShowLocationAction(gp);
             }
+            if (code == KeyEvent.VK_F) {
+                FishingAction.execute(gp);
+            }
         }
         else if (gp.gameState == gp.creditsState) {
             if (code == KeyEvent.VK_ESCAPE) {
@@ -82,10 +95,23 @@ public class KeyboardListener implements KeyListener {
         }
         else if (gp.gameState == gp.dialogueState) {
             if (code == KeyEvent.VK_ENTER) {
-                // PERBAIKAN: RESET currentNPC SAAT KELUAR DARI DIALOGUE
+                if (gp.ui.isEmilyShop) {
+                    gp.ui.shopModeIndex = 0;
+                    gp.gameState = gp.shopModeState;
+                    return;
+                }
+
+                // Check Shipping Bin transition
+                if (gp.ui.isShippingBinMode) {
+                    // Directly go to sell categories (no buy/sell choice)
+                    new action.SellAction(gp);
+                    return;
+                }
                 if (gp.ui.currentNPC != null) {
                     gp.ui.currentNPC = null; // Reset NPC setelah dialogue selesai
                 }
+                gp.ui.isEmilyShop = false;
+                gp.ui.isShippingBinMode = false;
                 gp.gameState = gp.playState;
                 if (gp.ui.currentDialogue.contains("energy")) {
                     gp.gameState = gp.playState;
@@ -367,6 +393,163 @@ public class KeyboardListener implements KeyListener {
                 // Reset dan kembali ke play state
                 gp.ui.filteredItems.clear();
                 gp.gameState = gp.playState;
+            }
+        }
+        else if (gp.gameState == gp.fishingGuessState) {
+            if (code == KeyEvent.VK_ESCAPE) {
+                gp.gameState = gp.playState; // langsung kembali ke mode main
+                return;
+            }
+
+            if (code == KeyEvent.VK_BACK_SPACE && gp.ui.fishingInput.length() > 0) {
+                gp.ui.fishingInput = gp.ui.fishingInput.substring(0, gp.ui.fishingInput.length() - 1);
+            } 
+            else if (code == KeyEvent.VK_ENTER) {
+                try {
+                    int guess = Integer.parseInt(gp.ui.fishingInput);
+                    if (guess == gp.ui.fishingTarget) {
+                        gp.ui.fishingSuccess = true;
+                        Fish caught = gp.ui.selectedFish;
+                        gp.player.addItem(caught.getName(), 1, model.ItemType.FISH);
+                        gp.ui.currentDialogue = "You caught a " + caught.getName() + "!";
+                        gp.gameState = gp.dialogueState;
+                    } else {
+                        gp.ui.fishingAttempt++;
+                        gp.ui.fishingInput = "";
+
+                        if (gp.ui.fishingAttempt > gp.ui.fishingMaxAttempts) {
+                            gp.ui.currentDialogue = "Failed to catch a fish...";
+                            gp.gameState = gp.dialogueState;
+                        }
+                    }
+                } catch (NumberFormatException ignored) {
+                    gp.ui.fishingInput = "";
+                }
+            }
+        } 
+                // SHOP MODE STATE (Buy/Sell)
+        else if (gp.gameState == gp.shopModeState) {
+            if (code == KeyEvent.VK_ENTER) {
+                // Emily only has buy mode now
+                gp.ui.shopCategoryIndex = 0;
+                gp.gameState = gp.shopCategoryState;
+            }
+            if (code == KeyEvent.VK_ESCAPE) {
+                gp.ui.isEmilyShop = false;
+                gp.gameState = gp.playState;
+            }
+        }
+        // SHOP CATEGORY STATE (Buy Categories)
+        else if (gp.gameState == gp.shopCategoryState) {
+            if (code == KeyEvent.VK_UP) {
+                if (gp.ui.shopCategoryIndex > 0) {
+                    gp.ui.shopCategoryIndex--;
+                } else {
+                    gp.ui.shopCategoryIndex = gp.ui.shopCategories.length - 1;
+                }
+            }
+            if (code == KeyEvent.VK_DOWN) {
+                if (gp.ui.shopCategoryIndex < gp.ui.shopCategories.length - 1) {
+                    gp.ui.shopCategoryIndex++;
+                } else {
+                    gp.ui.shopCategoryIndex = 0;
+                }
+            }
+            if (code == KeyEvent.VK_ENTER) {
+                // Load items for selected category
+                ItemType selectedCategory = gp.ui.shopCategories[gp.ui.shopCategoryIndex];
+                gp.ui.shopItems = ShopDatabase.getBuyableItemsByCategory(selectedCategory);
+                
+                if (!gp.ui.shopItems.isEmpty()) {
+                    gp.ui.shopItemIndex = 0;
+                    gp.gameState = gp.shopItemState;
+                }
+            }
+            if (code == KeyEvent.VK_ESCAPE) {
+                gp.gameState = gp.shopModeState;
+            }
+        }
+        // SHOP ITEM STATE (Buy Items)
+        else if (gp.gameState == gp.shopItemState) {
+            if (code == KeyEvent.VK_UP) {
+                if (gp.ui.shopItemIndex > 0) {
+                    gp.ui.shopItemIndex--;
+                } else {
+                    gp.ui.shopItemIndex = gp.ui.shopItems.size() - 1;
+                }
+            }
+            if (code == KeyEvent.VK_DOWN) {
+                if (gp.ui.shopItemIndex < gp.ui.shopItems.size() - 1) {
+                    gp.ui.shopItemIndex++;
+                } else {
+                    gp.ui.shopItemIndex = 0;
+                }
+            }
+            if (code == KeyEvent.VK_ENTER) {
+                // Execute buy logic
+                String selectedItem = gp.ui.shopItems.get(gp.ui.shopItemIndex);
+                action.BuyAction.executeBuyLogic(gp, selectedItem);
+            }
+            if (code == KeyEvent.VK_ESCAPE) {
+                gp.gameState = gp.shopCategoryState;
+            }
+        }
+        // SELL CATEGORY STATE
+        else if (gp.gameState == gp.sellCategoryState) {
+            if (code == KeyEvent.VK_UP) {
+                if (gp.ui.sellCategoryIndex > 0) {
+                    gp.ui.sellCategoryIndex--;
+                } else {
+                    gp.ui.sellCategoryIndex = gp.ui.sellCategories.size() - 1;
+                }
+            }
+            if (code == KeyEvent.VK_DOWN) {
+                if (gp.ui.sellCategoryIndex < gp.ui.sellCategories.size() - 1) {
+                    gp.ui.sellCategoryIndex++;
+                } else {
+                    gp.ui.sellCategoryIndex = 0;
+                }
+            }
+            if (code == KeyEvent.VK_ENTER) {
+                // Load items for selected sell category
+                ItemType selectedCategory = gp.ui.sellCategories.get(gp.ui.sellCategoryIndex);
+                gp.ui.sellItems = ShopDatabase.getSellableItemsByCategory(gp, selectedCategory);
+                
+                if (!gp.ui.sellItems.isEmpty()) {
+                    gp.ui.sellItemIndex = 0;
+                    gp.gameState = gp.sellItemState;
+                }
+            }
+            if (code == KeyEvent.VK_ESCAPE) {
+                // ENHANCED: Clean exit shipping bin dengan reset semua flags
+                gp.ui.isShippingBinMode = false;
+                gp.ui.currentNPC = null; // Reset currentNPC juga
+                gp.gameState = gp.playState;
+            }
+        }
+        // SELL ITEM STATE
+        else if (gp.gameState == gp.sellItemState) {
+            if (code == KeyEvent.VK_UP) {
+                if (gp.ui.sellItemIndex > 0) {
+                    gp.ui.sellItemIndex--;
+                } else {
+                    gp.ui.sellItemIndex = gp.ui.sellItems.size() - 1;
+                }
+            }
+            if (code == KeyEvent.VK_DOWN) {
+                if (gp.ui.sellItemIndex < gp.ui.sellItems.size() - 1) {
+                    gp.ui.sellItemIndex++;
+                } else {
+                    gp.ui.sellItemIndex = 0;
+                }
+            }
+            if (code == KeyEvent.VK_ENTER) {
+                // Execute shipping logic
+                String selectedItem = gp.ui.sellItems.get(gp.ui.sellItemIndex);
+                action.SellAction.executeShipLogic(gp, selectedItem);
+            }
+            if (code == KeyEvent.VK_ESCAPE) {
+                gp.gameState = gp.sellCategoryState;
             }
         }
     }

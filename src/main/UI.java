@@ -8,14 +8,14 @@ import java.awt.FontFormatException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.imageio.ImageIO;
-
-import model.Item;
-import objects.NPC;
-
 import java.awt.Font;
 import java.awt.Color;
+import javax.imageio.ImageIO;
+import model.Item;
+import model.Fish;
+import objects.NPC;
+import model.ItemType;
+import model.ShopDatabase;
 
 public class UI {
     GamePanel gp;
@@ -41,6 +41,28 @@ public class UI {
     public List<Item> filteredItems = new ArrayList<>();
     public int plantingCol, plantingRow;
     public String selectedItemDisplay = "";
+    public int fishingAttempt = 1;
+    public int fishingMaxAttempts = 10;
+    public int fishingTarget = 0;
+    public String fishingInput = "";
+    public boolean fishingSuccess = false;
+    public Fish selectedFish;
+
+    // SHOP VARIABLES (Emily)
+    public boolean isEmilyShop = false;
+    public String[] shopModes = {"Buy"}; // Remove "Sell"
+    public int shopModeIndex = 0;
+    public ItemType[] shopCategories = {ItemType.SEED, ItemType.FOOD, ItemType.MISC};
+    public int shopCategoryIndex = 0;
+    public List<String> shopItems = new ArrayList<>();
+    public int shopItemIndex = 0;
+
+    // SHIPPING BIN VARIABLES
+    public boolean isShippingBinMode = false;
+    public List<ItemType> sellCategories = new ArrayList<>();
+    public int sellCategoryIndex = 0;
+    public List<String> sellItems = new ArrayList<>();
+    public int sellItemIndex = 0;
 
     public UI(GamePanel gp) {
         this.gp = gp;
@@ -128,6 +150,32 @@ public class UI {
         // WORLD MAP STATE
         if (gp.gameState == gp.worldMapState) {
             drawWorldMapScreen();
+        }
+
+        // FISHING GUESS STATE
+        if (gp.gameState == gp.fishingGuessState) {
+            drawFishingGuessScreen();
+        }
+
+                // SHOP MODE SELECTION (Buy/Sell)
+        if (gp.gameState == gp.shopModeState) {
+            drawShopModeScreen();
+        }
+        // SHOP CATEGORY SELECTION
+        if (gp.gameState == gp.shopCategoryState) {
+            drawShopCategoryScreen();
+        }
+        // SHOP ITEM SELECTION
+        if (gp.gameState == gp.shopItemState) {
+            drawShopItemScreen();
+        }
+        // SELL CATEGORY SELECTION
+        if (gp.gameState == gp.sellCategoryState) {
+            drawSellCategoryScreen();
+        }
+        // SELL ITEM SELECTION
+        if (gp.gameState == gp.sellItemState) {
+            drawSellItemScreen();
         }
     }
 
@@ -311,26 +359,27 @@ public class UI {
         g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 60F));
         x += gp.tileSize;
         y += gp.tileSize;
-        for (String line : currentDialogue.split("\n")) {
-            g2.drawString(line, x, y);
-            y += 55;
-        }
+        drawWrappedText(currentDialogue, x, y, gp.screenWidth - x * 2, 55);
 
-        // PERBAIKAN: HANYA TAMPILKAN NPC INFO JIKA currentNPC TIDAK NULL
-        if (currentNPC != null) {
+        if (currentNPC != null && !isShippingBinMode) {
             // NPC NAME
             g2.setFont(g2.getFont().deriveFont(Font.BOLD, 40F));
             g2.drawString(currentNPC.getName(), x, 270);
 
             // Heart Points
             try {
-                // ENERGY IMAGE (digunakan sebagai heart icon)
                 energyImage = ImageIO.read(getClass().getResourceAsStream("/res/ui/energy.png"));
             } catch (IOException e) {
                 e.printStackTrace();
             }
             g2.drawImage(energyImage, x + gp.tileSize*3, 235, goldImage.getWidth()*4/3, goldImage.getHeight()*4/3, null);
             g2.drawString("Heart Points: " + currentNPC.getHeartPoints(), x + gp.tileSize*3+50, 270);
+        }
+
+        if (isShippingBinMode) {
+            g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 28F));
+            g2.setColor(Color.GREEN);
+            g2.drawString("Current Gold: " + gp.player.getGold() + "g", x, 300);
         }
     }
 
@@ -571,5 +620,255 @@ public class UI {
             g2.drawString(text, x, y);
             y += gp.tileSize; // Kurangi spacing dari 2 * tileSize menjadi 1 * tileSize
         }
+    }
+
+    public void drawWrappedText(String text, int x, int y, int maxWidth, int lineHeight) {
+        for (String line : wrapText(text, maxWidth)) {
+            g2.drawString(line, x, y);
+            y += lineHeight;
+        }
+    }
+
+    private java.util.List<String> wrapText(String text, int maxWidth) {
+        java.util.List<String> lines = new java.util.ArrayList<>();
+        StringBuilder line = new StringBuilder();
+        for (String word : text.split(" ")) {
+            String testLine = line.length() == 0 ? word : line + " " + word;
+            int width = g2.getFontMetrics().stringWidth(testLine);
+            if (width > maxWidth) {
+                lines.add(line.toString());
+                line = new StringBuilder(word);
+            } else {
+                line = new StringBuilder(testLine);
+            }
+        }
+        if (line.length() > 0) {
+            lines.add(line.toString());
+        }
+        return lines;
+    }
+
+    public void drawFishingGuessScreen() {
+        drawDialogueBox();
+        int x = gp.tileSize * 3;
+        int y = gp.tileSize + 10;
+
+        g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 48F));
+        g2.setColor(Color.WHITE);
+
+        // Nama ikan dan tipe
+        if (selectedFish != null) {
+            g2.drawString("Guess to catch fish: " + selectedFish.getName() + " (" + selectedFish.getType().getDisplayName() + ")", x, y + 30);
+        }
+
+        // Riddle info
+        g2.drawString("Riddle number " + fishingAttempt + " (1–" + fishingTargetMax() + "):", x, y + 90);
+
+        // Input user
+        g2.setColor(Color.YELLOW);
+        g2.drawString(fishingInput + "_", x, y + 160);
+
+        // ESC info (bottom right corner)
+        g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 30F));
+        g2.setColor(Color.LIGHT_GRAY);
+        String cancelText = "(ESC to cancel)";
+        int cancelX = gp.screenWidth - gp.tileSize * 2 - g2.getFontMetrics().stringWidth(cancelText) - 25;
+        int cancelY = gp.tileSize / 2 + gp.tileSize * 4 - 25;
+        g2.drawString(cancelText, cancelX, cancelY);
+    }
+
+    private int fishingTargetMax() {
+        return (selectedFish != null) ? selectedFish.getMaxNumber() : 10;
+    }
+
+        // SHOP MODE SELECTION (Buy/Sell)
+    public void drawShopModeScreen() {
+        drawDialogueBox();
+
+        int boxX = gp.tileSize * 2;
+        int boxY = gp.tileSize / 2;
+        int textX = boxX + 20;
+        int textY = boxY + 60;
+
+        g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 32F));
+        g2.setColor(Color.WHITE);
+        g2.drawString("EMILY'S SHOP - WELCOME!", textX, textY);
+
+        g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 28F));
+        g2.drawString("I only sell items here.", textX, textY + 40);
+        g2.drawString("Use the Shipping Bin to sell your items!", textX, textY + 70);
+        g2.drawString("(ENTER to browse, ESC to close)", textX, textY + 100);
+
+        // Show gold
+        g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 24F));
+        g2.setColor(Color.GREEN);
+        g2.drawString("Your Gold: " + gp.player.getGold() + "g", textX, textY + 140);
+    }
+
+    // SHOP CATEGORY SELECTION
+    public void drawShopCategoryScreen() {
+        drawDialogueBox();
+
+        int boxX = gp.tileSize * 2;
+        int boxY = gp.tileSize / 2;
+        int textX = boxX + 20;
+        int textY = boxY + 60;
+
+        g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 32F));
+        g2.setColor(Color.WHITE);
+        g2.drawString("EMILY'S SHOP - SELECT CATEGORY", textX, textY);
+
+        g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 28F));
+        g2.drawString("(↑/↓ to move, ENTER to select, ESC to back)", textX, textY + 40);
+
+        // Show selected category
+        g2.setFont(g2.getFont().deriveFont(Font.BOLD, 48F));
+        g2.setColor(Color.YELLOW);
+        String selectedCategory = shopCategories[shopCategoryIndex].getDisplayName();
+        g2.drawString("Category: " + selectedCategory, textX, textY + 120);
+
+        // Show navigation
+        g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 24F));
+        g2.setColor(Color.WHITE);
+        g2.drawString("Category " + (shopCategoryIndex + 1) + " of " + shopCategories.length, textX, textY + 160);
+
+        // Show gold
+        g2.setColor(Color.GREEN);
+        g2.drawString("Your Gold: " + gp.player.getGold() + "g", textX, textY + 190);
+    }
+
+    // SHOP ITEM SELECTION
+    public void drawShopItemScreen() {
+        drawDialogueBox();
+
+        int boxX = gp.tileSize * 2;
+        int boxY = gp.tileSize / 2;
+        int textX = boxX + 20;
+        int textY = boxY + 60;
+
+        g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 32F));
+        g2.setColor(Color.WHITE);
+        g2.drawString("EMILY'S SHOP - BUY ITEMS", textX, textY);
+
+        g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 28F));
+        g2.drawString("(↑/↓ to move, ENTER to buy, ESC to back)", textX, textY + 40);
+
+        if (shopItems.isEmpty()) {
+            g2.setColor(Color.RED);
+            g2.drawString("No items available in this category!", textX, textY + 100);
+            return;
+        }
+
+        // Show selected item
+        String selectedItem = shopItems.get(shopItemIndex);
+        int buyPrice = ShopDatabase.getBuyPrice(selectedItem);
+
+        g2.setFont(g2.getFont().deriveFont(Font.BOLD, 40F));
+        g2.setColor(Color.YELLOW);
+        g2.drawString("Item: " + selectedItem, textX, textY + 120);
+
+        g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 32F));
+        g2.setColor(Color.GREEN);
+        g2.drawString("Price: " + buyPrice + "g", textX, textY + 160);
+
+        g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 24F));
+        g2.setColor(Color.WHITE);
+        g2.drawString("Your Gold: " + gp.player.getGold() + "g", textX, textY + 190);
+        g2.drawString("Item " + (shopItemIndex + 1) + " of " + shopItems.size(), textX, textY + 215);
+
+        // Buy confirmation
+        g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 28F));
+        if (gp.player.getGold() >= buyPrice) {
+            g2.setColor(Color.CYAN);
+            g2.drawString("Press ENTER to buy", textX, textY + 250);
+        } else {
+            g2.setColor(Color.RED);
+            g2.drawString("Not enough gold!", textX, textY + 250);
+        }
+    }
+
+    // SELL CATEGORY SELECTION
+    public void drawSellCategoryScreen() {
+        drawDialogueBox();
+
+        int boxX = gp.tileSize * 2;
+        int boxY = gp.tileSize / 2;
+        int textX = boxX + 20;
+        int textY = boxY + 60;
+
+        g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 32F));
+        g2.setColor(Color.WHITE);
+        g2.drawString("SHIPPING BIN - SELECT CATEGORY", textX, textY);
+
+        g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 28F));
+        g2.drawString("(↑/↓ to move, ENTER to select, ESC to close)", textX, textY + 40);
+
+        if (sellCategories.isEmpty()) {
+            g2.setColor(Color.RED);
+            g2.drawString("No items available to ship!", textX, textY + 100);
+            return;
+        }
+
+        // Show selected category
+        g2.setFont(g2.getFont().deriveFont(Font.BOLD, 48F));
+        g2.setColor(Color.YELLOW);
+        String selectedCategory = sellCategories.get(sellCategoryIndex).getDisplayName();
+        g2.drawString("Category: " + selectedCategory, textX, textY + 120);
+
+        // Show navigation
+        g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 24F));
+        g2.setColor(Color.WHITE);
+        g2.drawString("Category " + (sellCategoryIndex + 1) + " of " + sellCategories.size(), textX, textY + 160);
+
+        // Show gold
+        g2.setColor(Color.GREEN);
+        g2.drawString("Your Gold: " + gp.player.getGold() + "g", textX, textY + 190);
+    }
+
+    // SELL ITEM SELECTION
+    public void drawSellItemScreen() {
+        drawDialogueBox();
+
+        int boxX = gp.tileSize * 2;
+        int boxY = gp.tileSize / 2;
+        int textX = boxX + 20;
+        int textY = boxY + 60;
+
+        g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 32F));
+        g2.setColor(Color.WHITE);
+        g2.drawString("SHIPPING BIN - SHIP ITEMS", textX, textY);
+
+        g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 28F));
+        g2.drawString("(↑/↓ to move, ENTER to ship, ESC to back)", textX, textY + 40);
+
+        if (sellItems.isEmpty()) {
+            g2.setColor(Color.RED);
+            g2.drawString("No items available in this category!", textX, textY + 100);
+            return;
+        }
+
+        // Show selected item
+        String selectedItem = sellItems.get(sellItemIndex);
+        int sellPrice = ShopDatabase.getSellPrice(selectedItem);
+        int quantity = gp.player.getInventory().getItemQuantity(selectedItem);
+
+        g2.setFont(g2.getFont().deriveFont(Font.BOLD, 40F));
+        g2.setColor(Color.YELLOW);
+        g2.drawString("Item: " + selectedItem, textX, textY + 120);
+
+        g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 32F));
+        g2.setColor(Color.GREEN);
+        g2.drawString("Ship Price: " + sellPrice + "g each", textX, textY + 160);
+
+        g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 24F));
+        g2.setColor(Color.WHITE);
+        g2.drawString("You have: " + quantity + " of this item", textX, textY + 190);
+        g2.drawString("Your Gold: " + gp.player.getGold() + "g", textX, textY + 215);
+        g2.drawString("Item " + (sellItemIndex + 1) + " of " + sellItems.size(), textX, textY + 240);
+
+        // Ship confirmation
+        g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 28F));
+        g2.setColor(Color.CYAN);
+        g2.drawString("Press ENTER to ship 1 item", textX, textY + 275);
     }
 }

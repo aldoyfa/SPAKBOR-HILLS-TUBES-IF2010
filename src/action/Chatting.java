@@ -16,6 +16,7 @@ public class Chatting implements Action {
     @Override
     public void execute() {
         if (gp.player.getEnergy() >= 10) {
+            gp.ui.currentNPC = npc;
             gp.gameState = gp.dialogueState;
             npc.speak();
             gp.player.setEnergy(-10);

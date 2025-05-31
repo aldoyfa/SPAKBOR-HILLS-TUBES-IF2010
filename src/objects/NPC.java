@@ -55,10 +55,6 @@ public abstract class NPC extends Object {
         this.engagementDay = day;
     }
 
-    // Metode untuk memperbarui status relationship berdasarkan heart points
-    private void updateRelationshipStatus() {
-        }
-
     @Override
     public void getImage() {
         try {

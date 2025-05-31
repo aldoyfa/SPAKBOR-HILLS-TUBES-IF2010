@@ -15,26 +15,19 @@ public class EatAction implements Action {
 
     @Override
     public void execute() {
-        // Cek energy player terlebih dahulu
-        if (gp.player.getEnergy() >= 5) {
-            // Filter item FOOD dari inventory
-            List<Item> foodItems = gp.player.getInventory().getItemsByType(ItemType.FOOD);
+        List<Item> foodItems = gp.player.getInventory().getItemsByType(ItemType.FOOD);
             
-            if (foodItems.isEmpty()) {
-                gp.ui.currentDialogue = "You don't have any food to eat!";
-                gp.gameState = gp.dialogueState;
-                return;
-            }
-            
-            // PERBAIKAN: LANGSUNG KE eatInventoryState
-            gp.ui.filteredItems.clear();
-            gp.ui.filteredItems.addAll(foodItems);
-            gp.ui.filteredInventorySelectionIndex = 0;
-            gp.gameState = gp.eatInventoryState; // LANGSUNG KE STATE KHUSUS
-        } else {
-            gp.ui.currentDialogue = "You don't have enough energy to eat!";
+        if (foodItems.isEmpty()) {
+            gp.ui.currentDialogue = "You don't have any food to eat!";
             gp.gameState = gp.dialogueState;
+            return;
         }
+            
+        // PERBAIKAN: LANGSUNG KE eatInventoryState
+        gp.ui.filteredItems.clear();
+        gp.ui.filteredItems.addAll(foodItems);
+        gp.ui.filteredInventorySelectionIndex = 0;
+        gp.gameState = gp.eatInventoryState; // LANGSUNG KE STATE KHUSUS
     }
     
     // Static method untuk execute eat logic - COMPLETELY INDEPENDENT

@@ -12,6 +12,7 @@ import main.UtilityTool;
 import model.Inventory;
 import model.Item;
 import objects.NPC;
+import objects.ShippingBin;
 import model.ItemType;
 
 public class Player {
@@ -124,16 +125,16 @@ public class Player {
         direction = "down";
         
         // Menggunakan explicit types untuk clarity
-        inventory.addItem("Parsnip Seeds", 15, ItemType.SEED);
-        inventory.addItem("Hoe", 1, ItemType.EQUIPMENT);
-        inventory.addItem("Watering Can", 1, ItemType.EQUIPMENT);
-        inventory.addItem("Pickaxe", 1, ItemType.EQUIPMENT);
-        inventory.addItem("Fishing Rod", 1, ItemType.EQUIPMENT);
-        inventory.addItem("Proposal Ring", 1, ItemType.EQUIPMENT);
+        inventory.addItemByName("Parsnip Seeds", 15);
+        inventory.addItemByName("Hoe", 1);
+        inventory.addItemByName("Watering Can", 1);
+        inventory.addItemByName("Pickaxe", 1);
+        inventory.addItemByName("Fishing Rod", 1);
+        inventory.addItemByName("Proposal Ring", 1);
         
         // // TAMBAHKAN FOOD ITEMS UNTUK TESTING
-        // inventory.addItem("Baguette", 3, ItemType.FOOD);
-        // inventory.addItem("Fish n' Chips", 2, ItemType.FOOD);
+        // inventory.addItemByName("Baguette", 3);
+        // inventory.addItemByName("Fish n' Chips", 2);
     }
 
     // Update getter methods untuk kompatibilitas dengan sistem lama
@@ -395,22 +396,22 @@ public class Player {
     }
 
     public void interactObject(int index) {
-        // implement logic ketika player menyentuh objek di sini
-        // contoh:
-        // if (gp.obj[index].name.equals("House")) {
-        //     System.out.println("You entered the house!");
-        // } else if (gp.obj[index].name.equals("Shipping Bin")) {
-        //     System.out.println("You opened the shipping bin!");
-        // } else if (gp.obj[index].name.equals("Pond")) {
-        //     System.out.println("You are at the pond!");
-        // }  
         if (gp.obj[index] instanceof NPC) {
             if (gp.keyH.enterPressed == true) {
                 gp.gameState = gp.NPCInterfaceState;
                 gp.ui.currentNPC = (NPC) gp.obj[index];
             }
         }
+        else if (gp.obj[index] instanceof ShippingBin) {
+            if (gp.keyH.enterPressed == true) {
+                // IMPORTANT: Reset currentNPC untuk object interactions
+                gp.ui.currentNPC = null;
+
+                ShippingBin shippingBin = (ShippingBin) gp.obj[index];
+                shippingBin.interact();
+            }
         gp.keyH.enterPressed = false;
+        }
     }
 
     public void draw(Graphics2D g2) {

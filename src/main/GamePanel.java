@@ -61,6 +61,13 @@ public class GamePanel extends JPanel implements Runnable {
     public final int worldMapState = 11;
     public final int creditsState = 12;
     public final int helpState = 13;
+    public final int fishingGuessState = 14;
+    public final int shopModeState = 15;      // Buy/Sell selection
+    public final int shopCategoryState = 16;  // Buy category selection
+    public final int shopItemState = 17;      // Buy item selection
+    public final int sellCategoryState = 18;  // Sell category selection
+    public final int sellItemState = 19;      // Sell item selection
+    public final int sellInventoryState = 20; // Sell item from inventory
 
     public int selectedMap = 0;
     public String[] mapNames = {"Farm Map", "Ocean", "Lake", "River", "Village", "House", "Store"}; 

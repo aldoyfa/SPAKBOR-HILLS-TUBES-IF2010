@@ -14,18 +14,9 @@ public class NPC_Emily extends NPC {
         heartPoints = 0;
         relationshipStatus = RelationshipsStatus.single;
         lovedItems = new String[] {
-            "Parsnip Seeds",
-            "Cauliflower Seeds",
-            "Potato Seeds",
-            "Wheat Seeds",
-            "Blueberry Seeds",
-            "Tomato Seeds",
-            "Hot Pepper Seeds",
-            "Melon Seeds",
-            "Cranberry Seeds",
-            "Pumpkin Seeds",
-            "Wheat Seeds",
-            "Grape Seeds"
+            "Parsnip Seeds", "Cauliflower Seeds", "Potato Seeds", "Wheat Seeds",
+            "Blueberry Seeds", "Tomato Seeds", "Hot Pepper Seeds", "Melon Seeds",
+            "Cranberry Seeds", "Pumpkin Seeds", "Grape Seeds"
         };
         likedItems = new String[] {"Catfish", "Salmon", "Sardine"};
         hatedItems = new String[] {"Coal", "Wood"};
@@ -34,6 +25,26 @@ public class NPC_Emily extends NPC {
 
     @Override
     public void setDialogue() {
-        dialogues[0] = ("Selamat datang! Ada yang bisa aku bantu?\nAku Emily, senang bertemu denganmu!");
+        dialogues[0] = "Welcome to my shop! I have everything you need for farming.";
+        dialogues[1] = "I sell seeds, food, and useful tools for your farm!";
+        dialogues[2] = "Thanks for visiting! Come back anytime you need supplies.";
+    }
+    
+    @Override
+    public void speak() {
+        if (dialogues[dialogueIndex] == null) {
+            dialogueIndex = 0;
+        }
+        
+        // Set dialogue biasa dulu
+        gp.ui.currentDialogue = dialogues[dialogueIndex];
+        dialogueIndex++;
+        
+        // Setelah dialogue, langsung ke shop mode
+        gp.ui.isEmilyShop = true; // Flag khusus Emily
+        
+        if (dialogueIndex >= dialogues.length || dialogues[dialogueIndex] == null) {
+            dialogueIndex = 0;
+        }
     }
 }

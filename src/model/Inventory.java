@@ -25,12 +25,22 @@ public class Inventory {
         }
     }
 
-    // Method overload dengan explicit type
+    // ENHANCED: Method dengan database auto-detection
     public void addItem(String name, int quantity, ItemType type) {
-        addItem(new Item(name, quantity, type));
+        addItem(new Item(name, quantity, type)); // Item constructor sudah handle database lookup
+    }
+    
+    // TAMBAHAN: Method untuk add item by name saja (auto-detect type)
+    public void addItemByName(String name, int quantity) {
+        Item item = Item.create(name, quantity);
+        if (item != null) {
+            addItem(item);
+        } else {
+            System.out.println("Error: Item '" + name + "' not found in database!");
+        }
     }
 
-    // Helper method untuk mencari item berdasarkan nama
+    // EXISTING methods tetap sama
     private Item findItemByName(String name) {
         return items.stream()
             .filter(item -> item.getBaseName().equals(name))
@@ -38,7 +48,6 @@ public class Inventory {
             .orElse(null);
     }
 
-    // Helper method untuk mencari item yang bisa di-stack
     private Item findStackableItem(Item item) {
         return items.stream()
             .filter(existingItem -> 
@@ -49,15 +58,12 @@ public class Inventory {
             .orElse(null);
     }
 
-    // Method untuk menghapus item dengan quantity
     public boolean removeItem(String name, int quantity) {
         Item item = findItemByName(name);
         if (item != null) {
             if (item.removeQuantity(quantity)) {
-                // Jika quantity menjadi 0 atau kurang, hapus item dari list
                 if (item.getQuantity() <= 0) {
                     items.remove(item);
-                    // Adjust selected index jika perlu
                     if (selectedIndex >= items.size() && !items.isEmpty()) {
                         selectedIndex = items.size() - 1;
                     } else if (items.isEmpty()) {
@@ -70,12 +76,10 @@ public class Inventory {
         return false;
     }
 
-    // Method untuk menghapus 1 quantity dari item yang dipilih
     public boolean removeSelectedItem() {
         return removeSelectedItem(1);
     }
 
-    // Method untuk menghapus quantity tertentu dari item yang dipilih
     public boolean removeSelectedItem(int quantity) {
         if (items.isEmpty() || selectedIndex >= items.size()) {
             return false;
@@ -125,18 +129,23 @@ public class Inventory {
         }
     }
 
-    // Helper method untuk debug
     public boolean hasItem(String name) {
-        return items.stream().anyMatch(item -> item.getName().equalsIgnoreCase(name));
+        return findItemByName(name) != null;
     }
 
-    public int getItemQuantity(String name) {
-        Item item = findItemByName(name);
+    // public int getItemQuantity(String name) {
+    //     Item item = findItemByName(name);
+    //     return item != null ? item.getQuantity() : 0;
+    // }
+
+    // NEW: Get quantity of specific item
+    public int getItemQuantity(String itemName) {
+        Item item = findItemByName(itemName);
         return item != null ? item.getQuantity() : 0;
     }
 
-    // Method untuk filter items by type
-    public java.util.List<Item> getItemsByType(ItemType type) {
+    // NEW: Get items by type (for sell categories)
+    public List<Item> getItemsByType(ItemType type) {
         return items.stream()
             .filter(item -> item.getType() == type)
             .collect(java.util.stream.Collectors.toList());
