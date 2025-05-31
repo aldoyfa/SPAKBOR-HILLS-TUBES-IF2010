@@ -84,13 +84,22 @@ public class Time {
     public int getDay() {
         return dayActual;
     }
-
+    
     public int getHour() {
         return hour;
     }
-
+    
     public int getMinute() {
         return minute;
     }
+    
+    public int getDayActual() {
+        return dayActual;
+    }
 
+    // TAMBAHAN: Method untuk marry time skip
+    public void setTimeToEvening() {
+        this.hour = 22;
+        this.minute = 0;
+    }
 }

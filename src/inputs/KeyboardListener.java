@@ -71,11 +71,16 @@ public class KeyboardListener implements KeyListener {
             if (code == KeyEvent.VK_P) { // Plant seeds
                 new action.PlantAction(gp);
             }
-            if (code == KeyEvent.VK_Q) { // Water plants (Q for Quality care!)
+            if (code == KeyEvent.VK_Q) { // Water plants
                 new action.WateringAction(gp);
             }
             if (code == KeyEvent.VK_R) { // Recover tilled land
                 new action.RecoverLandAction(gp);
+            }
+            
+            // TAMBAHAN: TIME DISPLAY
+            if (code == KeyEvent.VK_T) { // Show time (T for Time)
+                new action.ShowTimeAction(gp);
             }
         }
         else if (gp.gameState == gp.pauseState) {

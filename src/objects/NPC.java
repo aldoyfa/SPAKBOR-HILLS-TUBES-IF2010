@@ -7,6 +7,9 @@ import javax.imageio.ImageIO;
 import java.awt.Rectangle;
 
 import model.RelationshipsStatus;
+import main.GamePanel;
+import main.UtilityTool;
+
 public abstract class NPC extends Object {
     protected int heartPoints;
     protected String[] lovedItems;
@@ -14,7 +17,13 @@ public abstract class NPC extends Object {
     protected String[] hatedItems;
     protected RelationshipsStatus relationshipStatus;
     String[] dialogues = new String[10];
-    int dialogueIndex = 0; 
+    int dialogueIndex = 0;
+    
+    // TAMBAHAN: Engagement tracking untuk marry requirement
+    protected int engagementDay = 0;
+    
+    // TAMBAHAN: Utility tool untuk image scaling
+    protected UtilityTool uTool = new UtilityTool();
 
     public String getName() {
         return name;
@@ -44,14 +53,23 @@ public abstract class NPC extends Object {
         this.heartPoints += heartPoints;
     }
 
-   public void setRelationshipStatus(RelationshipsStatus relationshipStatus) {
+    public void setRelationshipStatus(RelationshipsStatus relationshipStatus) {
         this.relationshipStatus = relationshipStatus;
     }
-
+    
+    // TAMBAHAN: Engagement day methods
+    public int getEngagementDay() {
+        return engagementDay;
+    }
+    
+    public void setEngagementDay(int day) {
+        this.engagementDay = day;
+    }
 
     // Metode untuk memperbarui status relationship berdasarkan heart points
     private void updateRelationshipStatus() {
-        }
+        // Implementation bisa ditambahkan nanti
+    }
 
     @Override
     public void getImage() {

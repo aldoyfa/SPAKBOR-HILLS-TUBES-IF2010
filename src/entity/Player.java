@@ -37,6 +37,8 @@ public class Player {
    private int energy = 100;
    private String farmName;
    public String gender;
+   // TAMBAHAN: Marriage tracking
+   private boolean isMarried = false;
    private String partner = null;
    private int gold = 0;
    public Inventory inventory = new Inventory();
@@ -82,13 +84,22 @@ public class Player {
     public void setFarmName(String farmName) {
         this.farmName = gp.farmMap.getName();
     }
-
+    
+    // TAMBAHAN: Marriage methods
+    public boolean isMarried() {
+        return isMarried;
+    }
+    
+    public void setMarried(boolean married) {
+        this.isMarried = married;
+    }
+    
     public String getPartner() {
         return partner;
     }
-
-    public void setPartner(String partner) {
-        this.partner = partner;
+    
+    public void setPartner(String partnerName) {
+        this.partner = partnerName;
     }
 
     public int getGold() {
@@ -99,6 +110,7 @@ public class Player {
         this.gold += gold;
     }
 
+    // ENHANCED: Default values dengan Proposal Ring
     public void setDefaultValues() {
         worldX = gp.tileSize * 10;
         worldY = gp.tileSize * 9;
@@ -112,8 +124,11 @@ public class Player {
         inventory.addItem("Pickaxe", 1, ItemType.EQUIPMENT);
         inventory.addItem("Fishing Rod", 1, ItemType.EQUIPMENT);
         
+        // TAMBAHAN: Proposal Ring untuk testing
+        inventory.addItem("Proposal Ring", 1, ItemType.EQUIPMENT);
+        
         // TAMBAHKAN FOOD ITEMS UNTUK TESTING
-        inventory.addItem("Baguette", 3, ItemType.FOOD);
+        inventory.addItem("Baguette", 10, ItemType.FOOD);
         inventory.addItem("Fish n' Chips", 2, ItemType.FOOD);
     }
 
