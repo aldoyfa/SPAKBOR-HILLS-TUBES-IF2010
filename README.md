@@ -18,7 +18,9 @@ Setelah gagal menguasai dunia sebanyak 420 kali, Dr. Asep Spakbor memutuskan ban
 Lahir lah game Spakbor Hills, simulator bertani dengan sistem energi, cuaca, dan hubungan sosial yang kompleks. Dalam game ini, kamu harus bertani, memancing, memasak, bersosialisasi dengan NPC, dan mencapai milestone penting seperti menikah atau menjadi petani kaya.
 
 ## Cara Menjalankan Program
-
+- *Untuk OS Windows:*
+  ```text
+  Klik tombol "Run Java" di VS Code
 
 ## Struktur Program
 
