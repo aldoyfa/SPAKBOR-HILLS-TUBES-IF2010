@@ -66,7 +66,6 @@ public abstract class NPC extends Object {
             dialogueIndex = 0;
         }
         gp.ui.currentDialogue = dialogues[dialogueIndex];
-        gp.ui.currentNPC = this;
         dialogueIndex++;
     }
 }

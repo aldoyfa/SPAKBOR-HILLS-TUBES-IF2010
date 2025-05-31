@@ -3,6 +3,7 @@ package inputs;
 import java.awt.event.KeyListener;
 import java.awt.event.KeyEvent;
 import main.GamePanel;
+import action.Chatting;
 
 public class KeyboardListener implements KeyListener {
     GamePanel gp;
@@ -74,13 +75,38 @@ public class KeyboardListener implements KeyListener {
                 } else if (gp.ui.selectingGender) {
                     // Set ke player & lanjut ke main game
                     gp.player.setName(gp.ui.playerName);
-                    gp.player.gender = (gp.ui.genderIndex == 0) ? "male" : "female";
+                    gp.player.gender = (gp.ui.chooseIndex == 0) ? "male" : "female";
                     gp.farmMap.setName(gp.ui.farmName);
                     gp.gameState = gp.playState;
                 }
             } else if (gp.ui.selectingGender) {
                 if (e.getKeyCode() == KeyEvent.VK_LEFT || e.getKeyCode() == KeyEvent.VK_RIGHT) {
-                    gp.ui.genderIndex = 1 - gp.ui.genderIndex;
+                    gp.ui.chooseIndex = 1 - gp.ui.chooseIndex;
+                }
+            }
+        }
+        else if (gp.gameState == gp.NPCInterfaceState) {
+            if (code == KeyEvent.VK_LEFT) {
+                gp.ui.npcOptionIndex = (gp.ui.npcOptionIndex + gp.ui.npcOptions.length - 1) % gp.ui.npcOptions.length;
+            }
+            if (code == KeyEvent.VK_RIGHT) {
+                gp.ui.npcOptionIndex = (gp.ui.npcOptionIndex + 1) % gp.ui.npcOptions.length;
+            }
+            if (code == KeyEvent.VK_ENTER || code == KeyEvent.VK_SPACE) {
+                String selected = gp.ui.npcOptions[gp.ui.npcOptionIndex];
+                switch (selected) {
+                    case "Chat":
+                        new Chatting (gp, gp.ui.currentNPC);
+                        break;
+                    case "Gift":
+                        // new Gift (gp, gp.ui.currentNPC);
+                        break;
+                    case "Propose":
+                        // new Propose (gp, gp.ui.currentNPC);
+                        break;
+                    case "Marry":
+                        // new Marry (gp, gp.ui.currentNPC);
+                        break;
                 }
             }
         }

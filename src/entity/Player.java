@@ -312,20 +312,17 @@ public class Player {
     public void interactObject(int index) {
         // implement logic ketika player menyentuh objek di sini
         // contoh:
-        if (gp.obj[index].name.equals("House")) {
-            System.out.println("You entered the house!");
-        } else if (gp.obj[index].name.equals("Shipping Bin")) {
-            System.out.println("You opened the shipping bin!");
-        } else if (gp.obj[index].name.equals("Pond")) {
-            System.out.println("You are at the pond!");
-        } else if (gp.obj[index] instanceof NPC) {
+        // if (gp.obj[index].name.equals("House")) {
+        //     System.out.println("You entered the house!");
+        // } else if (gp.obj[index].name.equals("Shipping Bin")) {
+        //     System.out.println("You opened the shipping bin!");
+        // } else if (gp.obj[index].name.equals("Pond")) {
+        //     System.out.println("You are at the pond!");
+        // }  
+        if (gp.obj[index] instanceof NPC) {
             if (gp.keyH.enterPressed == true) {
-                if (getEnergy() >= 10) {
-                    gp.gameState = gp.dialogueState;
-                    ((NPC) gp.obj[index]).speak();
-                    setEnergy(-10);
-                    ((NPC) gp.obj[index]).setHeartPoints(10);
-                }
+                gp.gameState = gp.NPCInterfaceState;
+                gp.ui.currentNPC = (NPC) gp.obj[index];
             }
         }
         gp.keyH.enterPressed = false;
