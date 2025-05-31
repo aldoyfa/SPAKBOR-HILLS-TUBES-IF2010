@@ -69,7 +69,7 @@ public class GamePanel extends JPanel implements Runnable {
     // ENTITY AND OBJECT
     public FarmMap farmMap;
     public Player player;
-    public Object[] obj;
+    public Object[] obj = new Object[12]; // Changed from 10 to 12
     public ObjectRenderer objM;
     public int newGameCounter = 0; // Counter untuk tombol New Game
     public boolean isInFarmMap = true;
@@ -85,7 +85,6 @@ public class GamePanel extends JPanel implements Runnable {
         // ENTITY AND OBJECT
         farmMap = new FarmMap(this);
         player = new Player(this, keyH);
-        obj = new Object[10]; 
         objM = new ObjectRenderer(this);
     }
 
@@ -164,13 +163,13 @@ public class GamePanel extends JPanel implements Runnable {
             ui.draw(g2);
         } else {
             farmMap.renderer.draw(g2);
-            // Only draw objects if in farm map
-            if (selectedMap == 0) {
+            // Draw objects for both farm and village maps
+            if (selectedMap == 0 || selectedMap == 4) {
                 objM.draw(g2);
             }
             player.draw(g2);
             ui.draw(g2);
         }
-        g2.dispose(); 
+        g2.dispose();
     }
 }

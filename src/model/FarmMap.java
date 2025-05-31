@@ -8,6 +8,12 @@ import main.GamePanel;
 import objects.House;
 import objects.Pond;
 import objects.ShippingBin;
+import objects.NPC_Abigail;
+import objects.NPC_Caroline;
+import objects.NPC_Dasco;
+import objects.NPC_Emily;
+import objects.NPC_Perry;
+import objects.NPC_MayorTadi;
 import render.TileRenderer;
 
 public class FarmMap {
@@ -71,8 +77,70 @@ public class FarmMap {
             if (renderer != null) {
                 renderer.getTileImage();
             }
-        }
-        catch (Exception e) {
+
+            // Initialize objects for village map
+            if (filePath.contains("village")) {
+                // Clear existing objects first
+                for (int i = 0; i < gp.obj.length; i++) {
+                    gp.obj[i] = null;
+                }
+
+                // Adjust house positions to be more spread out
+                // First house group (far left)
+                gp.obj[0] = new House(gp);
+                gp.obj[0].worldX = 6 * gp.tileSize;
+                gp.obj[0].worldY = 6 * gp.tileSize;
+                
+                gp.obj[1] = new NPC_Abigail(gp);
+                gp.obj[1].worldX = 4 * gp.tileSize;
+                gp.obj[1].worldY = 12 * gp.tileSize;
+
+                // Second house group
+                gp.obj[2] = new House(gp);
+                gp.obj[2].worldX = 14 * gp.tileSize;
+                gp.obj[2].worldY = 6 * gp.tileSize;
+                
+                gp.obj[3] = new NPC_Caroline(gp);
+                gp.obj[3].worldX = 12 * gp.tileSize;
+                gp.obj[3].worldY = 12 * gp.tileSize;
+
+                // Third house group
+                gp.obj[4] = new House(gp);
+                gp.obj[4].worldX = 22 * gp.tileSize;
+                gp.obj[4].worldY = 6 * gp.tileSize;
+                
+                gp.obj[5] = new NPC_Emily(gp);
+                gp.obj[5].worldX = 20 * gp.tileSize;
+                gp.obj[5].worldY = 12 * gp.tileSize;
+
+                // Fourth house group
+                gp.obj[6] = new House(gp);
+                gp.obj[6].worldX = 6 * gp.tileSize;
+                gp.obj[6].worldY = 18 * gp.tileSize;
+                
+                gp.obj[7] = new NPC_Dasco(gp);
+                gp.obj[7].worldX = 4 * gp.tileSize;
+                gp.obj[7].worldY = 24 * gp.tileSize;
+
+                // Fifth house group
+                gp.obj[8] = new House(gp);
+                gp.obj[8].worldX = 14 * gp.tileSize;
+                gp.obj[8].worldY = 18 * gp.tileSize;
+                
+                gp.obj[9] = new NPC_Perry(gp);
+                gp.obj[9].worldX = 12 * gp.tileSize;
+                gp.obj[9].worldY = 24 * gp.tileSize;
+
+                // // Sixth house group
+                // gp.obj[10] = new House(gp);
+                // gp.obj[10].worldX = 30 * gp.tileSize;
+                // gp.obj[10].worldY = 7 * gp.tileSize;
+                
+                gp.obj[11] = new NPC_MayorTadi(gp);
+                gp.obj[11].worldX = 20 * gp.tileSize;
+                gp.obj[11].worldY = 24 * gp.tileSize;
+            }
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

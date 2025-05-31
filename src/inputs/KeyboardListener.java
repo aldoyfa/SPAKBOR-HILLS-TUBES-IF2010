@@ -133,7 +133,7 @@ public class KeyboardListener implements KeyListener {
                 }
             }
             if (code == KeyEvent.VK_ENTER) {
-                // Check energy first before proceeding
+                // Check energy first
                 if (gp.player.getEnergy() < 10) {
                     gp.ui.currentDialogue = "Not enough energy to travel! You need at least 10 energy.";
                     gp.gameState = gp.dialogueState;
@@ -159,7 +159,7 @@ public class KeyboardListener implements KeyListener {
                     }
 
                     // Clear existing objects
-                    gp.obj = new objects.Object[10];
+                    gp.obj = new objects.Object[12];
 
                     // Reinitialize map arrays with new dimensions
                     gp.farmMap.mapTileNum = new int[gp.maxWorldCol][gp.maxWorldRow];
@@ -167,9 +167,18 @@ public class KeyboardListener implements KeyListener {
                     // Load selected map
                     gp.farmMap.loadMap(gp.mapPaths[gp.selectedMap]);
 
-                    // Reset player position relative to new map size
-                    gp.player.worldX = gp.tileSize * (gp.maxWorldCol/4);
-                    gp.player.worldY = gp.tileSize * (gp.maxWorldRow/4);
+                    // Set spawn point based on map type
+                    if (gp.selectedMap == 4) { // Village map
+                        // Spawn in grass area (tile 4) in village
+                        gp.player.worldX = gp.tileSize * 4; // Center-ish X coordinate
+                        gp.player.worldY = gp.tileSize * 4; // Upper grass area Y coordinate
+                    } else if (gp.selectedMap == 0) { // Farm map
+                        gp.player.worldX = gp.tileSize * (gp.maxWorldCol/4);
+                        gp.player.worldY = gp.tileSize * (gp.maxWorldRow/4);
+                    } else { // Other maps
+                        gp.player.worldX = gp.tileSize * (gp.maxWorldCol/4);
+                        gp.player.worldY = gp.tileSize * (gp.maxWorldRow/4);
+                    }
                     gp.player.direction = "down";
 
                     // Place objects only if it's farm map
