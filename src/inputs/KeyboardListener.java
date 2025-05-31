@@ -137,6 +137,14 @@ public class KeyboardListener implements KeyListener {
                 if (gp.player.getEnergy() < 10) {
                     gp.ui.currentDialogue = "Not enough energy to travel! You need at least 10 energy.";
                     gp.gameState = gp.dialogueState;
+                    
+                    // Reset player position to previous location
+                    gp.player.worldX = gp.tileSize * (gp.maxWorldCol/4);
+                    gp.player.worldY = gp.tileSize * (gp.maxWorldRow/4);
+                    gp.player.direction = "down";
+                    
+                    // Switch back to play state
+                    gp.gameState = gp.playState;
                     return;
                 }
 
