@@ -7,19 +7,37 @@ import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import inputs.KeyboardListener;
 import main.GamePanel;
+import main.UtilityTool;
+import model.Inventory;
 
 public class Player {
+    
+   // SYSTEM
    GamePanel gp;
    KeyboardListener keyH;
    public BufferedImage up1, up2, down1, down2, left1, left2, right1, right2;
    public String direction;
    public int spriteCounter = 0;
    public int spriteNum = 1; 
+   int standCounter = 0;
+   boolean moving = false;
+   int pixelCounter = 0;
    public int worldX, worldY, speed;
    public Rectangle solidArea;
    public int solidAreaDefaultX, solidAreaDefaultY;
    public boolean collisionOn = false;
    public final int screenX, screenY;
+
+   // Atribut Player in-Game
+   private String name = "Player";
+   private int energy = 100;
+   private String farmName;
+   private String partner = null;
+   private int gold = 0;
+   public Inventory inventory = new Inventory();
+
+   // Atribut tambahan
+   public boolean hasSleptToday = false;
 
    public Player(GamePanel gp, KeyboardListener keyH) {
       this.gp = gp;
@@ -28,7 +46,7 @@ public class Player {
       screenX = gp.screenWidth / 2 - (gp.tileSize / 2);
       screenY = gp.screenHeight / 2 - (gp.tileSize / 2);
 
-      solidArea = new Rectangle(8, 16, 32, 32);
+      solidArea = new Rectangle(1, 1, 62, 62);
       solidAreaDefaultX = solidArea.x;
       solidAreaDefaultY = solidArea.y;
 
@@ -36,26 +54,67 @@ public class Player {
       getPlayerImage();
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public int getEnergy() {
+        return energy;
+    }
+
+    public void setEnergy(int energy) {
+        this.energy += energy;
+    }
+
+    public String getFarmName() {
+        return farmName;
+    }
+
+    public void setFarmName(String farmName) {
+        this.farmName = gp.farmMap.getName();
+    }
+
+    public String getPartner() {
+        return partner;
+    }
+
+    public void setPartner(String partner) {
+        this.partner = partner;
+    }
+
+    public int getGold() {
+        return gold;
+    }
+
+    public void setGold(int gold) {
+        this.gold += gold;
+    }
+
     public void setDefaultValues() {
         worldX = gp.tileSize * 17;
         worldY = gp.tileSize * 17;
-        speed = 12;
+        speed = 16;
         direction = "down";
+        inventory.addItem(new model.Item("Parsnip Seeds x15"));
+        inventory.addItem(new model.Item("Hoe"));
+        inventory.addItem(new model.Item("Watering Can"));
+        inventory.addItem(new model.Item("Pickaxe"));
+        inventory.addItem(new model.Item("Fishing Rod"));
     }
 
     public void getPlayerImage() {
-        try {
-            up1 = ImageIO.read(getClass().getResourceAsStream("/res/player/player_up_1.png"));
-            up2 = ImageIO.read(getClass().getResourceAsStream("/res/player/player_up_2.png"));
-            down1 = ImageIO.read(getClass().getResourceAsStream("/res/player/player_down_1.png"));
-            down2 = ImageIO.read(getClass().getResourceAsStream("/res/player/player_down_2.png"));
-            left1 = ImageIO.read(getClass().getResourceAsStream("/res/player/player_left_1.png"));
-            left2 = ImageIO.read(getClass().getResourceAsStream("/res/player/player_left_2.png"));
-            right1 = ImageIO.read(getClass().getResourceAsStream("/res/player/player_right_1.png"));
-            right2 = ImageIO.read(getClass().getResourceAsStream("/res/player/player_right_2.png"));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        up1 = setup("player_up_1"); 
+        up2 = setup("player_up_2");
+        down1 = setup("player_down_1");
+        down2 = setup("player_down_2");
+        left1 = setup("player_left_1");
+        left2 = setup("player_left_2");
+        right1 = setup("player_right_1");
+        right2 = setup("player_right_2");
     }
 
     public void checkTileCollision() {
@@ -169,29 +228,52 @@ public class Player {
         return index;
     }
 
-    public void update() {
-        if (keyH.wPressed || keyH.aPressed || keyH.sPressed || keyH.dPressed) {
-            if (keyH.wPressed) {
-                direction = "up";
-            }
-            if (keyH.sPressed) {
-                direction = "down";
-            }
-            if (keyH.aPressed) {
-                direction = "left";
-            }
-            if (keyH.dPressed) {
-                direction = "right";
-            }
-        
-            // Check tile collision    
-            collisionOn = false;
-            checkTileCollision();
-            int objIndex = checkObjectCollision(this);
-            if (objIndex != -1) {
-                pickUpObject(objIndex);
-            }   
+    public BufferedImage setup (String imageName) {
+        UtilityTool uTool = new UtilityTool();
+        BufferedImage image = null;
+        try {
+            image = ImageIO.read(getClass().getResourceAsStream("/res/player/" + imageName + ".png"));
+            image = uTool.scaleImage(image, gp.tileSize, gp.tileSize);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return image;
+    }
 
+    public void update() {
+        if (moving == false) {
+            if (keyH.wPressed || keyH.aPressed || keyH.sPressed || keyH.dPressed) {
+                if (keyH.wPressed) {
+                    direction = "up";
+                }
+                else if (keyH.sPressed) {
+                    direction = "down";
+                }
+                else if (keyH.aPressed) {
+                    direction = "left";
+                }
+                else if (keyH.dPressed) {
+                    direction = "right";
+                }
+                moving = true;
+        
+                // Check tile collision    
+                collisionOn = false;
+                checkTileCollision();
+                int objIndex = checkObjectCollision(this);
+                if (objIndex != -1) {
+                    pickUpObject(objIndex);
+                }
+            }
+            else {
+            standCounter++;
+                if (standCounter == 20) {
+                    spriteNum = 1;
+                    standCounter = 0;
+                }
+            }
+        }
+        if (moving == true) {
             if (!collisionOn) {
                 switch (direction) {
                     case "up":
@@ -208,15 +290,19 @@ public class Player {
                         break;
                 }
             }
-
             spriteCounter++;
-            if (spriteCounter > 8) {
-                if (spriteNum == 1) {
-                    spriteNum = 2;
-                } else if (spriteNum == 2) {
-                    spriteNum = 1;
+                if (spriteCounter > 8) {
+                    if (spriteNum == 1) {
+                        spriteNum = 2;
+                    } else if (spriteNum == 2) {
+                        spriteNum = 1;
+                    }
+                    spriteCounter = 0;
                 }
-                spriteCounter = 0;
+            pixelCounter += speed;
+            if (pixelCounter == 64) {
+                moving = false; 
+                pixelCounter = 0;
             }
         }
     }
@@ -266,6 +352,6 @@ public class Player {
                 }
                 break;
         }
-        g2.drawImage(image, screenX, screenY, gp.tileSize, gp.tileSize, null);
+        g2.drawImage(image, screenX, screenY, null);
     }
 }
