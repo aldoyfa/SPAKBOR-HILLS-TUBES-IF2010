@@ -130,6 +130,12 @@ public class Inventory {
         return findItemByName(name) != null;
     }
 
+    public boolean hasItem(String name, int quantity) {
+        Item item = findItemByName(name);
+        return item != null && item.getQuantity() >= quantity;
+    }
+    
+
     public int getItemQuantity(String name) {
         Item item = findItemByName(name);
         return item != null ? item.getQuantity() : 0;

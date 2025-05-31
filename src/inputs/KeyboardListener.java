@@ -88,7 +88,17 @@ public class KeyboardListener implements KeyListener {
             }
             if (code == KeyEvent.VK_F) { // Tombol F untuk memancing
                 action.FishingAction.execute(gp);
-            }            
+            }
+            if (code == KeyEvent.VK_C) {
+                model.Recipe recipe = model.RecipeDatabase.getRecipeByName("Baguette"); // contoh nyata
+                if (recipe != null) {
+                    action.CookingAction.execute(gp, recipe);
+                } else {
+                    gp.ui.currentDialogue = "Recipe not found.";
+                    gp.gameState = gp.dialogueState;
+                }
+            }
+                                               
         }
         else if (gp.gameState == gp.pauseState) {
             if (code == KeyEvent.VK_ESCAPE) {
