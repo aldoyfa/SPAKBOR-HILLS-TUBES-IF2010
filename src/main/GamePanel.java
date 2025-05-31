@@ -28,12 +28,12 @@ public class GamePanel extends JPanel implements Runnable {
     public final int screenHeight = tileSize * maxScreenRow; // 768 pixels
     
     // World Settings 
-    public int maxWorldCol = 52;
-    public int maxWorldRow = 50;
     public final int maxFarmMapCol = 52;
     public final int maxFarmMapRow = 50;
     public final int maxOtherMapCol = 32;
     public final int maxOtherMapRow = 32;
+    public int maxWorldCol = maxFarmMapCol;
+    public int maxWorldRow = maxFarmMapRow;
 
     // FPS
     int FPS = 60; 
@@ -63,13 +63,14 @@ public class GamePanel extends JPanel implements Runnable {
     public final int helpState = 13;
 
     public int selectedMap = 0;
-    public String[] mapNames = {"Farm Map", "Ocean", "Lake", "River", "Village", "Store"}; 
+    public String[] mapNames = {"Farm Map", "Ocean", "Lake", "River", "Village", "House", "Store"}; 
     public String[] mapPaths = {
         "/res/maps/farmmap.txt",
         "/res/maps/ocean.txt", 
         "/res/maps/lake.txt",
         "/res/maps/river.txt",
         "/res/maps/village.txt",
+        "/res/maps/flooring.txt",
         "/res/maps/store.txt"
     };
 
@@ -94,7 +95,7 @@ public class GamePanel extends JPanel implements Runnable {
         // ENTITY AND OBJECT
         farmMap = new FarmMap(this);
         player = new Player(this, keyH);
-        obj = new Object[10]; 
+        obj = new Object[25]; 
         objM = new ObjectRenderer(this);
     }
 
@@ -118,7 +119,7 @@ public class GamePanel extends JPanel implements Runnable {
         player = new Player(this, keyH);
         
         // Reset objek
-        obj = new Object[10];
+        obj = new Object[25];
         objM = new ObjectRenderer(this);
         objM.setObject();
 
@@ -212,7 +213,8 @@ public class GamePanel extends JPanel implements Runnable {
         // PLAY STATE
         else {
             farmMap.renderer.draw(g2);
-            if (selectedMap == 0) {
+            objM.draw(g2);
+            if (selectedMap == 0 || selectedMap == 4 || selectedMap == 6) {
                 objM.draw(g2);
             }
             player.draw(g2);

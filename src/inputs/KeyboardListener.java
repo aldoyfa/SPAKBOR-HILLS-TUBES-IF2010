@@ -175,65 +175,54 @@ public class KeyboardListener implements KeyListener {
                 }
             }
             if (code == KeyEvent.VK_ENTER) {
-                // Check energy first before proceeding
-                if (gp.player.getEnergy() < 10) {
-                    gp.ui.currentDialogue = "Not enough energy to travel! You need at least 10 energy.";
+                if (gp.player.getEnergy() <= 10) {
+                    gp.ui.currentDialogue = "You are too tired to travel!";
                     gp.gameState = gp.dialogueState;
-                    
-                    // Reset player position to previous location
-                    gp.player.worldX = gp.tileSize * (gp.maxWorldCol/4);
-                    gp.player.worldY = gp.tileSize * (gp.maxWorldRow/4);
-                    gp.player.direction = "down";
-                    
-                    // Switch back to play state
-                    gp.gameState = gp.playState;
                     return;
                 }
-
-                try {
+                else {
+                    gp.player.setEnergy(-10); // Kurangi energi saat memilih map
+                    try {
                     // Set map dimensions based on selected map
                     if (gp.selectedMap == 0) { // Farm Map
                         gp.maxWorldCol = gp.maxFarmMapCol;
                         gp.maxWorldRow = gp.maxFarmMapRow;
+                    } else if (gp.selectedMap == 5) { // NpcHouse/Flooring map
+                        gp.maxWorldCol = 24; // Set exact size for flooring
+                        gp.maxWorldRow = 24;
                     } else { // Other maps (Ocean, Lake, River, Village)
                         gp.maxWorldCol = gp.maxOtherMapCol;
                         gp.maxWorldRow = gp.maxOtherMapRow;
                     }
-
-                    // Clear existing objects
-                    gp.obj = new objects.Object[10];
-
-                    // Reinitialize map arrays with new dimensions
+                    // Reset map array with new dimensions
                     gp.farmMap.mapTileNum = new int[gp.maxWorldCol][gp.maxWorldRow];
 
                     // Load selected map
                     gp.farmMap.loadMap(gp.mapPaths[gp.selectedMap]);
 
-                    // Reset player position relative to new map size
-                    gp.player.worldX = gp.tileSize * (gp.maxWorldCol/4);
-                    gp.player.worldY = gp.tileSize * (gp.maxWorldRow/4);
+                    // Set spawn points based on map type
+                    if (gp.selectedMap == 5) { // NpcHouse/Flooring
+                        gp.player.worldX = gp.tileSize * 12; // Center of 24x24 map
+                        gp.player.worldY = gp.tileSize * 12;
+                    } else if (gp.selectedMap == 4) { // Village
+                        gp.player.worldX = gp.tileSize * 4;
+                        gp.player.worldY = gp.tileSize * 4;
+                    } else {
+                        gp.player.worldX = gp.tileSize * (gp.maxWorldCol/4);
+                        gp.player.worldY = gp.tileSize * (gp.maxWorldRow/4);
+                    }
+
                     gp.player.direction = "down";
-
-                    // Place objects only if it's farm map
-                    if (gp.selectedMap == 0) {
-                        gp.objM.setObject();
-                    }
-
-                    // Reduce energy by 10
-                    gp.player.setEnergy(-10);
-
-                    // Add 15 minutes to game time (3 ticks since 1 tick = 5 minutes)
-                    for (int i = 0; i < 3; i++) {
-                        gp.farmMap.time.tick();
-                    }
-
                     gp.gameState = gp.playState;
+
                 } catch (Exception ex) {
                     System.out.println("Error loading map: " + ex.getMessage());
                     ex.printStackTrace();
                 }
             }
         }
+    }
+                
         else if (gp.gameState == gp.tileActionState) {
             if (code == KeyEvent.VK_LEFT) {
                 gp.ui.tileOptionIndex = (gp.ui.tileOptionIndex + gp.ui.tileOptions.length - 1) % gp.ui.tileOptions.length;
