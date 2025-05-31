@@ -193,44 +193,7 @@ public class KeyboardListener implements KeyListener {
                 gp.gameState = gp.playState;
             }
         }
-        // HAPUS ATAU COMMENT OUT BAGIAN filteredInventoryState INI:
-        /*
-        else if (gp.gameState == gp.filteredInventoryState) {
-            // Navigation untuk filtered inventory (eat/plant) - TANPA NPC DEPENDENCY
-            if (code == KeyEvent.VK_UP) {
-                if (gp.ui.filteredInventorySelectionIndex > 0) {
-                    gp.ui.filteredInventorySelectionIndex--;
-                } else {
-                    gp.ui.filteredInventorySelectionIndex = gp.ui.filteredItems.size() - 1;
-                }
-            }
-            if (code == KeyEvent.VK_DOWN) {
-                if (gp.ui.filteredInventorySelectionIndex < gp.ui.filteredItems.size() - 1) {
-                    gp.ui.filteredInventorySelectionIndex++;
-                } else {
-                    gp.ui.filteredInventorySelectionIndex = 0;
-                }
-            }
-            if (code == KeyEvent.VK_ENTER) {
-                // Execute action berdasarkan currentAction - HAPUS DEPENDENCY KE GIFT
-                if (gp.currentAction != null) {
-                    if (gp.currentAction.equals("eat food")) {
-                        action.EatAction.executeEatLogic(gp);
-                    } else if (gp.currentAction.equals("plant seeds")) {
-                        action.PlantAction.executePlantLogic(gp);
-                    }
-                }
-            }
-            if (code == KeyEvent.VK_ESCAPE) {
-                // Reset dan kembali ke play state
-                gp.ui.filteredItems.clear();
-                gp.currentAction = "";
-                gp.gameState = gp.playState;
-            }
-        }
-        */
-
-        // PERTAHANKAN HANYA INI - EAT INVENTORY STATE (sudah ada di kode Anda)
+        // EAT INVENTORY STATE
         else if (gp.gameState == gp.eatInventoryState) {
             if (code == KeyEvent.VK_UP) {
                 if (gp.ui.filteredInventorySelectionIndex > 0) {
@@ -257,7 +220,7 @@ public class KeyboardListener implements KeyListener {
             }
         }
 
-        // PERTAHANKAN HANYA INI - PLANT INVENTORY STATE (sudah ada di kode Anda)
+        // PLANT INVENTORY STATE
         else if (gp.gameState == gp.plantInventoryState) {
             if (code == KeyEvent.VK_UP) {
                 if (gp.ui.filteredInventorySelectionIndex > 0) {
@@ -300,13 +263,5 @@ public class KeyboardListener implements KeyListener {
         if (code == KeyEvent.VK_D) {
             dPressed = false;
         }
-        // if (code == KeyEvent.VK_SPACE) {
-        //     spacePressed = false;
-        // }
-        // if (code == KeyEvent.VK_ENTER){
-        //     enterPressed = false; 
-        // } 
-        // if (code == KeyEvent.VK_UP)    upPressed    = true;
-        // if (code == KeyEvent.VK_DOWN)  downPressed  = true;
     }
 }
