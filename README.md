@@ -1,3 +1,5 @@
+![Main Menu](https://github.com/aldoyfa/SPAKBOR-HILLS-TUBES-IF2010/blob/main/src/res/ui/Main%20Menu.png)
+
 # TUGAS BESAR IF2010 Pemrograman Berorientasi Objek
 ## SPAKBOR HILLS: FARM AND BUILD RELATIONSHIPS!
 Kelompok 6 Kelas K6 (STI Jatinangor) Semester Genap 2024/2025
