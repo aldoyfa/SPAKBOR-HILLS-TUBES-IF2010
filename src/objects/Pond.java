@@ -1,4 +1,4 @@
-package objects;
+package Objects;
 
 import java.io.IOException;
 import java.awt.Rectangle;
