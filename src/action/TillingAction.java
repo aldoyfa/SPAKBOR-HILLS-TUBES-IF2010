@@ -1,7 +1,6 @@
 package action;
 
 import entity.Player;
-import model.Farm;
 import main.GamePanel;
 
 public class TillingAction implements Action {
@@ -27,7 +26,7 @@ public class TillingAction implements Action {
             player.time.tick();
             System.out.println("Tanah dibajak di: " + x + ", " + y);
         } else {
-            System.out.println("Tile ini tidak bisa dibajak.");
+            System.out.println("Tile ini sudah dibajak.");
         }
     }
 }

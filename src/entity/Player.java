@@ -144,8 +144,6 @@ public class Player {
                 spriteCounter = 0;
             }
         }
-
-        regenerateEnergy(1);
     }
 
     public void draw(Graphics2D g2) {
