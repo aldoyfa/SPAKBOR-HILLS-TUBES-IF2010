@@ -105,14 +105,6 @@ public class FarmMap {
                 gp.obj[3].worldY = 12 * gp.tileSize;
 
                 // Third house group
-                gp.obj[4] = new House(gp);
-                gp.obj[4].worldX = 22 * gp.tileSize;
-                gp.obj[4].worldY = 6 * gp.tileSize;
-                
-                gp.obj[5] = new NPC_Emily(gp);
-                gp.obj[5].worldX = 20 * gp.tileSize;
-                gp.obj[5].worldY = 12 * gp.tileSize;
-
                 // Fourth house group
                 gp.obj[6] = new House(gp);
                 gp.obj[6].worldX = 6 * gp.tileSize;
@@ -139,6 +131,24 @@ public class FarmMap {
                 gp.obj[11] = new NPC_MayorTadi(gp);
                 gp.obj[11].worldX = 20 * gp.tileSize;
                 gp.obj[11].worldY = 24 * gp.tileSize;
+            }
+            else if (filePath.contains("store")) {
+                // Clear existing objects first
+                for (int i = 0; i < gp.obj.length; i++) {
+                    gp.obj[i] = null;
+                }
+
+                // Place house in store map
+                gp.obj[0] = new House(gp);
+                gp.obj[0].worldX = 16 * gp.tileSize; // Center position for 32x32 map
+                gp.obj[0].worldY = 16 * gp.tileSize;
+
+                // Place Emily NPC in front of house
+                gp.obj[1] = new NPC_Emily(gp);
+                gp.obj[1].worldX = 14 * gp.tileSize; // Same X as house
+                gp.obj[1].worldY = 22 * gp.tileSize; // 2 tiles below house
+
+                // Don't call placeObjects() here as it will overwrite our store objects
             }
         } catch (Exception e) {
             e.printStackTrace();

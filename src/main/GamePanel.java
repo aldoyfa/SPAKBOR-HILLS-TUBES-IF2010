@@ -57,14 +57,15 @@ public class GamePanel extends JPanel implements Runnable {
     public final int NPCInterfaceState = 5;
     public final int worldMapState = 6;
     public int selectedMap = 0;
-    public String[] mapNames = {"Farm Map", "Ocean", "Lake", "River", "Village", "NpcHouse"}; 
+    public String[] mapNames = {"Farm Map", "Ocean", "Lake", "River", "Village", "House", "Store"}; 
     public String[] mapPaths = {
         "/res/maps/farmmap.txt",
         "/res/maps/ocean.txt", 
         "/res/maps/lake.txt",
         "/res/maps/river.txt",
         "/res/maps/village.txt",
-        "/res/maps/flooring.txt"
+        "/res/maps/flooring.txt",
+        "/res/maps/store.txt"
     };
 
     // ENTITY AND OBJECT
@@ -166,8 +167,8 @@ public class GamePanel extends JPanel implements Runnable {
             // Draw map tiles
             farmMap.renderer.draw(g2);
             
-            // Draw objects only for farm and village maps
-            if (selectedMap == 0 || selectedMap == 4) { 
+            // Draw objects for farm, village, store maps
+            if (selectedMap == 0 || selectedMap == 4 || selectedMap == 6) { 
                 objM.draw(g2);
             }
             
