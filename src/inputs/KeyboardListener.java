@@ -59,7 +59,12 @@ public class KeyboardListener implements KeyListener {
         }
         else if (gp.gameState == gp.dialogueState) {
             if (code == KeyEvent.VK_ENTER || code == KeyEvent.VK_SPACE) {
-                gp.gameState = gp.playState;
+                // Return to play state instead of world map if it was due to low energy
+                if (gp.ui.currentDialogue.contains("energy")) {
+                    gp.gameState = gp.playState;
+                } else {
+                    gp.gameState = gp.playState;
+                }
             }
         }
         else if (gp.gameState == gp.newGameState) {
@@ -128,6 +133,13 @@ public class KeyboardListener implements KeyListener {
                 }
             }
             if (code == KeyEvent.VK_ENTER) {
+                // Check energy first before proceeding
+                if (gp.player.getEnergy() < 10) {
+                    gp.ui.currentDialogue = "Not enough energy to travel! You need at least 10 energy.";
+                    gp.gameState = gp.dialogueState;
+                    return;
+                }
+
                 try {
                     // Set map dimensions based on selected map
                     if (gp.selectedMap == 0) { // Farm Map
@@ -139,7 +151,7 @@ public class KeyboardListener implements KeyListener {
                     }
 
                     // Clear existing objects
-                    gp.obj = new objects.Object[10];  // Specify the full package path for Object class
+                    gp.obj = new objects.Object[10];
 
                     // Reinitialize map arrays with new dimensions
                     gp.farmMap.mapTileNum = new int[gp.maxWorldCol][gp.maxWorldRow];
@@ -154,7 +166,15 @@ public class KeyboardListener implements KeyListener {
 
                     // Place objects only if it's farm map
                     if (gp.selectedMap == 0) {
-                        gp.objM.setObject(); // This will place all buildings and NPCs
+                        gp.objM.setObject();
+                    }
+
+                    // Reduce energy by 10
+                    gp.player.setEnergy(-10);
+
+                    // Add 15 minutes to game time (3 ticks since 1 tick = 5 minutes)
+                    for (int i = 0; i < 3; i++) {
+                        gp.farmMap.time.tick();
                     }
 
                     gp.gameState = gp.playState;
