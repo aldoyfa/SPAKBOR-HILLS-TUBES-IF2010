@@ -3,11 +3,13 @@ package model;
 public class Item {
     private String name;
     private int quantity;
+    private ItemType type;
 
-    // Constructor baru untuk memisahkan nama dan quantity
-    public Item(String name, int quantity) {
+    // Constructor dengan type
+    public Item(String name, int quantity, ItemType type) {
         this.name = name;
         this.quantity = quantity;
+        this.type = type;
     }
 
     public String getName() {
@@ -16,6 +18,10 @@ public class Item {
 
     public int getQuantity() {
         return quantity;
+    }
+
+    public ItemType getType() {
+        return type;
     }
 
     public void setQuantity(int quantity) {
@@ -34,16 +40,24 @@ public class Item {
         return false;
     }
 
-    // Method untuk display dengan quantity (seperti UI yang sudah ada)
+    // Method untuk display dengan quantity (untuk UI sederhana)
+    public String getSimpleDisplayName() {
+        return (quantity > 1) ? name + " x" + quantity : name;
+    }
+
+    // Method untuk display dengan quantity dan type
     public String getDisplayName() {
-        if (quantity > 1) {
-            return name + " x" + quantity;
-        }
-        return name;
+        String displayName = (quantity > 1) ? name + " x" + quantity : name;
+        return displayName + " [" + type.getDisplayName() + "]";
     }
 
     // Method untuk mendapatkan nama asli tanpa quantity
     public String getBaseName() {
         return name;
+    }
+
+    // Method untuk check apakah item stackable berdasarkan type
+    public boolean isStackable() {
+        return type != ItemType.EQUIPMENT && type != ItemType.MISC;
     }
 }

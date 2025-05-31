@@ -6,6 +6,7 @@ import java.awt.Rectangle;
 import java.awt.BasicStroke;
 import java.awt.FontFormatException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.imageio.ImageIO;
@@ -34,9 +35,12 @@ public class UI {
     public String[] npcOptions = {"Chat", "Gift", "Propose", "Marry"};
     public int npcOptionIndex = 0;
 
-// Variabel untuk inventory selection (hapus targetNPC)
-    public int inventorySelectionIndex = 0;
-// public NPC targetNPC; // HAPUS INI - gunakan currentNPC
+// Variabel untuk inventory selection
+public int inventorySelectionIndex = 0;
+
+// Variabel untuk filtered inventory (eat/plant actions)
+public int filteredInventorySelectionIndex = 0;
+public List<Item> filteredItems = new ArrayList<>();
 
     public UI(GamePanel gp) {
         this.gp = gp;
@@ -69,7 +73,6 @@ public class UI {
         if (gp.gameState == gp.playState) {
             drawGoldUI();
             drawEnergy();
-        
         }
 
         // PAUSE STATE
@@ -90,6 +93,30 @@ public class UI {
         // INVENTORY SELECTION STATE
         if (gp.gameState == gp.inventorySelectionState) {
             drawInventorySelectionScreen();
+        }
+
+        // INVENTORY STATE (tambahkan ini)
+        if (gp.gameState == gp.inventoryState) {
+            drawInventoryScreen();
+        }
+
+        // HAPUS ATAU COMMENT OUT INI - TIDAK DIPERLUKAN LAGI:
+        /*
+        // FILTERED INVENTORY STATE (untuk eat/plant actions)
+        if (gp.gameState == gp.filteredInventoryState) {
+            drawFilteredInventoryScreen();
+        }
+        */
+        
+        // PERTAHANKAN HANYA INI - 2 STATE BARU:
+        // EAT INVENTORY STATE
+        if (gp.gameState == gp.eatInventoryState) {
+            drawEatInventoryScreen();
+        }
+        
+        // PLANT INVENTORY STATE  
+        if (gp.gameState == gp.plantInventoryState) {
+            drawPlantInventoryScreen();
         }
     }
 
@@ -205,19 +232,22 @@ public class UI {
             y += 55;
         }
 
-        // NPC NAME
-        g2.setFont(g2.getFont().deriveFont(Font.BOLD, 40F));
-        g2.drawString(currentNPC.getName(), x, 270);
+        // PERBAIKAN: HANYA TAMPILKAN NPC INFO JIKA currentNPC TIDAK NULL
+        if (currentNPC != null) {
+            // NPC NAME
+            g2.setFont(g2.getFont().deriveFont(Font.BOLD, 40F));
+            g2.drawString(currentNPC.getName(), x, 270);
 
-        // Heart Points
-        try {
-            // GOLD IMAGE
-            energyImage = ImageIO.read(getClass().getResourceAsStream("/res/ui/energy.png"));
-        } catch (IOException e) {
-            e.printStackTrace();
+            // Heart Points
+            try {
+                // ENERGY IMAGE (digunakan sebagai heart icon)
+                energyImage = ImageIO.read(getClass().getResourceAsStream("/res/ui/energy.png"));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            g2.drawImage(energyImage, x + gp.tileSize*3, 235, energyImage.getWidth()*4/3, energyImage.getHeight()*4/3, null);
+            g2.drawString("Heart Points: " + currentNPC.getHeartPoints(), x + gp.tileSize*3+50, 270);
         }
-        g2.drawImage(energyImage, x + gp.tileSize*3, 235, goldImage.getWidth()*4/3, goldImage.getHeight()*4/3, null);
-        g2.drawString("Heart Points: " + currentNPC.getHeartPoints(), x + gp.tileSize*3+50, 270);
     }
 
     public void drawDialogueBox () {
@@ -261,40 +291,172 @@ public class UI {
         g2.drawString("Energy: " + gp.player.getEnergy(), 88, 120);
     }
 
-    // Method untuk menampilkan inventory selection
+    // Method untuk menampilkan inventory selection (KHUSUS UNTUK GIFT)
     public void drawInventorySelectionScreen() {
         drawDialogueBox();
-        int x = gp.tileSize * 3;
-        int y = gp.tileSize * 2;
+        int boxX = gp.tileSize * 2;
+        int boxY = gp.tileSize / 2;
+        int textX = boxX + 20;
+        int textY = boxY + 60;
 
-        g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 48F));
+        g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 32F));
         g2.setColor(Color.WHITE);
-        g2.drawString("Select item to give", x, y - 30);
+        g2.drawString("Select item to give", textX, textY);
         
-        g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 48F));
+        g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 28F));
+        g2.drawString("(↑/↓ to move, ENTER to confirm, ESC to cancel)", textX, textY + 40);
+        
+        // Ambil items dari inventory
+        java.util.List<model.Item> items = gp.player.getInventory().getItems();
+        
+        if (items.isEmpty()) {
+            g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 36F));
+            g2.setColor(Color.RED);
+            g2.drawString("No items in inventory!", textX, textY + 100);
+            return;
+        }
+
+        // Tampilkan item yang dipilih dengan quantity
+        g2.setFont(g2.getFont().deriveFont(Font.BOLD, 40F));
+        g2.setColor(Color.YELLOW);
+        String selectedItemDisplay = items.get(inventorySelectionIndex).getSimpleDisplayName();
+        g2.drawString("Selected: " + selectedItemDisplay, textX, textY + 120);
+        
+        // Info posisi item
+        g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 24F));
         g2.setColor(Color.WHITE);
-        g2.drawString("(↑/↓ to move, ENTER to confirm, ESC to cancel):", x, y + 30);
+        g2.drawString("Item " + (inventorySelectionIndex + 1) + " of " + items.size(), textX, textY + 160);
+        
+        // TAMPILKAN INFO NPC HANYA UNTUK GIFT ACTION
+        if (currentNPC != null) {
+            g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 28F));
+            g2.setColor(Color.WHITE);
+            g2.drawString("Giving to: " + currentNPC.getName(), textX, textY + 200);
+            
+            g2.setColor(Color.RED);
+            g2.drawString("❤️ Heart Points: " + currentNPC.getHeartPoints(), textX, textY + 230);
+        }
+    }
+
+    // Method untuk menampilkan inventory lengkap
+    public void drawInventoryScreen() {
+        drawDialogueBox();
+        
+        int boxX = gp.tileSize * 2;
+        int boxY = gp.tileSize / 2;
+        int textX = boxX + 20;
+        int textY = boxY + 60;
+
+        g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 32F));
+        g2.setColor(Color.WHITE);
+        g2.drawString("INVENTORY", textX, textY);
+        
+        g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 28F));
+        g2.drawString("(↑/↓ to move, ENTER to select, ESC to close)", textX, textY + 40);
         
         // Ambil items dari inventory
         List<Item> items = gp.player.getInventory().getItems();
         
         if (items.isEmpty()) {
-            g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 48F));
+            g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 36F));
             g2.setColor(Color.RED);
-            g2.drawString("No items in inventory!", x, y + gp.tileSize);
+            g2.drawString("Inventory is empty!", textX, textY + 100);
             return;
         }
 
-        // Tampilkan hanya item yang dipilih (seperti gender selection)
-        g2.setFont(g2.getFont().deriveFont(Font.BOLD, 48F));
+        // Tampilkan item yang dipilih
+        g2.setFont(g2.getFont().deriveFont(Font.BOLD, 40F));
         g2.setColor(Color.YELLOW);
-        String selectedItemName = items.get(inventorySelectionIndex).getName();
-        g2.drawString("Selected Item: " + selectedItemName, x, y + gp.tileSize + 30);
+        String selectedItemDisplay = items.get(inventorySelectionIndex).getSimpleDisplayName();
+        g2.drawString("Selected: " + selectedItemDisplay, textX, textY + 120);
         
-        // Tampilkan instruksi tambahan
-        g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 36F));
+        // Info type dan posisi item
+        g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 24F));
         g2.setColor(Color.WHITE);
-        g2.drawString("Item " + (inventorySelectionIndex + 1) + " of " + items.size(), x, y + gp.tileSize + 80);
+        g2.drawString("Type: " + items.get(inventorySelectionIndex).getType().getDisplayName(), textX, textY + 160);
+        g2.drawString("Item " + (inventorySelectionIndex + 1) + " of " + items.size(), textX, textY + 190);
+    }
+
+    // Method khusus untuk Eat - TANPA currentNPC
+    public void drawEatInventoryScreen() {
+        drawDialogueBox();
+        
+        int boxX = gp.tileSize * 2;
+        int boxY = gp.tileSize / 2;
+        int textX = boxX + 20;
+        int textY = boxY + 60;
+
+        g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 32F));
+        g2.setColor(Color.WHITE);
+        g2.drawString("SELECT FOOD TO EAT", textX, textY);
+        
+        g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 28F));
+        g2.drawString("(↑/↓ to move, ENTER to confirm, ESC to cancel)", textX, textY + 40);
+        
+        // NULL SAFE CHECK untuk filteredItems
+        if (filteredItems == null || filteredItems.isEmpty()) {
+            g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 36F));
+            g2.setColor(Color.RED);
+            g2.drawString("No food items available!", textX, textY + 100);
+            return;
+        }
+
+        // Tampilkan item yang dipilih dari filtered list
+        g2.setFont(g2.getFont().deriveFont(Font.BOLD, 40F));
+        g2.setColor(Color.YELLOW);
+        String selectedItemDisplay = filteredItems.get(filteredInventorySelectionIndex).getSimpleDisplayName();
+        g2.drawString("Selected: " + selectedItemDisplay, textX, textY + 120);
+        
+        // Info posisi item
+        g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 24F));
+        g2.setColor(Color.WHITE);
+        g2.drawString("Item " + (filteredInventorySelectionIndex + 1) + " of " + filteredItems.size(), textX, textY + 160);
+        
+        // Tampilkan info action
+        g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 28F));
+        g2.setColor(Color.CYAN);
+        g2.drawString("Action: Restore energy", textX, textY + 200);
+    }
+
+    // Method khusus untuk Plant - TANPA currentNPC
+    public void drawPlantInventoryScreen() {
+        drawDialogueBox();
+        
+        int boxX = gp.tileSize * 2;
+        int boxY = gp.tileSize / 2;
+        int textX = boxX + 20;
+        int textY = boxY + 60;
+
+        g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 32F));
+        g2.setColor(Color.WHITE);
+        g2.drawString("SELECT SEEDS TO PLANT", textX, textY);
+        
+        g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 28F));
+        g2.drawString("(↑/↓ to move, ENTER to confirm, ESC to cancel)", textX, textY + 40);
+        
+        // NULL SAFE CHECK untuk filteredItems
+        if (filteredItems == null || filteredItems.isEmpty()) {
+            g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 36F));
+            g2.setColor(Color.RED);
+            g2.drawString("No seeds available!", textX, textY + 100);
+            return;
+        }
+
+        // Tampilkan item yang dipilih dari filtered list
+        g2.setFont(g2.getFont().deriveFont(Font.BOLD, 40F));
+        g2.setColor(Color.YELLOW);
+        String selectedItemDisplay = filteredItems.get(filteredInventorySelectionIndex).getSimpleDisplayName();
+        g2.drawString("Selected: " + selectedItemDisplay, textX, textY + 120);
+        
+        // Info posisi item
+        g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 24F));
+        g2.setColor(Color.WHITE);
+        g2.drawString("Item " + (filteredInventorySelectionIndex + 1) + " of " + filteredItems.size(), textX, textY + 160);
+        
+        // Tampilkan info action
+        g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 28F));
+        g2.setColor(Color.CYAN);
+        g2.drawString("Action: Plant in farm", textX, textY + 200);
     }
 
     public int getXForCenteredText(String text) {

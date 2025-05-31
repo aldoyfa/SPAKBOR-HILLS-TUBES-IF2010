@@ -50,6 +50,17 @@ public class KeyboardListener implements KeyListener {
             if (code == KeyEvent.VK_ENTER || code == KeyEvent.VK_SPACE) {
                 enterPressed = true;
             }
+            
+            // TAMBAHKAN TRIGGERS UNTUK ACTIONS
+            if (code == KeyEvent.VK_I) { // Tekan I untuk open inventory
+                new action.OpenInventoryAction(gp);
+            }
+            if (code == KeyEvent.VK_E) { // Tekan E untuk eat
+                new action.EatAction(gp);
+            }
+            if (code == KeyEvent.VK_P) { // Tekan P untuk plant
+                new action.PlantAction(gp);
+            }
         }
         else if (gp.gameState == gp.pauseState) {
             if (code == KeyEvent.VK_ESCAPE) {
@@ -57,7 +68,11 @@ public class KeyboardListener implements KeyListener {
             }
         }
         else if (gp.gameState == gp.dialogueState) {
-            if (code == KeyEvent.VK_ENTER || code == KeyEvent.VK_SPACE) {
+            if (code == KeyEvent.VK_ENTER) {
+                // PERBAIKAN: RESET currentNPC SAAT KELUAR DARI DIALOGUE
+                if (gp.ui.currentNPC != null) {
+                    gp.ui.currentNPC = null; // Reset NPC setelah dialogue selesai
+                }
                 gp.gameState = gp.playState;
             }
         }
@@ -112,9 +127,13 @@ public class KeyboardListener implements KeyListener {
                         break;
                 }
             }
+            if (code == KeyEvent.VK_ESCAPE) {
+                gp.gameState = gp.playState;
+            }
         }
+        // FIX UNTUK INVENTORY SELECTION STATE (Gift system)
         else if (gp.gameState == gp.inventorySelectionState) {
-            // Navigation untuk inventory selection seperti gender selection
+            // Navigation untuk inventory selection (Gift)
             java.util.List<model.Item> items = gp.player.getInventory().getItems();
             
             if (code == KeyEvent.VK_UP) {
@@ -135,11 +154,133 @@ public class KeyboardListener implements KeyListener {
             }
             if (code == KeyEvent.VK_ENTER) {
                 // Konfirmasi pilihan item dan execute gift logic
-                Gift.executeGiftLogic(gp);
+                action.Gift.executeGiftLogic(gp);
             }
             if (code == KeyEvent.VK_ESCAPE) {
                 // Kembali ke NPC interface
                 gp.gameState = gp.NPCInterfaceState;
+            }
+        }
+        else if (gp.gameState == gp.inventoryState) {
+            // Navigation untuk inventory lengkap
+            java.util.List<model.Item> items = gp.player.getInventory().getItems();
+            
+            if (code == KeyEvent.VK_UP) {
+                if (gp.ui.inventorySelectionIndex > 0) {
+                    gp.ui.inventorySelectionIndex--;
+                } else {
+                    gp.ui.inventorySelectionIndex = items.size() - 1;
+                }
+            }
+            if (code == KeyEvent.VK_DOWN) {
+                if (gp.ui.inventorySelectionIndex < items.size() - 1) {
+                    gp.ui.inventorySelectionIndex++;
+                } else {
+                    gp.ui.inventorySelectionIndex = 0;
+                }
+            }
+            if (code == KeyEvent.VK_ENTER) {
+                // Untuk sekarang hanya tampilkan info item
+                if (!items.isEmpty()) {
+                    model.Item selectedItem = items.get(gp.ui.inventorySelectionIndex);
+                    gp.ui.currentDialogue = "Item: " + selectedItem.getName() + 
+                                           "\nType: " + selectedItem.getType().getDisplayName() + 
+                                           "\nQuantity: " + selectedItem.getQuantity();
+                    gp.gameState = gp.dialogueState;
+                }
+            }
+            if (code == KeyEvent.VK_ESCAPE) {
+                gp.gameState = gp.playState;
+            }
+        }
+        // HAPUS ATAU COMMENT OUT BAGIAN filteredInventoryState INI:
+        /*
+        else if (gp.gameState == gp.filteredInventoryState) {
+            // Navigation untuk filtered inventory (eat/plant) - TANPA NPC DEPENDENCY
+            if (code == KeyEvent.VK_UP) {
+                if (gp.ui.filteredInventorySelectionIndex > 0) {
+                    gp.ui.filteredInventorySelectionIndex--;
+                } else {
+                    gp.ui.filteredInventorySelectionIndex = gp.ui.filteredItems.size() - 1;
+                }
+            }
+            if (code == KeyEvent.VK_DOWN) {
+                if (gp.ui.filteredInventorySelectionIndex < gp.ui.filteredItems.size() - 1) {
+                    gp.ui.filteredInventorySelectionIndex++;
+                } else {
+                    gp.ui.filteredInventorySelectionIndex = 0;
+                }
+            }
+            if (code == KeyEvent.VK_ENTER) {
+                // Execute action berdasarkan currentAction - HAPUS DEPENDENCY KE GIFT
+                if (gp.currentAction != null) {
+                    if (gp.currentAction.equals("eat food")) {
+                        action.EatAction.executeEatLogic(gp);
+                    } else if (gp.currentAction.equals("plant seeds")) {
+                        action.PlantAction.executePlantLogic(gp);
+                    }
+                }
+            }
+            if (code == KeyEvent.VK_ESCAPE) {
+                // Reset dan kembali ke play state
+                gp.ui.filteredItems.clear();
+                gp.currentAction = "";
+                gp.gameState = gp.playState;
+            }
+        }
+        */
+
+        // PERTAHANKAN HANYA INI - EAT INVENTORY STATE (sudah ada di kode Anda)
+        else if (gp.gameState == gp.eatInventoryState) {
+            if (code == KeyEvent.VK_UP) {
+                if (gp.ui.filteredInventorySelectionIndex > 0) {
+                    gp.ui.filteredInventorySelectionIndex--;
+                } else {
+                    gp.ui.filteredInventorySelectionIndex = gp.ui.filteredItems.size() - 1;
+                }
+            }
+            if (code == KeyEvent.VK_DOWN) {
+                if (gp.ui.filteredInventorySelectionIndex < gp.ui.filteredItems.size() - 1) {
+                    gp.ui.filteredInventorySelectionIndex++;
+                } else {
+                    gp.ui.filteredInventorySelectionIndex = 0;
+                }
+            }
+            if (code == KeyEvent.VK_ENTER) {
+                // Execute eat logic
+                action.EatAction.executeEatLogic(gp);
+            }
+            if (code == KeyEvent.VK_ESCAPE) {
+                // Reset dan kembali ke play state
+                gp.ui.filteredItems.clear();
+                gp.gameState = gp.playState;
+            }
+        }
+
+        // PERTAHANKAN HANYA INI - PLANT INVENTORY STATE (sudah ada di kode Anda)
+        else if (gp.gameState == gp.plantInventoryState) {
+            if (code == KeyEvent.VK_UP) {
+                if (gp.ui.filteredInventorySelectionIndex > 0) {
+                    gp.ui.filteredInventorySelectionIndex--;
+                } else {
+                    gp.ui.filteredInventorySelectionIndex = gp.ui.filteredItems.size() - 1;
+                }
+            }
+            if (code == KeyEvent.VK_DOWN) {
+                if (gp.ui.filteredInventorySelectionIndex < gp.ui.filteredItems.size() - 1) {
+                    gp.ui.filteredInventorySelectionIndex++;
+                } else {
+                    gp.ui.filteredInventorySelectionIndex = 0;
+                }
+            }
+            if (code == KeyEvent.VK_ENTER) {
+                // Execute plant logic
+                action.PlantAction.executePlantLogic(gp);
+            }
+            if (code == KeyEvent.VK_ESCAPE) {
+                // Reset dan kembali ke play state
+                gp.ui.filteredItems.clear();
+                gp.gameState = gp.playState;
             }
         }
     }

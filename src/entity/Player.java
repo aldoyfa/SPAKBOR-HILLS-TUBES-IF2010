@@ -12,6 +12,7 @@ import main.UtilityTool;
 import model.Inventory;
 import model.Item;
 import objects.NPC;
+import model.ItemType;
 
 public class Player {
     
@@ -104,12 +105,16 @@ public class Player {
         speed = 16;
         direction = "down";
         
-        // Menggunakan system baru - pisahkan nama dan quantity
-        inventory.addItem("Parsnip Seeds", 15);
-        inventory.addItem("Hoe", 1);
-        inventory.addItem("Watering Can", 1);
-        inventory.addItem("Pickaxe", 1);
-        inventory.addItem("Fishing Rod", 1);
+        // Menggunakan explicit types untuk clarity
+        inventory.addItem("Parsnip Seeds", 15, ItemType.SEED);
+        inventory.addItem("Hoe", 1, ItemType.EQUIPMENT);
+        inventory.addItem("Watering Can", 1, ItemType.EQUIPMENT);
+        inventory.addItem("Pickaxe", 1, ItemType.EQUIPMENT);
+        inventory.addItem("Fishing Rod", 1, ItemType.EQUIPMENT);
+        
+        // TAMBAHKAN FOOD ITEMS UNTUK TESTING
+        inventory.addItem("Baguette", 3, ItemType.FOOD);
+        inventory.addItem("Fish n' Chips", 2, ItemType.FOOD);
     }
 
     // Update getter methods untuk kompatibilitas dengan sistem lama
@@ -134,8 +139,8 @@ public class Player {
     }
 
     // Method untuk kemudahan menambah item
-    public void addItem(String name, int quantity) {
-        inventory.addItem(name, quantity);
+    public void addItem(String name, int quantity, ItemType type) {
+        inventory.addItem(name, quantity, type);
     }
 
     public Inventory getInventory() {

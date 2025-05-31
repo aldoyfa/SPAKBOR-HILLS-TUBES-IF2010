@@ -1,0 +1,83 @@
+package action;
+
+import main.GamePanel;
+import model.Item;
+import model.ItemType;
+import java.util.List;
+
+public class EatAction implements Action {
+    private GamePanel gp;
+
+    public EatAction(GamePanel gp) {
+        this.gp = gp;
+        execute();
+    }
+
+    @Override
+    public void execute() {
+        // Cek energy player terlebih dahulu
+        if (gp.player.getEnergy() >= 5) {
+            // Filter item FOOD dari inventory
+            List<Item> foodItems = gp.player.getInventory().getItemsByType(ItemType.FOOD);
+            
+            if (foodItems.isEmpty()) {
+                gp.ui.currentDialogue = "You don't have any food to eat!";
+                gp.gameState = gp.dialogueState;
+                return;
+            }
+            
+            // PERBAIKAN: LANGSUNG KE eatInventoryState
+            gp.ui.filteredItems.clear();
+            gp.ui.filteredItems.addAll(foodItems);
+            gp.ui.filteredInventorySelectionIndex = 0;
+            gp.gameState = gp.eatInventoryState; // LANGSUNG KE STATE KHUSUS
+        } else {
+            gp.ui.currentDialogue = "You don't have enough energy to eat!";
+            gp.gameState = gp.dialogueState;
+        }
+    }
+    
+    // Static method untuk execute eat logic - COMPLETELY INDEPENDENT
+    public static void executeEatLogic(GamePanel gp) {
+        if (gp.ui.filteredItems != null && !gp.ui.filteredItems.isEmpty() && 
+            gp.ui.filteredInventorySelectionIndex < gp.ui.filteredItems.size()) {
+            
+            Item selectedFood = gp.ui.filteredItems.get(gp.ui.filteredInventorySelectionIndex);
+            
+            // Logic untuk makan
+            String reaction = "You ate " + selectedFood.getName() + "! ";
+            int energyGain = 20; // Default energy gain
+            
+            // Energy gain berdasarkan jenis makanan
+            switch (selectedFood.getName().toLowerCase()) {
+                case "fish n' chips":
+                    energyGain = 40;
+                    break;
+                case "baguette":
+                    energyGain = 25;
+                    break;
+                case "wine":
+                    energyGain = 15;
+                    break;
+                default:
+                    energyGain = 20;
+            }
+            
+            reaction += "+" + energyGain + " energy!";
+            
+            // Update energy player
+            gp.player.setEnergy(energyGain);
+            
+            // Hapus 1 quantity dari item
+            gp.player.getInventory().removeItem(selectedFood.getBaseName(), 1);
+            
+            // PERBAIKAN: CLEAR FILTERED ITEMS TANPA currentAction
+            gp.ui.filteredItems.clear();
+            // HAPUS BARIS INI: gp.currentAction = "";
+            
+            // Set dialogue dan pindah ke dialogue state
+            gp.ui.currentDialogue = reaction;
+            gp.gameState = gp.dialogueState;
+        }
+    }
+}

@@ -7,34 +7,44 @@ public class Inventory {
     private List<Item> items = new ArrayList<>();
     private int selectedIndex = 0;
 
-    // Method untuk menambah item dengan smart stacking
+    // Method untuk menambah item dengan smart stacking berdasarkan type
     public void addItem(Item item) {
-        // Cari apakah item dengan nama yang sama sudah ada
-        Item existingItem = findItemByName(item.getBaseName());
+        // Tools dan Quest items tidak di-stack
+        if (!item.isStackable()) {
+            items.add(item);
+            return;
+        }
+        
+        // Cari item dengan nama dan type yang sama untuk stacking
+        Item existingItem = findStackableItem(item);
         
         if (existingItem != null) {
-            // Jika ada, tambahkan quantity ke item yang sudah ada
             existingItem.addQuantity(item.getQuantity());
         } else {
-            // Jika tidak ada, tambahkan item baru
             items.add(item);
         }
     }
 
-    // Method overload untuk kemudahan (nama, quantity)
-    public void addItem(String name, int quantity) {
-        addItem(new Item(name, quantity));
-    }
-
-    // Method overload untuk backward compatibility (single item)
-    public void addItem(String name) {
-        addItem(new Item(name, 1));
+    // Method overload dengan explicit type
+    public void addItem(String name, int quantity, ItemType type) {
+        addItem(new Item(name, quantity, type));
     }
 
     // Helper method untuk mencari item berdasarkan nama
     private Item findItemByName(String name) {
         return items.stream()
             .filter(item -> item.getBaseName().equals(name))
+            .findFirst()
+            .orElse(null);
+    }
+
+    // Helper method untuk mencari item yang bisa di-stack
+    private Item findStackableItem(Item item) {
+        return items.stream()
+            .filter(existingItem -> 
+                existingItem.getBaseName().equals(item.getBaseName()) &&
+                existingItem.getType() == item.getType() &&
+                existingItem.isStackable())
             .findFirst()
             .orElse(null);
     }
@@ -123,5 +133,12 @@ public class Inventory {
     public int getItemQuantity(String name) {
         Item item = findItemByName(name);
         return item != null ? item.getQuantity() : 0;
+    }
+
+    // Method untuk filter items by type
+    public java.util.List<Item> getItemsByType(ItemType type) {
+        return items.stream()
+            .filter(item -> item.getType() == type)
+            .collect(java.util.stream.Collectors.toList());
     }
 }
