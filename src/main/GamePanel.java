@@ -4,9 +4,13 @@ import Objects.Object;
 import Objects.ObjectManager;
 import entity.Player;
 import inputs.KeyboardListener;
+import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.util.ArrayList;
+import java.util.List;
 import javax.swing.JPanel;
 import model.FarmTile;
 import tile.TileManager;
@@ -53,6 +57,11 @@ public class GamePanel extends JPanel implements Runnable {
     public boolean showDetailedActionMenu = false;
     public int detailedActionMenuIndex = 0;
 
+    // Message display system
+    private List<String> messages = new ArrayList<>();
+    private List<Integer> messageTimers = new ArrayList<>();
+    private final int MESSAGE_DISPLAY_TIME = 180; // frames (~3 seconds at 60 FPS)
+
     // Action menu items
     public static class ActionMenuItem {
         public String name;
@@ -70,7 +79,6 @@ public class GamePanel extends JPanel implements Runnable {
         }
     }
 
-
     public ActionMenuItem[] detailedActionMenuItems = new ActionMenuItem[] {
         new ActionMenuItem("Tilling", "Mengubah land menjadi soil", 5, 5, "Hoe"),
         new ActionMenuItem("Recover Land", "Mengubah soil menjadi land", 5, 5, "Pickaxe"),
@@ -81,7 +89,6 @@ public class GamePanel extends JPanel implements Runnable {
     public static final int PLAY_STATE = 0;
     public static final int END_GAME_STATE = 1;
     public int gameState = PLAY_STATE;
-
 
     public GamePanel() {
         this.setPreferredSize(new Dimension(screenWidth, screenHeight));
@@ -152,6 +159,17 @@ public class GamePanel extends JPanel implements Runnable {
             keyH.lPressed = false;
         }
         
+        // Update message timers and remove expired messages
+        for (int i = 0; i < messageTimers.size(); i++) {
+            int time = messageTimers.get(i) - 1;
+            messageTimers.set(i, time);
+            if (time <= 0) {
+                messageTimers.remove(i);
+                messages.remove(i);
+                i--;
+            }
+        }
+
         // Detailed action menu navigation and selection
         if (showDetailedActionMenu) {
             if (keyH.upPressed) {
@@ -186,6 +204,11 @@ public class GamePanel extends JPanel implements Runnable {
         }
     }
 
+    public void addMessage(String message) {
+        messages.add(message);
+        messageTimers.add(MESSAGE_DISPLAY_TIME);
+    }
+
     private void executeDetailedAction(int index) {
         int tileX = player.worldX / tileSize;
         int tileY = player.worldY / tileSize;
@@ -217,8 +240,8 @@ public class GamePanel extends JPanel implements Runnable {
         }
         player.draw(g2);
 
-        g2.setColor(java.awt.Color.WHITE);
-        g2.setFont(new java.awt.Font("Arial", java.awt.Font.BOLD, 18));
+        g2.setColor(Color.WHITE);
+        g2.setFont(new Font("Arial", Font.BOLD, 18));
 
         if (showInventory) {
             g2.drawString("Inventory:", 20, 60);
@@ -257,31 +280,41 @@ public class GamePanel extends JPanel implements Runnable {
             int arc = 20;
 
             // Draw background box
-            g2.setColor(new java.awt.Color(0, 0, 0, 200));
+            g2.setColor(new Color(0, 0, 0, 200));
             g2.fillRoundRect(x, y, width, height, arc, arc);
 
             // Draw border
-            g2.setColor(java.awt.Color.WHITE);
+            g2.setColor(Color.WHITE);
             g2.drawRoundRect(x, y, width, height, arc, arc);
 
             // Draw title and instructions
-            g2.setFont(new java.awt.Font("Arial", java.awt.Font.BOLD, 16));
+            g2.setFont(new Font("Arial", Font.BOLD, 16));
             g2.drawString("Select Action (↑/↓ to move, ENTER to confirm, ESC to cancel)", x + 20, y + 30);
 
             // Draw menu items
-            g2.setFont(new java.awt.Font("Arial", java.awt.Font.PLAIN, 14));
+            g2.setFont(new Font("Arial", Font.PLAIN, 14));
             int itemY = y + 60;
             for (int i = 0; i < detailedActionMenuItems.length; i++) {
                 ActionMenuItem item = detailedActionMenuItems[i];
                 if (i == detailedActionMenuIndex) {
-                    g2.setColor(java.awt.Color.YELLOW);
+                    g2.setColor(Color.YELLOW);
                     g2.drawString("> " + item.name, x + 20, itemY);
                 } else {
-                    g2.setColor(java.awt.Color.WHITE);
+                    g2.setColor(Color.WHITE);
                     g2.drawString(item.name, x + 20, itemY);
                 }
                 itemY += 30;
             }
+        }
+
+        // Draw messages on screen
+        int msgX = 20;
+        int msgY = 100;
+        g2.setFont(new Font("Arial", Font.BOLD, 16));
+        for (int i = 0; i < messages.size(); i++) {
+            g2.setColor(Color.WHITE);
+            g2.drawString(messages.get(i), msgX, msgY);
+            msgY += 25;
         }
 
         g2.dispose();

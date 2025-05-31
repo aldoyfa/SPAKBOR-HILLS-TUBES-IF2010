@@ -16,7 +16,7 @@ public class TillingAction implements Action {
     @Override
     public void execute(Player player) {
         if (player.getEnergy() < 5) {
-            System.out.println("Energi tidak cukup untuk membajak.");
+            gp.addMessage("Energi tidak cukup untuk membajak.");
             return;
         }
 
@@ -24,9 +24,9 @@ public class TillingAction implements Action {
             gp.farmMap[x][y].till();
             player.reduceEnergy(5);
             player.time.tick();
-            System.out.println("Tanah dibajak di: " + x + ", " + y);
+            gp.addMessage("Tanah dibajak di: " + x + ", " + y);
         } else {
-            System.out.println("Tile ini sudah dibajak.");
+            gp.addMessage("Tile ini sudah dibajak.");
         }
     }
 }

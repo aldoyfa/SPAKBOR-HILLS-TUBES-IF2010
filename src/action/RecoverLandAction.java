@@ -16,12 +16,12 @@ public class RecoverLandAction implements Action {
     @Override
     public void execute(Player player) {
         if (player.getEnergy() < 5) {
-            System.out.println("Energi tidak cukup untuk recovery tanah.");
+            gp.addMessage("Energi tidak cukup untuk recovery tanah.");
             return;
         }
 
         if (!player.getInventory().hasTool("Pickaxe")) {
-            System.out.println("Kamu butuh Pickaxe untuk melakukan recovery.");
+            gp.addMessage("Kamu butuh Pickaxe untuk melakukan recovery.");
             return;
         }
 
@@ -29,9 +29,9 @@ public class RecoverLandAction implements Action {
             gp.farmMap[x][y].resetToLand();
             player.reduceEnergy(5);
             player.time.tick();
-            System.out.println("Tile berhasil dikembalikan ke bentuk land di (" + x + "," + y + ")");
+            gp.addMessage("Tile berhasil dikembalikan ke bentuk land di (" + x + "," + y + ")");
         } else {
-            System.out.println("Tile ini bukan tanah (soil).");
+            gp.addMessage("Tile ini bukan tanah (soil).");
         }
     }
 }

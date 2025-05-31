@@ -16,7 +16,7 @@ public class WateringAction implements Action {
     @Override
     public void execute(Player player) {
         if (player.getEnergy() < 5) {
-            System.out.println("Energi tidak cukup untuk menyiram.");
+            gp.addMessage("Energi tidak cukup untuk menyiram.");
             return;
         }
 
@@ -24,9 +24,9 @@ public class WateringAction implements Action {
             gp.farmMap[x][y].water();
             player.reduceEnergy(5);
             player.time.tick();
-            System.out.println("Tanaman disiram di: " + x + ", " + y);
+            gp.addMessage("Tanaman disiram di: " + x + ", " + y);
         } else {
-            System.out.println("Tidak ada tanaman untuk disiram.");
+            gp.addMessage("Tidak ada tanaman untuk disiram.");
         }
     }
 }
