@@ -31,9 +31,9 @@ public class UI {
     public String[] npcOptions = {"Chat", "Gift", "Propose", "Marry"};
     public int npcOptionIndex = 0;
 
-    // Variabel untuk inventory selection
+// Variabel untuk inventory selection (hapus targetNPC)
     public int inventorySelectionIndex = 0;
-    public NPC targetNPC; // NPC yang akan menerima gift
+// public NPC targetNPC; // HAPUS INI - gunakan currentNPC
 
     public UI(GamePanel gp) {
         this.gp = gp;
@@ -258,6 +258,7 @@ public class UI {
         g2.drawString("Energy: " + gp.player.getEnergy(), 88, 120);
     }
 
+    // Method untuk menampilkan inventory selection
     public void drawInventorySelectionScreen() {
         drawDialogueBox();
         int x = gp.tileSize * 3;
@@ -277,15 +278,16 @@ public class UI {
             return;
         }
 
-        // Tampilkan setiap item dalam list
-        for (int i = 0; i < items.size(); i++) {
-            if (i == inventorySelectionIndex) {
-                g2.setColor(Color.YELLOW);
-            } else {
-                g2.setColor(Color.WHITE);
-            }
-            g2.drawString(items.get(i).getName(), x, y + gp.tileSize + (i * 60));
-        }
+        // Tampilkan hanya item yang dipilih (seperti gender selection)
+        g2.setFont(g2.getFont().deriveFont(Font.BOLD, 64F));
+        g2.setColor(Color.YELLOW);
+        String selectedItemName = items.get(inventorySelectionIndex).getName();
+        g2.drawString("Selected Item: " + selectedItemName, x, y + gp.tileSize + 50);
+        
+        // Tampilkan instruksi tambahan
+        g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 36F));
+        g2.setColor(Color.WHITE);
+        g2.drawString("Item " + (inventorySelectionIndex + 1) + " of " + items.size(), x, y + gp.tileSize + 120);
     }
 
     public int getXForCenteredText(String text) {
