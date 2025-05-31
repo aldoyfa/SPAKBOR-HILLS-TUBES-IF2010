@@ -150,4 +150,9 @@ public class Inventory {
             .filter(item -> item.getType() == type)
             .collect(java.util.stream.Collectors.toList());
     }
+
+    public boolean hasItem(String name, int quantity) {
+        Item item = findItemByName(name);
+        return item != null && item.getQuantity() >= quantity;
+    }
 }
