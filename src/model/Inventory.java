@@ -127,7 +127,7 @@ public class Inventory {
 
     // Helper method untuk debug
     public boolean hasItem(String name) {
-        return findItemByName(name) != null;
+        return items.stream().anyMatch(item -> item.getName().equalsIgnoreCase(name));
     }
 
     public int getItemQuantity(String name) {

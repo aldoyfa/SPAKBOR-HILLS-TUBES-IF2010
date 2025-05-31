@@ -34,9 +34,13 @@ public class UI {
     public boolean selectingGender = false;
     public String[] npcOptions = {"Chat", "Gift", "Propose", "Marry"};
     public int npcOptionIndex = 0;
+    public String[] tileOptions = {"Tiling", "Recover", "Plant", "Water", "Harvest"};
+    public int tileOptionIndex = 0;
     public int inventorySelectionIndex = 0;
     public int filteredInventorySelectionIndex = 0;
     public List<Item> filteredItems = new ArrayList<>();
+    public int plantingCol, plantingRow;
+    public String selectedItemDisplay = "";
 
     public UI(GamePanel gp) {
         this.gp = gp;
@@ -99,6 +103,11 @@ public class UI {
         // EAT INVENTORY STATE
         if (gp.gameState == gp.eatInventoryState) {
             drawEatInventoryScreen();
+        }
+
+        // PLANT INVENTORY STATE  
+        if (gp.gameState == gp.tileActionState) {
+            drawTileActionScreen();
         }
         
         // PLANT INVENTORY STATE  
@@ -192,6 +201,27 @@ public class UI {
                 g2.setColor(Color.WHITE);
             }
             g2.drawString(npcOptions[i], x + (i * spacing), y + gp.tileSize * 2);
+        }
+    }
+
+     public void drawTileActionScreen() {
+        drawDialogueBox();
+        int x = gp.tileSize * 3;
+        int y = gp.tileSize * 2 ;
+
+        g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 48F));
+        g2.setColor(Color.WHITE);
+        g2.drawString("Select Action (←/→ to move, ENTER to confirm):", x, y);
+
+        int spacing = gp.tileSize * 3;
+
+        for (int i = 0; i < tileOptions.length; i++) {
+            if (i == tileOptionIndex) {
+                g2.setColor(Color.YELLOW);
+            } else {
+                g2.setColor(Color.WHITE);
+            }
+            g2.drawString(tileOptions[i], x + (i * spacing), y + gp.tileSize * 2);
         }
     }
 
@@ -305,7 +335,7 @@ public class UI {
         // Tampilkan item yang dipilih dengan quantity
         g2.setFont(g2.getFont().deriveFont(Font.BOLD, 40F));
         g2.setColor(Color.YELLOW);
-        String selectedItemDisplay = items.get(inventorySelectionIndex).getSimpleDisplayName();
+        selectedItemDisplay = items.get(inventorySelectionIndex).getSimpleDisplayName();
         g2.drawString("Selected: " + selectedItemDisplay, textX, textY + 120);
         
         // Info posisi item
@@ -342,7 +372,7 @@ public class UI {
         // Tampilkan item yang dipilih
         g2.setFont(g2.getFont().deriveFont(Font.BOLD, 40F));
         g2.setColor(Color.YELLOW);
-        String selectedItemDisplay = items.get(inventorySelectionIndex).getSimpleDisplayName();
+        selectedItemDisplay = items.get(inventorySelectionIndex).getSimpleDisplayName();
         g2.drawString("Selected: " + selectedItemDisplay, textX, textY + 110);
         
         // Info type dan posisi item
@@ -378,7 +408,7 @@ public class UI {
         // Tampilkan item yang dipilih dari filtered list
         g2.setFont(g2.getFont().deriveFont(Font.BOLD, 40F));
         g2.setColor(Color.YELLOW);
-        String selectedItemDisplay = filteredItems.get(filteredInventorySelectionIndex).getSimpleDisplayName();
+        selectedItemDisplay = filteredItems.get(filteredInventorySelectionIndex).getSimpleDisplayName();
         g2.drawString("Selected: " + selectedItemDisplay, textX, textY + 110);
         
         // Info posisi item
@@ -418,7 +448,8 @@ public class UI {
         // Tampilkan item yang dipilih dari filtered list
         g2.setFont(g2.getFont().deriveFont(Font.BOLD, 40F));
         g2.setColor(Color.YELLOW);
-        String selectedItemDisplay = filteredItems.get(filteredInventorySelectionIndex).getSimpleDisplayName();
+        g2.drawString("Selected: " + selectedItemDisplay, textX, textY + 110);
+        selectedItemDisplay = filteredItems.get(filteredInventorySelectionIndex).getSimpleDisplayName();
         g2.drawString("Selected: " + selectedItemDisplay, textX, textY + 110);
         
         // Info posisi item

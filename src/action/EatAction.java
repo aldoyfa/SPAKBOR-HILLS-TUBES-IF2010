@@ -46,18 +46,45 @@ public class EatAction implements Action {
             
             // Logic untuk makan
             String reaction = "You ate " + selectedFood.getName() + "! ";
-            int energyGain = 20; // Default energy gain
+            int energyGain; // Default energy gain
             
             // Energy gain berdasarkan jenis makanan
             switch (selectedFood.getName().toLowerCase()) {
-                case "fish n' chips":
-                    energyGain = 40;
+                case "fish n’ chips":
+                    energyGain = 50;
                     break;
                 case "baguette":
                     energyGain = 25;
                     break;
+                case "sashimi":
+                    energyGain = 70;
+                    break;
+                case "fugu":
+                    energyGain = 50;
+                    break;
                 case "wine":
-                    energyGain = 15;
+                    energyGain = 20;
+                    break;
+                case "pumpkin pie":
+                    energyGain = 35;
+                    break;
+                case "veggie soup":
+                    energyGain = 40;
+                    break;
+                case "fish stew":
+                    energyGain = 70;
+                    break;
+                case "spakbor salad":
+                    energyGain = 70;
+                    break;
+                case "fish sandwich":
+                    energyGain = 50;
+                    break;
+                case "the legends of spakbor":
+                    energyGain = 100;
+                    break;
+                case "cooked pig's head":
+                    energyGain = 100;
                     break;
                 default:
                     energyGain = 20;

@@ -7,6 +7,7 @@ import action.Chatting;
 import action.Gift;
 import action.Marry;
 import action.Propose;
+import action.PlantAction;
 
 public class KeyboardListener implements KeyListener {
     GamePanel gp;
@@ -57,9 +58,6 @@ public class KeyboardListener implements KeyListener {
             }
             if (code == KeyEvent.VK_E) { // Tekan E untuk eat
                 new action.EatAction(gp);
-            }
-            if (code == KeyEvent.VK_P) { // Tekan P untuk plant
-                new action.PlantAction(gp);
             }
         }
         else if (gp.gameState == gp.pauseState) {
@@ -124,6 +122,37 @@ public class KeyboardListener implements KeyListener {
                         break;
                     case "Marry":
                         new Marry (gp, gp.ui.currentNPC);
+                        break;
+                }
+            }
+            if (code == KeyEvent.VK_ESCAPE) {
+                gp.gameState = gp.playState;
+            }
+        }
+        else if (gp.gameState == gp.tileActionState) {
+            if (code == KeyEvent.VK_LEFT) {
+                gp.ui.tileOptionIndex = (gp.ui.tileOptionIndex + gp.ui.tileOptions.length - 1) % gp.ui.tileOptions.length;
+            }
+            if (code == KeyEvent.VK_RIGHT) {
+                gp.ui.tileOptionIndex = (gp.ui.tileOptionIndex + 1) % gp.ui.tileOptions.length;
+            }
+            if (code == KeyEvent.VK_ENTER || code == KeyEvent.VK_SPACE) {
+                String selected = gp.ui.tileOptions[gp.ui.tileOptionIndex];
+                switch (selected) {
+                    case "Tiling":
+                        new PlantAction (gp, "Tiling");
+                        break;
+                    case "Recover":
+                        new PlantAction (gp, "Recover");
+                        break;
+                    case "Plant":
+                        new PlantAction (gp, "Plant");
+                        break;
+                    case "Water":
+                        new PlantAction (gp, "Water");
+                        break;
+                    case "Harvest":
+                        new PlantAction (gp, "Harvest");
                         break;
                 }
             }
@@ -238,7 +267,7 @@ public class KeyboardListener implements KeyListener {
             }
             if (code == KeyEvent.VK_ENTER) {
                 // Execute plant logic
-                action.PlantAction.executePlantLogic(gp);
+                new PlantAction(gp, "Plant").executePlantLogic(gp);
             }
             if (code == KeyEvent.VK_ESCAPE) {
                 // Reset dan kembali ke play state

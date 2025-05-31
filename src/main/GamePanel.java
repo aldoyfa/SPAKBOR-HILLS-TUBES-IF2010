@@ -9,6 +9,7 @@ import java.awt.Graphics2D;
 
 import inputs.KeyboardListener;
 import inputs.MyMouseListener;
+import model.CropData;
 import model.FarmMap;
 import objects.Object;
 import render.ObjectRenderer;
@@ -46,30 +47,14 @@ public class GamePanel extends JPanel implements Runnable {
     public final int titleState = 0;
     public final int playState = 1;
     public final int pauseState = 2;
-    public final int newGameState = 3; // PERBAIKAN: UBAH KE 3
+    public final int newGameState = 3;
     public final int dialogueState = 4; 
-    public final int characterState = 5; // PERBAIKAN: GESER KE 5
-    public final int tradeState = 6; // GESER
-    public final int fishingState = 7; // GESER
-    public final int travelState = 8; // GESER
-    public final int sellingState = 9; // GESER
-    public final int viewPlayerInfoState = 10; // GESER
-    public final int viewHelpState = 11; // GESER
-    public final int sleepingState = 12; // GESER
-    public final int chattingState = 13; // GESER
-    public final int giftingState = 14; // GESER
-    public final int proposingState = 15; // GESER
-    public final int marryingState = 16; // GESER
-    public final int npcInteractionState = 17; // GESER
-    public final int cookingState = 18; // GESER
-    public final int cookingExecutionState = 19; // GESER
-
-    // TAMBAHKAN STATE BARU:
-    public final int NPCInterfaceState = 20;
-    public final int inventorySelectionState = 21; // KHUSUS GIFT
-    public final int inventoryState = 22; // INVENTORY LENGKAP
-    public final int eatInventoryState = 23; // KHUSUS EAT
-    public final int plantInventoryState = 24; // KHUSUS PLANT
+    public final int NPCInterfaceState = 5;
+    public final int inventorySelectionState = 6; 
+    public final int inventoryState = 7; 
+    public final int eatInventoryState = 8; 
+    public final int plantInventoryState = 9; 
+    public final int tileActionState = 10;
 
     public int newGameCounter = 0;
 
@@ -130,11 +115,25 @@ public class GamePanel extends JPanel implements Runnable {
                 //     player.autoSleep();
                 // }
 
+                if (hour == 6) {
+                    for (int col = 10; col < 42; col++) {
+                        for (int row = 9; row < 41; row++) {
+                            CropData data = farmMap.cropInfo[col][row];
+                            if (data != null) {
+                                if (data.wateredToday || farmMap.isRainyDay()) {
+                                    data.daysPlanted++;
+                                }
+                                data.wateredToday = false;
+                            }
+                        }
+                    }        
+                }
+
                 // Reset flag tidur saat pagi
                 if (hour == 6 && minute == 0) {
                     player.hasSleptToday = false;
                 }
-            }            
+            }
 
             try {
                 double remainingTime = nextDrawTime - System.nanoTime();

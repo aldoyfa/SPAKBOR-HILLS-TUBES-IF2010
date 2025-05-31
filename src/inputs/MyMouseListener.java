@@ -56,6 +56,16 @@ public class MyMouseListener implements MouseListener, MouseMotionListener {
 	    int x = e.getX();
     	int y = e.getY();
 
+		if (gp.gameState == gp.playState) {
+			int col = (e.getX() + gp.player.worldX - gp.player.screenX) / gp.tileSize;
+			int row = (e.getY() + gp.player.worldY - gp.player.screenY) / gp.tileSize;
+			if (col >= 10 && col < 42 && row >= 9 && row < 41) {
+				gp.ui.plantingCol = col;
+				gp.ui.plantingRow = row;
+				gp.gameState = gp.tileActionState;
+			}
+		}
+
 		if (gp.gameState == gp.titleState) {
 			if (gp.ui.newGameRect.contains(x, y)) {
 				gp.gameState = gp.newGameState;

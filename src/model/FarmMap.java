@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Random;
-
 import main.GamePanel;
 import objects.House;
 import objects.Pond;
@@ -19,6 +18,7 @@ public class FarmMap {
     public TileRenderer renderer;
     public int mapTileNum[][];
     public Tile[] tile;
+    public CropData[][] cropInfo;
 
     public FarmMap(GamePanel gp) {
         this.gp = gp;
@@ -26,6 +26,7 @@ public class FarmMap {
         mapTileNum = new int[gp.maxWorldCol][gp.maxWorldRow];
         loadMap("/res/maps/farmmap.txt");
         renderer = new TileRenderer(this.gp);
+        cropInfo = new CropData[gp.maxWorldCol][gp.maxWorldRow];
     }
 
     public String getName() {
@@ -122,5 +123,9 @@ public class FarmMap {
         gp.obj[2] = new Pond(gp);
         gp.obj[2].worldX = pondX * gp.tileSize;
         gp.obj[2].worldY = pondY * gp.tileSize; 
+    }
+
+    public boolean isRainyDay() {
+        return time.getWeather().equals("Rainy");
     }
 }
