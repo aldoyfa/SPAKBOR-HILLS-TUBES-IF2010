@@ -4,6 +4,9 @@ import java.awt.event.KeyListener;
 import java.awt.event.KeyEvent;
 import main.GamePanel;
 import action.Chatting;
+import action.Gift;
+import action.Marry;
+import action.Propose;
 
 public class KeyboardListener implements KeyListener {
     GamePanel gp;
@@ -99,13 +102,13 @@ public class KeyboardListener implements KeyListener {
                         new Chatting (gp, gp.ui.currentNPC);
                         break;
                     case "Gift":
-                        // new Gift (gp, gp.ui.currentNPC);
+                        new Gift (gp, gp.ui.currentNPC);
                         break;
                     case "Propose":
-                        // new Propose (gp, gp.ui.currentNPC);
+                        new Propose (gp, gp.ui.currentNPC);
                         break;
                     case "Marry":
-                        // new Marry (gp, gp.ui.currentNPC);
+                        new Marry (gp, gp.ui.currentNPC);
                         break;
                 }
             }
