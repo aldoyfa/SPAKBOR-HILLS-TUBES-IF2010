@@ -61,6 +61,9 @@ public class KeyboardListener implements KeyListener {
             if (code == KeyEvent.VK_T) { // Show time (T for Time)
                 new action.ShowTimeAction(gp);
             }
+            if (code == KeyEvent.VK_L) {
+                new action.ShowLocationAction(gp);
+            }
         }
         else if (gp.gameState == gp.creditsState) {
             if (code == KeyEvent.VK_ESCAPE) {
@@ -107,9 +110,19 @@ public class KeyboardListener implements KeyListener {
                     gp.ui.selectingGender = true;
                 } else if (gp.ui.selectingGender) {
                     // Set ke player & lanjut ke main game
-                    gp.player.setName(gp.ui.playerName);
+                    if (gp.ui.playerName.isEmpty()) {
+                        gp.ui.playerName = "Player"; // Default name
+                    }
+                    else {
+                        gp.player.setName(gp.ui.playerName);
+                    }
                     gp.player.gender = (gp.ui.chooseIndex == 0) ? "male" : "female";
-                    gp.farmMap.setName(gp.ui.farmName);
+                    if (gp.ui.farmName.isEmpty()) {
+                        gp.ui.farmName = "My Farm"; // Default name
+                    }
+                    else {
+                        gp.farmMap.setName(gp.ui.farmName);
+                    }
                     gp.gameState = gp.playState;
                     gp.ui.selectingGender = false;
                     gp.ui.enteringPlayerName = true;

@@ -7,6 +7,7 @@ public class ShowLocationAction implements Action {
 
     public ShowLocationAction(GamePanel gp) {
         this.gp = gp;
+        execute();
     }
 
     @Override
@@ -17,5 +18,12 @@ public class ShowLocationAction implements Action {
         System.out.println("Lokasi Anda saat ini:");
         System.out.println("Pixel: (" + gp.player.worldX + ", " + gp.player.worldY + ")");
         System.out.println("Tile: (" + tileX + ", " + tileY + ")");
+        System.out.println("Map: " + gp.mapNames[gp.selectedMap]);
+
+        gp.ui.currentDialogue = "Lokasi Anda saat ini:"
+                + "\nPixel: (" + gp.player.worldX + ", " + gp.player.worldY + ")"
+                + "\nTile: (" + tileX + ", " + tileY + ")"
+                + "\nMap: " + gp.mapNames[gp.selectedMap];
+        gp.gameState = gp.dialogueState;
     }
 }
