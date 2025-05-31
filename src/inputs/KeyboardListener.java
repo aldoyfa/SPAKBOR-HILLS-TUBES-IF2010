@@ -52,13 +52,15 @@ public class KeyboardListener implements KeyListener {
             if (code == KeyEvent.VK_ENTER || code == KeyEvent.VK_SPACE) {
                 enterPressed = true;
             }
-            
             // TAMBAHKAN TRIGGERS UNTUK ACTIONS
             if (code == KeyEvent.VK_I) { // Tekan I untuk open inventory
                 new action.OpenInventoryAction(gp);
             }
             if (code == KeyEvent.VK_E) { // Tekan E untuk eat
                 new action.EatAction(gp);
+            }
+            if (code == KeyEvent.VK_T) { // Show time (T for Time)
+                new action.ShowTimeAction(gp);
             }
         }
         else if (gp.gameState == gp.pauseState) {

@@ -68,7 +68,7 @@ public class Time {
 
     public String getCurrentTime() {
         return String.format(
-            "Hari ke-%d | Musim: %s | Jam: %02d:%02d | Cuaca: %s",
+            "Hari ke-%d | Musim: %s | Jam: %02d:%02d\nCuaca: %s",
             dayActual, seasons[seasonIndex], hour, minute, weather
         );
     }
@@ -80,8 +80,25 @@ public class Time {
     public String getWeather() {
         return weather;
     }
+    
+    public void setTimeToEvening() {
+        if (hour < 22) {
+            this.hour = 22;
+            this.minute = 0;
+        }
+        else if (hour >= 22 && hour < 24) {
+            dayActual++;
+            daySeason++;
+            this.hour = 22;
+            this.minute = 0;
+        }
+        else {
+            this.hour = 22;
+            this.minute = 0;
+        }
+    }
 
-    public int getDay() {
+    public int getDayActual() {
         return dayActual;
     }
 

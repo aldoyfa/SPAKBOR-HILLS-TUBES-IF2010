@@ -40,6 +40,8 @@ public class Player {
    private String partner = null;
    private int gold = 0;
    public Inventory inventory = new Inventory();
+   private boolean isMarried = false;
+   private boolean isEngaged = false;
 
    // Atribut tambahan
    public boolean hasSleptToday = false;
@@ -95,6 +97,22 @@ public class Player {
         return gold;
     }
 
+    public boolean isMarried() {
+        return isMarried;
+    }
+
+    public void setMarried(boolean married) {
+        this.isMarried = married;
+    }
+
+    public boolean isEngaged() {
+        return isEngaged;
+    }
+
+    public void setEngaged(boolean Engaged) {
+        this.isEngaged = Engaged;
+    }
+
     public void setGold(int gold) {
         this.gold += gold;
     }
@@ -111,6 +129,7 @@ public class Player {
         inventory.addItem("Watering Can", 1, ItemType.EQUIPMENT);
         inventory.addItem("Pickaxe", 1, ItemType.EQUIPMENT);
         inventory.addItem("Fishing Rod", 1, ItemType.EQUIPMENT);
+        inventory.addItem("Proposal Ring", 1, ItemType.EQUIPMENT);
         
         // // TAMBAHKAN FOOD ITEMS UNTUK TESTING
         // inventory.addItem("Baguette", 3, ItemType.FOOD);

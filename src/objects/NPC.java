@@ -13,6 +13,7 @@ public abstract class NPC extends Object {
     protected RelationshipsStatus relationshipStatus;
     String[] dialogues = new String[10];
     int dialogueIndex = 0; 
+    protected int engagementDay = 0;
 
     public String getName() {
         return name;
@@ -46,6 +47,13 @@ public abstract class NPC extends Object {
         this.relationshipStatus = relationshipStatus;
     }
 
+    public int getEngagementDay() {
+        return engagementDay;
+    }
+
+    public void setEngagementDay(int day) {
+        this.engagementDay = day;
+    }
 
     // Metode untuk memperbarui status relationship berdasarkan heart points
     private void updateRelationshipStatus() {
