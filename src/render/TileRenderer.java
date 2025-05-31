@@ -19,7 +19,7 @@ public class TileRenderer {
         setup (0, "tilable", false);
         setup (1, "wall", true);
         setup (2, "tilled", false);
-        setup (3, "tree", false);
+        setup (3, "tree", true);
         setup (4, "grass", false);
         setup (5, "planted", true);
         setup(6, "water", true);

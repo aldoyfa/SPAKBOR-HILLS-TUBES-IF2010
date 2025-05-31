@@ -72,7 +72,7 @@ public class GamePanel extends JPanel implements Runnable {
     public Object[] obj;
     public ObjectRenderer objM;
     public int newGameCounter = 0; // Counter untuk tombol New Game
-    
+    public boolean isInFarmMap = true;
 
     public GamePanel() {
         this.setPreferredSize(new Dimension(screenWidth, screenHeight));
@@ -159,14 +159,15 @@ public class GamePanel extends JPanel implements Runnable {
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
         Graphics2D g2 = (Graphics2D) g;
-        // TITLE SCREEN
+        
         if (gameState == titleState) {
             ui.draw(g2);
-        }
-        // PLAY STATE
-        else {
+        } else {
             farmMap.renderer.draw(g2);
-            objM.draw(g2);
+            // Only draw objects if in farm map
+            if (selectedMap == 0) {
+                objM.draw(g2);
+            }
             player.draw(g2);
             ui.draw(g2);
         }

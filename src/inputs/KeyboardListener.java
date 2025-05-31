@@ -7,6 +7,7 @@ import action.Chatting;
 import action.Gift;
 import action.Marry;
 import action.Propose;
+import objects.Object; // Add this import
 
 public class KeyboardListener implements KeyListener {
     GamePanel gp;
@@ -137,6 +138,9 @@ public class KeyboardListener implements KeyListener {
                         gp.maxWorldRow = gp.maxOtherMapRow;
                     }
 
+                    // Clear existing objects
+                    gp.obj = new objects.Object[10];  // Specify the full package path for Object class
+
                     // Reinitialize map arrays with new dimensions
                     gp.farmMap.mapTileNum = new int[gp.maxWorldCol][gp.maxWorldRow];
 
@@ -148,9 +152,9 @@ public class KeyboardListener implements KeyListener {
                     gp.player.worldY = gp.tileSize * (gp.maxWorldRow/4);
                     gp.player.direction = "down";
 
-                    // Reset object placement if needed
+                    // Place objects only if it's farm map
                     if (gp.selectedMap == 0) {
-                        gp.farmMap.placeObjects();
+                        gp.objM.setObject(); // This will place all buildings and NPCs
                     }
 
                     gp.gameState = gp.playState;
