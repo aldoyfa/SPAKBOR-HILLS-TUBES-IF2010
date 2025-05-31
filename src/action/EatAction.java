@@ -16,7 +16,7 @@ public class EatAction implements Action {
     @Override
     public void execute() {
         // Cek energy player terlebih dahulu
-        if (gp.player.getEnergy() >= 5) {
+        if (gp.player.getEnergy() >= 0) {
             // Filter item FOOD dari inventory
             List<Item> foodItems = gp.player.getInventory().getItemsByType(ItemType.FOOD);
             

@@ -16,8 +16,11 @@ public class Chatting implements Action {
     @Override
     public void execute() {
         if (gp.player.getEnergy() >= 10) {
+            // ENHANCED: Set currentNPC untuk shop integration
+            gp.ui.currentNPC = npc;
+            
             gp.gameState = gp.dialogueState;
-            npc.speak();
+            npc.speak(); // Emily's speak() method will set isEmilyShop = true
             gp.player.setEnergy(-10);
             npc.setHeartPoints(10);
         }

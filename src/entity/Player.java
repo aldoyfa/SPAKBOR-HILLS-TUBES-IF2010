@@ -117,19 +117,17 @@ public class Player {
         speed = 16;
         direction = "down";
         
-        // Menggunakan explicit types untuk clarity
-        inventory.addItem("Parsnip Seeds", 15, ItemType.SEED);
-        inventory.addItem("Hoe", 1, ItemType.EQUIPMENT);
-        inventory.addItem("Watering Can", 1, ItemType.EQUIPMENT);
-        inventory.addItem("Pickaxe", 1, ItemType.EQUIPMENT);
-        inventory.addItem("Fishing Rod", 1, ItemType.EQUIPMENT);
+        // ENHANCED: Gunakan addItemByName untuk auto type detection
+        inventory.addItemByName("Parsnip Seeds", 15);
+        inventory.addItemByName("Hoe", 1);
+        inventory.addItemByName("Watering Can", 1);
+        inventory.addItemByName("Pickaxe", 1);
+        inventory.addItemByName("Fishing Rod", 1);
+        inventory.addItemByName("Proposal Ring", 1);
         
-        // TAMBAHAN: Proposal Ring untuk testing
-        inventory.addItem("Proposal Ring", 1, ItemType.EQUIPMENT);
-        
-        // TAMBAHKAN FOOD ITEMS UNTUK TESTING
-        inventory.addItem("Baguette", 10, ItemType.FOOD);
-        inventory.addItem("Fish n' Chips", 2, ItemType.FOOD);
+        // TAMBAHAN: Testing items dari database
+        inventory.addItemByName("Baguette", 3);
+        inventory.addItemByName("Fish n' Chips", 2);
     }
 
     // Update getter methods untuk kompatibilitas dengan sistem lama

@@ -13,6 +13,8 @@ import javax.imageio.ImageIO;
 
 import model.Item;
 import objects.NPC;
+import model.ItemType;
+import model.ShopDatabase;
 
 import java.awt.Font;
 import java.awt.Color;
@@ -41,6 +43,21 @@ public int inventorySelectionIndex = 0;
 // Variabel untuk filtered inventory (eat/plant actions)
 public int filteredInventorySelectionIndex = 0;
 public List<Item> filteredItems = new ArrayList<>();
+
+// SHOP VARIABLES
+public boolean isEmilyShop = false;
+public String[] shopModes = {"Buy", "Sell"};
+public int shopModeIndex = 0;
+public ItemType[] shopCategories = {ItemType.SEED, ItemType.FOOD, ItemType.MISC};
+public int shopCategoryIndex = 0;
+public List<String> shopItems = new ArrayList<>();
+public int shopItemIndex = 0;
+
+// SELL VARIABLES
+public List<ItemType> sellCategories = new ArrayList<>();
+public int sellCategoryIndex = 0;
+public List<String> sellItems = new ArrayList<>();
+public int sellItemIndex = 0;
 
     public UI(GamePanel gp) {
         this.gp = gp;
@@ -117,6 +134,27 @@ public List<Item> filteredItems = new ArrayList<>();
         // PLANT INVENTORY STATE  
         if (gp.gameState == gp.plantInventoryState) {
             drawPlantInventoryScreen();
+        }
+        
+        // SHOP MODE SELECTION (Buy/Sell)
+        if (gp.gameState == gp.shopModeState) {
+            drawShopModeScreen();
+        }
+        // SHOP CATEGORY SELECTION
+        if (gp.gameState == gp.shopCategoryState) {
+            drawShopCategoryScreen();
+        }
+        // SHOP ITEM SELECTION
+        if (gp.gameState == gp.shopItemState) {
+            drawShopItemScreen();
+        }
+        // SELL CATEGORY SELECTION
+        if (gp.gameState == gp.sellCategoryState) {
+            drawSellCategoryScreen();
+        }
+        // SELL ITEM SELECTION
+        if (gp.gameState == gp.sellItemState) {
+            drawSellItemScreen();
         }
     }
 
@@ -457,6 +495,210 @@ public List<Item> filteredItems = new ArrayList<>();
         g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 28F));
         g2.setColor(Color.CYAN);
         g2.drawString("Action: Plant in farm", textX, textY + 200);
+    }
+
+    // SHOP MODE SELECTION (Buy/Sell)
+    public void drawShopModeScreen() {
+        drawDialogueBox();
+        
+        int boxX = gp.tileSize * 2;
+        int boxY = gp.tileSize / 2;
+        int textX = boxX + 20;
+        int textY = boxY + 60;
+
+        g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 32F));
+        g2.setColor(Color.WHITE);
+        g2.drawString("EMILY'S SHOP - WELCOME!", textX, textY);
+        
+        g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 28F));
+        g2.drawString("(←/→ to move, ENTER to select, ESC to close)", textX, textY + 40);
+        
+        // Show shop mode options
+        int spacing = gp.tileSize * 4;
+        for (int i = 0; i < shopModes.length; i++) {
+            if (i == shopModeIndex) {
+                g2.setFont(g2.getFont().deriveFont(Font.BOLD, 48F));
+                g2.setColor(Color.YELLOW);
+            } else {
+                g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 40F));
+                g2.setColor(Color.WHITE);
+            }
+            g2.drawString(shopModes[i], textX + (i * spacing), textY + 120);
+        }
+        
+        // Show gold
+        g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 24F));
+        g2.setColor(Color.GREEN);
+        g2.drawString("Your Gold: " + gp.player.getGold() + "g", textX, textY + 180);
+    }
+
+    // SHOP CATEGORY SELECTION
+    public void drawShopCategoryScreen() {
+        drawDialogueBox();
+        
+        int boxX = gp.tileSize * 2;
+        int boxY = gp.tileSize / 2;
+        int textX = boxX + 20;
+        int textY = boxY + 60;
+
+        g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 32F));
+        g2.setColor(Color.WHITE);
+        g2.drawString("EMILY'S SHOP - SELECT CATEGORY", textX, textY);
+        
+        g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 28F));
+        g2.drawString("(↑/↓ to move, ENTER to select, ESC to back)", textX, textY + 40);
+        
+        // Show selected category
+        g2.setFont(g2.getFont().deriveFont(Font.BOLD, 48F));
+        g2.setColor(Color.YELLOW);
+        String selectedCategory = shopCategories[shopCategoryIndex].getDisplayName();
+        g2.drawString("Category: " + selectedCategory, textX, textY + 120);
+        
+        // Show navigation
+        g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 24F));
+        g2.setColor(Color.WHITE);
+        g2.drawString("Category " + (shopCategoryIndex + 1) + " of " + shopCategories.length, textX, textY + 160);
+        
+        // Show gold
+        g2.setColor(Color.GREEN);
+        g2.drawString("Your Gold: " + gp.player.getGold() + "g", textX, textY + 190);
+    }
+
+    // SHOP ITEM SELECTION
+    public void drawShopItemScreen() {
+        drawDialogueBox();
+        
+        int boxX = gp.tileSize * 2;
+        int boxY = gp.tileSize / 2;
+        int textX = boxX + 20;
+        int textY = boxY + 60;
+
+        g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 32F));
+        g2.setColor(Color.WHITE);
+        g2.drawString("EMILY'S SHOP - BUY ITEMS", textX, textY);
+        
+        g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 28F));
+        g2.drawString("(↑/↓ to move, ENTER to buy, ESC to back)", textX, textY + 40);
+        
+        if (shopItems.isEmpty()) {
+            g2.setColor(Color.RED);
+            g2.drawString("No items available in this category!", textX, textY + 100);
+            return;
+        }
+
+        // Show selected item
+        String selectedItem = shopItems.get(shopItemIndex);
+        int buyPrice = ShopDatabase.getBuyPrice(selectedItem);
+        
+        g2.setFont(g2.getFont().deriveFont(Font.BOLD, 40F));
+        g2.setColor(Color.YELLOW);
+        g2.drawString("Item: " + selectedItem, textX, textY + 120);
+        
+        g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 32F));
+        g2.setColor(Color.GREEN);
+        g2.drawString("Price: " + buyPrice + "g", textX, textY + 160);
+        
+        g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 24F));
+        g2.setColor(Color.WHITE);
+        g2.drawString("Your Gold: " + gp.player.getGold() + "g", textX, textY + 190);
+        g2.drawString("Item " + (shopItemIndex + 1) + " of " + shopItems.size(), textX, textY + 215);
+        
+        // Buy confirmation
+        g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 28F));
+        if (gp.player.getGold() >= buyPrice) {
+            g2.setColor(Color.CYAN);
+            g2.drawString("Press ENTER to buy", textX, textY + 250);
+        } else {
+            g2.setColor(Color.RED);
+            g2.drawString("Not enough gold!", textX, textY + 250);
+        }
+    }
+
+    // SELL CATEGORY SELECTION
+    public void drawSellCategoryScreen() {
+        drawDialogueBox();
+        
+        int boxX = gp.tileSize * 2;
+        int boxY = gp.tileSize / 2;
+        int textX = boxX + 20;
+        int textY = boxY + 60;
+
+        g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 32F));
+        g2.setColor(Color.WHITE);
+        g2.drawString("EMILY'S SHOP - SELECT SELL CATEGORY", textX, textY);
+        
+        g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 28F));
+        g2.drawString("(↑/↓ to move, ENTER to select, ESC to back)", textX, textY + 40);
+        
+        if (sellCategories.isEmpty()) {
+            g2.setColor(Color.RED);
+            g2.drawString("No items available to sell!", textX, textY + 100);
+            return;
+        }
+        
+        // Show selected category
+        g2.setFont(g2.getFont().deriveFont(Font.BOLD, 48F));
+        g2.setColor(Color.YELLOW);
+        String selectedCategory = sellCategories.get(sellCategoryIndex).getDisplayName();
+        g2.drawString("Category: " + selectedCategory, textX, textY + 120);
+        
+        // Show navigation
+        g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 24F));
+        g2.setColor(Color.WHITE);
+        g2.drawString("Category " + (sellCategoryIndex + 1) + " of " + sellCategories.size(), textX, textY + 160);
+        
+        // Show gold
+        g2.setColor(Color.GREEN);
+        g2.drawString("Your Gold: " + gp.player.getGold() + "g", textX, textY + 190);
+    }
+
+    // SELL ITEM SELECTION
+    public void drawSellItemScreen() {
+        drawDialogueBox();
+        
+        int boxX = gp.tileSize * 2;
+        int boxY = gp.tileSize / 2;
+        int textX = boxX + 20;
+        int textY = boxY + 60;
+
+        g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 32F));
+        g2.setColor(Color.WHITE);
+        g2.drawString("EMILY'S SHOP - SELL ITEMS", textX, textY);
+        
+        g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 28F));
+        g2.drawString("(↑/↓ to move, ENTER to sell, ESC to back)", textX, textY + 40);
+        
+        if (sellItems.isEmpty()) {
+            g2.setColor(Color.RED);
+            g2.drawString("No items available in this category!", textX, textY + 100);
+            return;
+        }
+
+        // Show selected item
+        String selectedItem = sellItems.get(sellItemIndex);
+        int sellPrice = ShopDatabase.getSellPrice(selectedItem);
+        
+        // Get quantity dari inventory
+        int quantity = gp.player.getInventory().getItemQuantity(selectedItem);
+        
+        g2.setFont(g2.getFont().deriveFont(Font.BOLD, 40F));
+        g2.setColor(Color.YELLOW);
+        g2.drawString("Item: " + selectedItem, textX, textY + 120);
+        
+        g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 32F));
+        g2.setColor(Color.GREEN);
+        g2.drawString("Sell Price: " + sellPrice + "g each", textX, textY + 160);
+        
+        g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 24F));
+        g2.setColor(Color.WHITE);
+        g2.drawString("You have: " + quantity + " of this item", textX, textY + 190);
+        g2.drawString("Your Gold: " + gp.player.getGold() + "g", textX, textY + 215);
+        g2.drawString("Item " + (sellItemIndex + 1) + " of " + sellItems.size(), textX, textY + 240);
+        
+        // Sell confirmation
+        g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 28F));
+        g2.setColor(Color.CYAN);
+        g2.drawString("Press ENTER to sell 1 item", textX, textY + 275);
     }
 
     public int getXForCenteredText(String text) {

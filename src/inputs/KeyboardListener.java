@@ -7,6 +7,9 @@ import action.Chatting;
 import action.Gift;
 import action.Marry;
 import action.Propose;
+import model.ShopDatabase;
+import model.ItemType;
+
 
 public class KeyboardListener implements KeyListener {
     GamePanel gp;
@@ -90,9 +93,17 @@ public class KeyboardListener implements KeyListener {
         }
         else if (gp.gameState == gp.dialogueState) {
             if (code == KeyEvent.VK_ENTER) {
-                // PERBAIKAN: RESET currentNPC SAAT KELUAR DARI DIALOGUE
+                // SPECIAL: Check if it's Emily's shop dialogue
+                if (gp.ui.isEmilyShop) {
+                    // Transition to shop mode selection
+                    gp.ui.shopModeIndex = 0;
+                    gp.gameState = gp.shopModeState;
+                    return; // Don't reset isEmilyShop yet
+                }
+                
+                // Normal dialogue exit (for other NPCs)
                 if (gp.ui.currentNPC != null) {
-                    gp.ui.currentNPC = null; // Reset NPC setelah dialogue selesai
+                    gp.ui.currentNPC = null;
                 }
                 gp.gameState = gp.playState;
             }
@@ -267,6 +278,142 @@ public class KeyboardListener implements KeyListener {
                 // Reset dan kembali ke play state
                 gp.ui.filteredItems.clear();
                 gp.gameState = gp.playState;
+            }
+        }
+        // SHOP MODE STATE (Buy/Sell)
+        else if (gp.gameState == gp.shopModeState) {
+            if (code == KeyEvent.VK_LEFT) {
+                gp.ui.shopModeIndex = (gp.ui.shopModeIndex + gp.ui.shopModes.length - 1) % gp.ui.shopModes.length;
+            }
+            if (code == KeyEvent.VK_RIGHT) {
+                gp.ui.shopModeIndex = (gp.ui.shopModeIndex + 1) % gp.ui.shopModes.length;
+            }
+            if (code == KeyEvent.VK_ENTER) {
+                String selectedMode = gp.ui.shopModes[gp.ui.shopModeIndex];
+                if (selectedMode.equals("Buy")) {
+                    // Go to buy category selection
+                    gp.ui.shopCategoryIndex = 0;
+                    gp.gameState = gp.shopCategoryState;
+                } else if (selectedMode.equals("Sell")) {
+                    // Go to sell category selection
+                    new action.SellAction(gp);
+                }
+            }
+            if (code == KeyEvent.VK_ESCAPE) {
+                // Exit shop completely
+                gp.ui.isEmilyShop = false;
+                gp.ui.currentNPC = null;
+                gp.gameState = gp.playState;
+            }
+        }
+        // SHOP CATEGORY STATE (Buy Categories)
+        else if (gp.gameState == gp.shopCategoryState) {
+            if (code == KeyEvent.VK_UP) {
+                if (gp.ui.shopCategoryIndex > 0) {
+                    gp.ui.shopCategoryIndex--;
+                } else {
+                    gp.ui.shopCategoryIndex = gp.ui.shopCategories.length - 1;
+                }
+            }
+            if (code == KeyEvent.VK_DOWN) {
+                if (gp.ui.shopCategoryIndex < gp.ui.shopCategories.length - 1) {
+                    gp.ui.shopCategoryIndex++;
+                } else {
+                    gp.ui.shopCategoryIndex = 0;
+                }
+            }
+            if (code == KeyEvent.VK_ENTER) {
+                // Load items for selected category
+                ItemType selectedCategory = gp.ui.shopCategories[gp.ui.shopCategoryIndex];
+                gp.ui.shopItems = ShopDatabase.getBuyableItemsByCategory(selectedCategory);
+                
+                if (!gp.ui.shopItems.isEmpty()) {
+                    gp.ui.shopItemIndex = 0;
+                    gp.gameState = gp.shopItemState;
+                }
+            }
+            if (code == KeyEvent.VK_ESCAPE) {
+                gp.gameState = gp.shopModeState;
+            }
+        }
+        // SHOP ITEM STATE (Buy Items)
+        else if (gp.gameState == gp.shopItemState) {
+            if (code == KeyEvent.VK_UP) {
+                if (gp.ui.shopItemIndex > 0) {
+                    gp.ui.shopItemIndex--;
+                } else {
+                    gp.ui.shopItemIndex = gp.ui.shopItems.size() - 1;
+                }
+            }
+            if (code == KeyEvent.VK_DOWN) {
+                if (gp.ui.shopItemIndex < gp.ui.shopItems.size() - 1) {
+                    gp.ui.shopItemIndex++;
+                } else {
+                    gp.ui.shopItemIndex = 0;
+                }
+            }
+            if (code == KeyEvent.VK_ENTER) {
+                // Execute buy logic
+                String selectedItem = gp.ui.shopItems.get(gp.ui.shopItemIndex);
+                action.BuyAction.executeBuyLogic(gp, selectedItem);
+            }
+            if (code == KeyEvent.VK_ESCAPE) {
+                gp.gameState = gp.shopCategoryState;
+            }
+        }
+        // SELL CATEGORY STATE
+        else if (gp.gameState == gp.sellCategoryState) {
+            if (code == KeyEvent.VK_UP) {
+                if (gp.ui.sellCategoryIndex > 0) {
+                    gp.ui.sellCategoryIndex--;
+                } else {
+                    gp.ui.sellCategoryIndex = gp.ui.sellCategories.size() - 1;
+                }
+            }
+            if (code == KeyEvent.VK_DOWN) {
+                if (gp.ui.sellCategoryIndex < gp.ui.sellCategories.size() - 1) {
+                    gp.ui.sellCategoryIndex++;
+                } else {
+                    gp.ui.sellCategoryIndex = 0;
+                }
+            }
+            if (code == KeyEvent.VK_ENTER) {
+                // Load items for selected sell category
+                ItemType selectedCategory = gp.ui.sellCategories.get(gp.ui.sellCategoryIndex);
+                gp.ui.sellItems = ShopDatabase.getSellableItemsByCategory(gp, selectedCategory);
+                
+                if (!gp.ui.sellItems.isEmpty()) {
+                    gp.ui.sellItemIndex = 0;
+                    gp.gameState = gp.sellItemState;
+                }
+            }
+            if (code == KeyEvent.VK_ESCAPE) {
+                gp.gameState = gp.shopModeState;
+            }
+        }
+        // SELL ITEM STATE
+        else if (gp.gameState == gp.sellItemState) {
+            if (code == KeyEvent.VK_UP) {
+                if (gp.ui.sellItemIndex > 0) {
+                    gp.ui.sellItemIndex--;
+                } else {
+                    gp.ui.sellItemIndex = gp.ui.sellItems.size() - 1;
+                }
+            }
+            if (code == KeyEvent.VK_DOWN) {
+                if (gp.ui.sellItemIndex < gp.ui.sellItems.size() - 1) {
+                    gp.ui.sellItemIndex++;
+                } else {
+                    gp.ui.sellItemIndex = 0;
+                }
+            }
+            if (code == KeyEvent.VK_ENTER) {
+                // Execute sell logic
+                String selectedItem = gp.ui.sellItems.get(gp.ui.sellItemIndex);
+                action.SellAction.executeSellLogic(gp, selectedItem);
+            }
+            if (code == KeyEvent.VK_ESCAPE) {
+                gp.gameState = gp.sellCategoryState;
             }
         }
     }

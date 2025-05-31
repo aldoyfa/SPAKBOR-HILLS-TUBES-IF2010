@@ -70,7 +70,12 @@ public class GamePanel extends JPanel implements Runnable {
     public final int inventoryState = 22; // INVENTORY LENGKAP
     public final int eatInventoryState = 23; // KHUSUS EAT
     public final int plantInventoryState = 24; // KHUSUS PLANT
-
+    public final int shopModeState = 25;      // Buy/Sell selection
+    public final int shopCategoryState = 26;  // Buy category selection
+    public final int shopItemState = 27;      // Buy item selection
+    public final int sellCategoryState = 28;  // Sell category selection
+    public final int sellItemState = 29;      // Sell item selection
+    public final int sellInventoryState = 30; // Sell item from inventory
     public int newGameCounter = 0;
 
     // ENTITY AND OBJECT
