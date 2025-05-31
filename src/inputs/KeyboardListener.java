@@ -113,6 +113,35 @@ public class KeyboardListener implements KeyListener {
                 }
             }
         }
+        else if (gp.gameState == gp.worldMapState) {
+            if (code == KeyEvent.VK_W || code == KeyEvent.VK_UP) {
+                gp.selectedMap--;
+                if (gp.selectedMap < 0) {
+                    gp.selectedMap = gp.mapNames.length - 1;
+                }
+            }
+            if (code == KeyEvent.VK_S || code == KeyEvent.VK_DOWN) {
+                gp.selectedMap++;
+                if (gp.selectedMap >= gp.mapNames.length) {
+                    gp.selectedMap = 0;
+                }
+            }
+            if (code == KeyEvent.VK_ENTER) {
+                try {
+                    // Load map yang dipilih
+                    gp.farmMap.loadMap(gp.mapPaths[gp.selectedMap]);
+                    // Reset posisi player ke tengah map
+                    gp.player.worldX = gp.tileSize * (gp.maxWorldCol/2);
+                    gp.player.worldY = gp.tileSize * (gp.maxWorldRow/2);
+                    gp.player.direction = "down";
+                    // Reset object placement sesuai map baru
+                    gp.farmMap.placeObjects();
+                    gp.gameState = gp.playState;
+                } catch (Exception ex) {
+                    System.out.println("Error loading map: " + ex.getMessage());
+                }
+            }
+        }
     }
 
     public void keyReleased (KeyEvent e) {

@@ -49,13 +49,23 @@ public class GamePanel extends JPanel implements Runnable {
     public final int dialogueState = 3;
     public final int newGameState = 4;
     public final int NPCInterfaceState = 5;
-    public int newGameCounter = 0;
+    public final int worldMapState = 6;
+    public int selectedMap = 0;
+    public String[] mapNames = {"Farm Map", "Ocean", "Lake", "River", "Village"}; 
+    public String[] mapPaths = {
+        "/res/maps/farmmap.txt",
+        "/res/maps/ocean.txt", 
+        "/res/maps/lake.txt",
+        "/res/maps/river.txt",
+        "/res/maps/village.txt"
+    };
 
     // ENTITY AND OBJECT
     public FarmMap farmMap;
     public Player player;
     public Object[] obj;
     public ObjectRenderer objM;
+    public int newGameCounter = 0; // Counter untuk tombol New Game
     
 
     public GamePanel() {

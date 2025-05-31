@@ -242,6 +242,33 @@ public class Player {
         return image;
     }
 
+    public void checkMapBoundary() {
+        boolean atBoundary = false;
+        
+        // Cek batas map
+        if (worldX <= 0) {
+            worldX = 0;
+            atBoundary = true;
+        }
+        if (worldX >= gp.maxWorldCol * gp.tileSize - gp.tileSize) {
+            worldX = gp.maxWorldCol * gp.tileSize - gp.tileSize;
+            atBoundary = true;
+        }
+        if (worldY <= 0) {
+            worldY = 0;
+            atBoundary = true;
+        }
+        if (worldY >= gp.maxWorldRow * gp.tileSize - gp.tileSize) {
+            worldY = gp.maxWorldRow * gp.tileSize - gp.tileSize;
+            atBoundary = true;
+        }
+        
+        if (atBoundary) {
+            moving = false;
+            gp.gameState = gp.worldMapState;
+        }
+    }
+
     public void update() {
         if (moving == false) {
             if (keyH.wPressed || keyH.aPressed || keyH.sPressed || keyH.dPressed) {
@@ -307,6 +334,7 @@ public class Player {
                 pixelCounter = 0;
             }
         }
+        checkMapBoundary(); // Tambahkan ini
     }
 
     public void interactObject(int index) {

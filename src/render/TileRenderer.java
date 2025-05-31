@@ -22,6 +22,8 @@ public class TileRenderer {
         setup (3, "tree", false);
         setup (4, "grass", false);
         setup (5, "planted", true);
+        setup(6, "water", true);
+        setup(7, "sand", false);
     }
 
     public void setup (int index, String imageName, boolean collision) {
