@@ -39,18 +39,6 @@ public class KeyboardListener implements KeyListener {
         if (code == KeyEvent.VK_1) {
             onePressed = true;
         }
-        if (code == KeyEvent.VK_2) {
-            twoPressed = true;
-        }
-        if (code == KeyEvent.VK_3) {
-            threePressed = true;
-        }
-        if (code == KeyEvent.VK_4) {
-            fourPressed = true;
-        }
-        if (code == KeyEvent.VK_5) {
-            fivePressed = true;
-        }
         if (code == KeyEvent.VK_UP) {
             upPressed = true;
         }
