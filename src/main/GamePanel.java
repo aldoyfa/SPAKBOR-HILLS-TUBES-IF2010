@@ -41,14 +41,36 @@ public class GamePanel extends JPanel implements Runnable {
     Thread gameThread;
     long timeCounter = 0; // Counter untuk waktu game
 
-    // GAME STATE
+    // GAME STATE - TAMBAHKAN STATE YANG HILANG
     public int gameState;
     public final int titleState = 0;
     public final int playState = 1;
     public final int pauseState = 2;
-    public final int dialogueState = 3;
-    public final int newGameState = 4;
-    public final int NPCInterfaceState = 5;
+    public final int newGameState = 3; // PERBAIKAN: UBAH KE 3
+    public final int dialogueState = 4; 
+    public final int characterState = 5; // PERBAIKAN: GESER KE 5
+    public final int tradeState = 6; // GESER
+    public final int fishingState = 7; // GESER
+    public final int travelState = 8; // GESER
+    public final int sellingState = 9; // GESER
+    public final int viewPlayerInfoState = 10; // GESER
+    public final int viewHelpState = 11; // GESER
+    public final int sleepingState = 12; // GESER
+    public final int chattingState = 13; // GESER
+    public final int giftingState = 14; // GESER
+    public final int proposingState = 15; // GESER
+    public final int marryingState = 16; // GESER
+    public final int npcInteractionState = 17; // GESER
+    public final int cookingState = 18; // GESER
+    public final int cookingExecutionState = 19; // GESER
+
+    // TAMBAHKAN STATE BARU:
+    public final int NPCInterfaceState = 20;
+    public final int inventorySelectionState = 21; // KHUSUS GIFT
+    public final int inventoryState = 22; // INVENTORY LENGKAP
+    public final int eatInventoryState = 23; // KHUSUS EAT
+    public final int plantInventoryState = 24; // KHUSUS PLANT
+
     public int newGameCounter = 0;
 
     // ENTITY AND OBJECT

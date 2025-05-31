@@ -46,6 +46,11 @@ public abstract class NPC extends Object {
         this.relationshipStatus = relationshipStatus;
     }
 
+
+    // Metode untuk memperbarui status relationship berdasarkan heart points
+    private void updateRelationshipStatus() {
+        }
+
     @Override
     public void getImage() {
         try {
