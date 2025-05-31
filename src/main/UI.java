@@ -177,6 +177,11 @@ public class UI {
         if (gp.gameState == gp.sellItemState) {
             drawSellItemScreen();
         }
+
+        // END GAME STATE
+        if (gp.gameState == gp.endGameState) {
+            drawEndGameStats();
+        }
     }
 
     public void drawTitleScreen() {
@@ -359,7 +364,10 @@ public class UI {
         g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 60F));
         x += gp.tileSize;
         y += gp.tileSize;
-        drawWrappedText(currentDialogue, x, y, gp.screenWidth - x * 2, 55);
+        for (String line : currentDialogue.split("\n")) {
+            g2.drawString(line, x, y);
+            y += 55;
+        }
 
         if (currentNPC != null && !isShippingBinMode) {
             // NPC NAME
@@ -870,5 +878,9 @@ public class UI {
         g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 28F));
         g2.setColor(Color.CYAN);
         g2.drawString("Press ENTER to ship 1 item", textX, textY + 275);
+    }
+
+    public void drawEndGameStats() {
+    
     }
 }

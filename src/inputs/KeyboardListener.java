@@ -77,6 +77,9 @@ public class KeyboardListener implements KeyListener {
             if (code == KeyEvent.VK_F) {
                 FishingAction.execute(gp);
             }
+            if (code == KeyEvent.VK_V) {
+                new action.ShowPlayerInfo(gp);
+            }
         }
         else if (gp.gameState == gp.creditsState) {
             if (code == KeyEvent.VK_ESCAPE) {

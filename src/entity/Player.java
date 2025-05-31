@@ -2,6 +2,8 @@ package entity;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.HashMap;
+
 import javax.imageio.ImageIO;
 
 import java.awt.Graphics2D;
@@ -43,6 +45,16 @@ public class Player {
    public Inventory inventory = new Inventory();
    private boolean isMarried = false;
    private boolean isEngaged = false;
+   private String favoriteItem = "Pickaxe" ;
+
+    // STATISTICS
+    public int totalIncome = 0;
+    public int totalExpenditure = 0;
+    public int cropsHarvested = 0;
+    public int fishCaught = 0;
+    public int commonFish = 0, regularFish = 0, legendaryFish = 0;
+    public int daysPlayed = 0;
+    public HashMap<NPC, NPCStats> npcStats = new HashMap<>();
 
    // Atribut tambahan
    public boolean hasSleptToday = false;
@@ -116,6 +128,22 @@ public class Player {
 
     public void setGold(int gold) {
         this.gold += gold;
+    }
+
+    public String getGender() {
+        return gender;
+    }
+
+    public void setGender (String gender) {
+        this.gender = gender;
+    }
+
+    public String getFavoriteItem() {
+        return favoriteItem;
+    }
+
+    public void setFavoriteItem(String favoriteItem) {
+        this.favoriteItem = favoriteItem;
     }
 
     public void setDefaultValues() {
@@ -448,5 +476,41 @@ public class Player {
                 break;
         }
         g2.drawImage(image, screenX, screenY, null);
+    }
+
+    public void addIncome(int amount) { gold += amount; totalIncome += amount; }
+    public void addExpenditure(int amount) { gold -= amount; totalExpenditure += amount; }
+    public void incrementCropsHarvested() { cropsHarvested++; }
+    public void addFishCaught(String rarity) {
+        fishCaught++;
+        switch (rarity) {
+            case "common": commonFish++; break;
+            case "regular": regularFish++; break;
+            case "legendary": legendaryFish++; break;
+        }
+    }
+    public void incrementDaysPlayed() { daysPlayed++; }
+
+    public static class NPCStats {
+        public String relationship = "Single";
+        public int chatFrequency = 0;
+        public int giftFrequency = 0;
+        public int visitingFrequency = 0;
+    }
+
+    public int seasonIncome = 0, seasonExpenditure = 0;
+    public int seasonsPassed = 0;
+
+    public void newSeason() {
+        seasonsPassed++;
+        seasonIncome = 0;
+        seasonExpenditure = 0;
+    }
+
+    public double getAvgSeasonIncome() {
+        return seasonsPassed == 0 ? 0 : (double) totalIncome / seasonsPassed;
+    }
+    public double getAvgSeasonExpenditure() {
+        return seasonsPassed == 0 ? 0 : (double) totalExpenditure / seasonsPassed;
     }
 }

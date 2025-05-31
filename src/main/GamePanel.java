@@ -34,6 +34,7 @@ public class GamePanel extends JPanel implements Runnable {
     public final int maxOtherMapRow = 32;
     public int maxWorldCol = maxFarmMapCol;
     public int maxWorldRow = maxFarmMapRow;
+    public boolean endGameTriggered = false; 
 
     // FPS
     int FPS = 60; 
@@ -68,6 +69,7 @@ public class GamePanel extends JPanel implements Runnable {
     public final int sellCategoryState = 18;  // Sell category selection
     public final int sellItemState = 19;      // Sell item selection
     public final int sellInventoryState = 20; // Sell item from inventory
+    public final int endGameState = 21;       // End game state
 
     public int selectedMap = 0;
     public String[] mapNames = {"Farm Map", "Ocean", "Lake", "River", "Village", "House", "Store"}; 
@@ -110,6 +112,14 @@ public class GamePanel extends JPanel implements Runnable {
         farmMap.renderer.getTileImage();
         objM.setObject(); 
         gameState = titleState;
+    }
+
+    public void checkEndGame() {
+        if (!endGameTriggered && (player.getGold() >= 17209 || player.isMarried())) {
+            endGameTriggered = true;
+            gameState = endGameState; 
+            ui.drawEndGameStats(); 
+        }
     }
 
     public void startGameThread() {
