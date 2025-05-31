@@ -167,8 +167,8 @@ public class GamePanel extends JPanel implements Runnable {
             // Draw map tiles
             farmMap.renderer.draw(g2);
             
-            // Draw objects for farm, village, store maps
-            if (selectedMap == 0 || selectedMap == 4 || selectedMap == 6) { 
+            // Draw objects for farm, village, store, and house maps
+            if (selectedMap == 0 || selectedMap == 4 || selectedMap == 5 || selectedMap == 6) { 
                 objM.draw(g2);
             }
             

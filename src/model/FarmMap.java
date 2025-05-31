@@ -8,13 +8,17 @@ import main.GamePanel;
 import objects.House;
 import objects.Pond;
 import objects.ShippingBin;
+import objects.Stove;
 import objects.NPC_Abigail;
 import objects.NPC_Caroline;
 import objects.NPC_Dasco;
 import objects.NPC_Emily;
 import objects.NPC_Perry;
 import objects.NPC_MayorTadi;
+import objects.Bed;
 import render.TileRenderer;
+import objects.Tv;
+import objects.Stove;
 
 public class FarmMap {
     GamePanel gp;
@@ -149,6 +153,26 @@ public class FarmMap {
                 gp.obj[1].worldY = 22 * gp.tileSize; // 2 tiles below house
 
                 // Don't call placeObjects() here as it will overwrite our store objects
+            }
+            else if (filePath.contains("flooring")) {  // This is the house map
+                // Clear existing objects first
+                for (int i = 0; i < gp.obj.length; i++) {
+                    gp.obj[i] = null;
+                }
+
+
+                // Place bed inside house
+                gp.obj[1] = new Bed(gp);
+                gp.obj[1].worldX = 2 * gp.tileSize;
+                gp.obj[1].worldY = 2 * gp.tileSize;
+
+                gp.obj[2] = new Tv(gp);
+                gp.obj[2].worldX = 2 * gp.tileSize;
+                gp.obj[2].worldY = 9 * gp.tileSize;
+
+                gp.obj[3] = new Stove(gp);
+                gp.obj[3].worldX = 2 * gp.tileSize;
+                gp.obj[3].worldY = 13 * gp.tileSize;
             }
         } catch (Exception e) {
             e.printStackTrace();
